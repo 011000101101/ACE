@@ -1,4 +1,4 @@
-package DesignAnalyzer;
+package designAnalyzer;
 
 public class DesignAnalyzer {
 
