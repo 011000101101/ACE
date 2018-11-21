@@ -4,11 +4,11 @@ public class IOBlock extends NetlistBlock {
 
 	 
 	
-	public IOBlock(String newName, boolean subblk) {
+	public IOBlock(String newName, int newAssignedIdentifier) {
 		
-		name= newName;
-		pinAssignments= new Net[1]; ////save single net assignment to pin
-		subblk_1= subblk;
+		super(newName, newAssignedIdentifier);
+		
+		pinAssignments= new Net[2];
 		
 	}
 	

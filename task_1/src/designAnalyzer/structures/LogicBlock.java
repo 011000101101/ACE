@@ -3,11 +3,17 @@ package designAnalyzer.structures;
 public class LogicBlock extends NetlistBlock {
 
 	
-	public LogicBlock(String newName) {
+	public LogicBlock(String newName, int newAssignedIdentifier) {
+
+		super(newName, newAssignedIdentifier);
 		
-		name= newName;
-		pinAssignments= new Net[5]; //save all net assignments to pins except for clock pin
+		/**
+		 * save all net assignments to pins
+		 */
+		pinAssignments= new Net[6];
+		
 		subblk_1= false;
+		
 		
 		
 	}
