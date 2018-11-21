@@ -48,4 +48,19 @@ public class ErrorReporter {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public static void reportBlockNotPlacedError(NetlistBlock block) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportBlockPlacedOutOfBoundsError(NetlistBlock block) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportDuplicateBlockPlacementError(NetlistBlock block) {
+		// TODO Auto-generated method stub
+		
+	}
 }

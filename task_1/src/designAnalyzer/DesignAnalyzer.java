@@ -2,6 +2,7 @@ package designAnalyzer;
 
 import java.io.FileNotFoundException;
 
+import designAnalyzer.consistencyChecker.ConsistencyChecker;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.ArchitectureParser;
 import designAnalyzer.inputParser.NetlistParser;
@@ -9,12 +10,15 @@ import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.inputParser.RoutingParser;
 
 public class DesignAnalyzer {
+	
+	private static boolean routingFileProvided= false;
 
 	private static NetlistParser netlistParser;
 	private static ArchitectureParser architectureParser;
 	private static PlacementParser placementParser;
 	private static RoutingParser routingParser;
-	private static boolean routingFileProvided= false;
+	
+	private static ConsistencyChecker consistencyChecker;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -24,6 +28,8 @@ public class DesignAnalyzer {
 		String architectureFilePath= null;
 		String placementFilePath= null;
 		String routingFilePath= null;
+		
+		consistencyChecker= new ConsistencyChecker(xSize, ySize);
 		
 		try {
 			
@@ -35,6 +41,8 @@ public class DesignAnalyzer {
 			}
 			
 			parse();
+			
+			consistencyChecker.checkConsistency(routingFileProvided);
 			
 			analyze();
 			
@@ -62,11 +70,6 @@ public class DesignAnalyzer {
 	
 	private static void analyze() {
 		
-		checkPlacement();
-		
-		if(routingFileProvided) {
-			checkRouting();
-		}
 		
 		analyzeTiming(routingFileProvided);
 		

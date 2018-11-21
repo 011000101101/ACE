@@ -29,8 +29,8 @@ public abstract class NetlistBlock {
 	 */
 	protected Net[] pinAssignments;
 	
-	protected int xCoordinate;
-	protected int yCoordinate;
+	protected int xCoordinate= -1;
+	protected int yCoordinate= -1;
 	
 	
 	/**
@@ -93,6 +93,25 @@ public abstract class NetlistBlock {
 	 */
 	public String getName() {
 		return name;
+	}
+
+
+	/**
+	 * standard getter
+	 * @return the X coordinate of this block if it has been placed, '-1' if not
+	 */
+	public int getX() {
+		return xCoordinate;
+	}
+
+
+
+	/**
+	 * standard getter
+	 * @return the Y coordinate of this block if it has been placed, '-1' if not
+	 */
+	public int getY() {
+		return yCoordinate;
 	}
 	
 }
