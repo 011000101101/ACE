@@ -21,6 +21,17 @@ public class StructureManager {
 	 */
 	private int numberOfNets;
 	
+	/**
+	 * HashMap containing all Blocks, with name as key
+	 */
+	private HashMap<String, NetlistBlock> blockMap;
+	
+	/**
+	 * counter keeping track of the number of the number of nets in existence <br>
+	 * -used for setting unique id for each new net
+	 */
+	private int numberOfBlocks;
+	
 	private static StructureManager instance= null;
 	
 	
@@ -56,10 +67,29 @@ public class StructureManager {
 	}
 
 
-
+	/**
+	 * inserts the given block into the block HashMap with name as key, <br>
+	 * report an error if a block with the same name already exists
+	 * @param currentBlock the block to be inserted
+	 */
 	public void insertBlock(NetlistBlock currentBlock) {
-		// TODO Auto-generated method stub
+
+		if(blockMap.containsKey(currentBlock.getName())) {
+			ErrorReporter.reportDuplicateBlockError(currentBlock);
+		}
+		else {
+			numberOfBlocks++;
+			blockMap.put(currentBlock.getName(),  currentBlock);
+		}
 		
+	}
+	
+	/**
+	 * standard getter
+	 * @return the HashMap containing all blocks with names as keys
+	 */
+	public HashMap<String, NetlistBlock> getBlockMap(){
+		return blockMap;
 	}
 
 

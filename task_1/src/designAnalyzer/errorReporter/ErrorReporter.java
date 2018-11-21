@@ -38,4 +38,14 @@ public class ErrorReporter {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public static void reportFileNotFoundError(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportDuplicateBlockError(NetlistBlock currentBlock) {
+		// TODO Auto-generated method stub
+		
+	}
 }

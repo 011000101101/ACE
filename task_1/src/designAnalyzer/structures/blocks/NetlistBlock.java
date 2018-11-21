@@ -85,5 +85,14 @@ public abstract class NetlistBlock {
 			ErrorReporter.reportDuplicatePinAssignmentError(this, pinNumber, netToConnect);
 		}
 	}
+
+
+	/**
+	 * standard getter
+	 * @return the name of this block
+	 */
+	public String getName() {
+		return name;
+	}
 	
 }
