@@ -29,6 +29,10 @@ public class DesignAnalyzer {
 		String placementFilePath= null;
 		String routingFilePath= null;
 		
+		int xSize= null;
+		int ySize= null;
+		
+		
 		consistencyChecker= new ConsistencyChecker(xSize, ySize);
 		
 		try {

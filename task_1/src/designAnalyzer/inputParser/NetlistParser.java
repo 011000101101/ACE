@@ -5,6 +5,7 @@ import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.blocks.IOBlock;
 import designAnalyzer.structures.blocks.LogicBlock;
 import designAnalyzer.structures.blocks.NetlistBlock;
+import designAnalyzer.structures.nets.Net;
 
 public class NetlistParser extends AbstractInputParser {
 
@@ -92,7 +93,9 @@ public class NetlistParser extends AbstractInputParser {
 				ErrorReporter.reportSyntaxError("pinlist", currentLine[0], this);
 			}
 			
-			currentBlock.connect(structureManager.retrieveNet(currentLine[1], false), 1); //connect specified net to output pin of input block
+			Net currentNet= structureManager.retrieveNet(currentLine[1], false);
+			currentBlock.connect(currentNet, 1); //connect specified net to output pin of input block
+			currentNet.setSource(currentBlock); //link block to net as only source
 			
 		}
 		else {
@@ -120,7 +123,9 @@ public class NetlistParser extends AbstractInputParser {
 				ErrorReporter.reportSyntaxError("pinlist", currentLine[0], this);
 			}
 			
-			currentBlock.connect(structureManager.retrieveNet(currentLine[1], false), 0); //connect specified net to input pin of output block
+			Net currentNet= structureManager.retrieveNet(currentLine[1], false);
+			currentBlock.connect(currentNet, 0); //connect specified net to input pin of output block
+			currentNet.addSink(currentBlock);	//link block to net as sink
 			
 		}
 		else {
@@ -156,24 +161,36 @@ public class NetlistParser extends AbstractInputParser {
 		
 		if(currentLine.length == 7) {	//check for correct number of arguments
 			
-			if(!"pinlist:".equals(currentLine[0])) { //check for correct token at start of line
+			if(!"pinlist:".equals(currentLine[0])) {	//check for correct token at start of line
 				ErrorReporter.reportSyntaxError("pinlist", currentLine[0], this);
 			}
 			
-			//connect input and output pins
-			for(int i= 0; i < 5; i++) {		//connect pins
+			//connect input pins
+			for(int i= 0; i < 4; i++) {	
 				
 				if(!"open".equals(currentLine[i+1])) {	//ignore "open" pins
 					pinsConnected[i]= true;
-					currentBlock.connect(structureManager.retrieveNet(currentLine[i+1], false), i); //connect specified net to the appropriate input pin of output block
+					Net currentNet= structureManager.retrieveNet(currentLine[i+1], false);
+					currentBlock.connect(currentNet, i);	//connect specified net to the appropriate input pin of logic block
+					currentNet.addSink(currentBlock);	//link block to net as sink
 				}
 				
+			}
+			
+			//connect output pin
+			if(!"open".equals(currentLine[5])) {	//ignore "open" pins
+				pinsConnected[4]= true;
+				Net currentNet= structureManager.retrieveNet(currentLine[5], false);
+				currentBlock.connect(currentNet, 4);	//connect specified net to the output pin of logic block
+				currentNet.setSource(currentBlock);	//link block to net as only source
 			}
 			
 			//connect clock pin
 			if(!"open".equals(currentLine[6])) {	//ignore "open" pins
 				pinsConnected[5]= true;
-				currentBlock.connect(structureManager.retrieveNet(currentLine[6], true), 5); //connect specified net to the appropriate input pin of output block
+				Net currentNet= structureManager.retrieveNet(currentLine[6], false);
+				currentBlock.connect(currentNet, 5);	//connect specified net to the clock pin of logic block
+				currentNet.setSource(currentBlock); //link block to net as only source
 			}
 			
 		}
@@ -225,6 +242,12 @@ public class NetlistParser extends AbstractInputParser {
 	private void parseGlobal() {
 		
 		structureManager.retrieveNet(currentLine[1], true);
+		
+	}
+
+	@Override
+	protected void parseHeader() {
+		// empty method, no header
 		
 	}
 

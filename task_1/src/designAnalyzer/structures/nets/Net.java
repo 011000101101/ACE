@@ -1,5 +1,9 @@
 package designAnalyzer.structures.nets;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.PathElement;
 
@@ -22,6 +26,11 @@ public class Net {
 	private NetlistBlock source;
 	
 	/**
+	 * list of sink Blocks
+	 */
+	private List<NetlistBlock> sinks;
+	
+	/**
 	 * path from source to all destinations
 	 */
 	private PathElement path;
@@ -41,6 +50,9 @@ public class Net {
 		name= newName;
 		assignedIdentifier= newAssignedIdentifier;
 		isClockNet= newIsClockNet;
+		
+		source= null;
+		sinks= new LinkedList<NetlistBlock>();
 	}
 
 
@@ -50,6 +62,29 @@ public class Net {
 	 */
 	public boolean getIsClocknNet() {
 		return isClockNet;
+	}
+
+
+	/**
+	 * sets source block if it source was empty before, else reports a duplicateSourceError
+	 * @param currentBlock block to be set as source of this Net (each block only possesses one output pin)
+	 */
+	public void setSource(NetlistBlock currentBlock) {
+
+		if(source == null) {
+			source= currentBlock;
+		}
+		else {
+			ErrorReporter.reportDuplicateSourceError(this, currentBlock);
+		}
+		
+	}
+
+
+	public void addSink(NetlistBlock currentBlock) {
+		//TODO revisit and check if sufficient
+		sinks.add(currentBlock);
+		
 	}
 
 	// TODO remove in final version

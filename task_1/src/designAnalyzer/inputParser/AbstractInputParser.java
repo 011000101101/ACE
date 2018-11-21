@@ -107,6 +107,7 @@ public abstract class AbstractInputParser {
 	 */
 	public void parseAll() {
 		
+		parseHeader();
 		
 		while(currentLine != null) {	//check for end of file
 			
@@ -116,6 +117,9 @@ public abstract class AbstractInputParser {
 		}
 		
 	}
+	
+	protected abstract void parseHeader();
+	
 	
 	/**
 	 * parses one block of lines in the input file <br>

@@ -63,4 +63,9 @@ public class ErrorReporter {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public static void reportDuplicateSourceError(Net net, NetlistBlock currentBlock) {
+		// TODO Auto-generated method stub
+		
+	}
 }
