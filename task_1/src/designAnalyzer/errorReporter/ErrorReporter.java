@@ -1,9 +1,9 @@
-package errorReporter;
+package designAnalyzer.errorReporter;
 
 import designAnalyzer.inputParser.AbstractInputParser;
 import designAnalyzer.inputParser.NetlistParser;
-import designAnalyzer.structures.Net;
-import designAnalyzer.structures.NetlistBlock;
+import designAnalyzer.structures.blocks.NetlistBlock;
+import designAnalyzer.structures.nets.Net;
 
 public class ErrorReporter {
 
@@ -32,5 +32,10 @@ public class ErrorReporter {
 
 		System.err.println("Syntax error in Netlist file at line " + parser.getLineNumber() + ": expected one of " + expectedTokens.toString() + ", read '" + readToken + "'.");
 
+	}
+
+	public static void reportClockNetConnectionError(Net temp, boolean isClockNet) {
+		// TODO Auto-generated method stub
+		
 	}
 }

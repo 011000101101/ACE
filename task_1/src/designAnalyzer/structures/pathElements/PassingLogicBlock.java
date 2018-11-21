@@ -1,4 +1,4 @@
-package designAnalyzer.structures;
+package designAnalyzer.structures.pathElements;
 
 public class PassingLogicBlock extends PathElement {
 

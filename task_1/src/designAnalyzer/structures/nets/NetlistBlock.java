@@ -1,6 +1,7 @@
-package designAnalyzer.structures;
+package designAnalyzer.structures.blocks;
 
-import errorReporter.ErrorReporter;
+import designAnalyzer.errorReporter.ErrorReporter;
+import designAnalyzer.structures.nets.Net;
 
 public abstract class NetlistBlock {
 

@@ -5,10 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-
 import designAnalyzer.structures.*;
-import errorReporter.ErrorReporter;
 
 public abstract class AbstractInputParser {
 
@@ -37,26 +34,23 @@ public abstract class AbstractInputParser {
 	 */
 	protected String[] currentLine;
 	
-	
-	
 	/**
-	 * HashMap containing all Nets, with name as key
+	 * object managing all datastructure instances <br>
+	 * -handling insertion, retrieval and others
 	 */
-	private HashMap<String, Net> netMap;
-	
-	private int numberOfNets;
+	protected StructureManager structureManager;
 	
 	
 	
-	public AbstractInputParser(String newFilePath, HashMap<String, Net> newNetMap) throws FileNotFoundException {
+	
+	
+	public AbstractInputParser(String newFilePath) throws FileNotFoundException {
 		
 		filePath= newFilePath;
 		inputFile= new File(filePath);
 		inputFileReader= new BufferedReader(new FileReader(inputFile));
 		currentLineNumber= 0;
-		
-		netMap= newNetMap;
-		numberOfNets= 0;
+		structureManager= StructureManager.getInstance();
 		
 	}
 	
@@ -70,21 +64,18 @@ public abstract class AbstractInputParser {
 		 * temporary variable for checking for end of file
 		 */
 		String currentLine= readLine(); // read the line
-			
-		while(currentLine.charAt(0) == '#') {	//ignore comment lines starting with '#'
-			currentLine= readLine();
-		}
 		
 		if(currentLine == null) {	//end of file
 				
 			return null;
 		
 		}
-		else {
-				
-			return currentLine.split("\\s+");	//return tokenized line
-	
+			
+		while(currentLine.charAt(0) == '#' || currentLine.length() == 0) {	//ignore comment lines starting with '#' and empty lines
+			currentLine= readLine();
 		}
+
+		return currentLine.split("\\s+");	//return tokenized line
 		
 	}
 	
@@ -94,37 +85,25 @@ public abstract class AbstractInputParser {
 	 * @see java.io.BufferedReader#readLine()
 	 */
 	private String readLine() {
+		
 		try {
 			
 			currentLineNumber+= 1;
 			return inputFileReader.readLine();
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("WARNING: IOException occured while trying to read a line from the input file, trying to resume execution normally...");
 			e.printStackTrace();
 		}
 		return ""; //return empty line if IOException occurred
 	}
 	
+	/**
+	 * standard getter
+	 * @return current line number of the BufferedReader in the input file
+	 */
 	public int getLineNumber() {
 		return currentLineNumber;
-	}
-	
-	/**
-	 * get Net by name reference if it already exists, else create new Net, insert into netMap and return it
-	 * @param name name of the Net to get the instance of
-	 * @return instance of Net belonging to the given name
-	 */
-	protected Net getNet(String name) {
-		if(netMap.containsKey(name)) {
-			return netMap.get(name);
-		}
-		else {
-			numberOfNets++;
-			Net newNet= new Net(name, numberOfNets);
-			netMap.put(name,  newNet);
-			return newNet;
-		}
 	}
 	
 	

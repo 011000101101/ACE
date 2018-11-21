@@ -1,4 +1,6 @@
-package designAnalyzer.structures;
+package designAnalyzer.structures.blocks;
+
+import designAnalyzer.structures.nets.Net;
 
 public class IOBlock extends NetlistBlock {
 
