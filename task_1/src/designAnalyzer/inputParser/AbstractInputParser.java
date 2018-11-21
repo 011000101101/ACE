@@ -98,6 +98,36 @@ public abstract class AbstractInputParser {
 		return ""; //return empty line if IOException occurred
 	}
 	
+
+	
+	
+	/**
+	 * parses the complete netlist file, block by block until end of file (indicated by null)
+	 * requires: the first line is already read
+	 */
+	public void parseAll() {
+		
+		
+		while(currentLine != null) {	//check for end of file
+			
+			parseOneBlock();	
+			currentLine= readLineAndTokenize();
+			
+		}
+		
+	}
+	
+	/**
+	 * parses one block of lines in the input file <br>
+	 * <br>
+	 * (actually parsing the appropriate number of lines for the block to be parsed, ignoring empty and comment lines)<br>
+	 * <br>
+	 * requires: the first line of the current block is already read (stored in currentLine)<br>
+	 * post-state: currentLine contains the last line of the block that was just parsed
+	 */
+	protected abstract void parseOneBlock();
+	
+	
 	/**
 	 * standard getter
 	 * @return current line number of the BufferedReader in the input file

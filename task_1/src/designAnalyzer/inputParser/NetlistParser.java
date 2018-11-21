@@ -24,32 +24,7 @@ public class NetlistParser extends AbstractInputParser {
 		
 	}
 	
-	
-	/**
-	 * parses the complete netlist file, block by block until end of file (indicated by null)
-	 * requires: the first line is already read
-	 */
-	public void parseNetlist() {
-		
-		
-		while(currentLine != null) {	//check for end of file
-			
-			parseOneBlock();	
-			currentLine= readLineAndTokenize();
-			
-		}
-		
-	}
-	
-	/**
-	 * parses one block of lines in the netlist file <br>
-	 * <br>
-	 * (actually parsing the appropriate number of lines for the block to be parsed, ignoring empty lines)<br>
-	 * <br>
-	 * requires: the first line of the current block is already read (stored in currentLine)<br>
-	 * post-state: currentLine contains the last line of the block that was just parsed
-	 */
-	private void parseOneBlock() {
+	protected void parseOneBlock() {
 		
 		/**
 		 * the block currently being parsed
