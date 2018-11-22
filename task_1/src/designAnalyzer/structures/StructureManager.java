@@ -114,6 +114,16 @@ public class StructureManager {
 		return blockMap;
 	}
 
+	/**
+	 * 
+	 */
+	public NetlistBlock retrieveBlockByName(String name) {
+		if(blockMap.containsKey(name)) {
+			return blockMap.get(name);
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * inserts given block into the block indexing structure with coordinates as key if coordinates are valid and free <br>

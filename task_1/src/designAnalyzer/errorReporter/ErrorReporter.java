@@ -2,7 +2,9 @@ package designAnalyzer.errorReporter;
 
 import designAnalyzer.inputParser.AbstractInputParser;
 import designAnalyzer.inputParser.NetlistParser;
+import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.structures.Net;
+import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
@@ -19,7 +21,7 @@ public class ErrorReporter {
 		// TODO implement error reporting
 	}
 
-	public static void reportInvalidTokenCount(int i, NetlistParser netlistParser) {
+	public static void reportInvalidTokenCount(int i, AbstractInputParser parser) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -75,8 +77,7 @@ public class ErrorReporter {
 		
 	}
 
-	public static void reportInconsistentArgumentError(int xGridSize, String string, String string2,
-			AbstractInputParser routingParser) {
+	public static void reportInconsistentArgumentError(int xGridSize, String string, String string2,AbstractInputParser parser) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -87,6 +88,10 @@ public class ErrorReporter {
 	}
 
 	public static void reportMissingNetError(String name, AbstractInputParser routingParser) {
+		// TODO Auto-generated method stub
+	}
+
+	public static void reportBlockNotFoundError(AbstractInputParser parser) {
 		// TODO Auto-generated method stub
 		
 	}

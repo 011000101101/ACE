@@ -30,6 +30,13 @@ public class ParameterManager {
 	 */
 	private int yGridSize;
 	
+	
+	/**
+	 * path of netlist file
+	 */
+	private String netlistPath;
+	
+	
 	/**
 	 * number of parallel wires in each communication channel
 	 */
@@ -68,4 +75,11 @@ public class ParameterManager {
 		return yGridSize;
 	}
 	
+	public String getNetlistPath() {
+		return netlistPath;
+	}
+	
+	public void setNetlistName(String newVal) {
+		netlistPath = newVal;
+	}
 }
