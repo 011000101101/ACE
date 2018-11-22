@@ -39,7 +39,7 @@ public abstract class NetlistBlock extends PathElement{
 	/**
 	 * internal blocknumber for debugging purposes
 	 */
-	/*protected boolean subblock;*/
+	protected int blockNumber;
 	
 	
 	/**
@@ -54,7 +54,9 @@ public abstract class NetlistBlock extends PathElement{
 		assignedIdentifier= newAssignedIdentifier;
 	}
 	
-	
+	public void setBlockNumber(int newInt) {
+		blockNumber = newInt;
+	}
 	
 	/**
 	 * standard setter method
