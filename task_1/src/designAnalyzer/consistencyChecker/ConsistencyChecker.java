@@ -56,6 +56,10 @@ public class ConsistencyChecker {
 		if(xCoordinate == -1 || yCoordinate == -1) {
 			ErrorReporter.reportBlockNotPlacedError(block);
 		}
+		
+		/*//TODO remove in final version
+			//redundant to checks performed when placing a block (in class StructureManager)
+		
 		else if(xCoordinate < 0 || xCoordinate > (xSize + 1) || yCoordinate < 0 || yCoordinate > (ySize + 1) ) {
 			ErrorReporter.reportBlockPlacedOutOfBoundsError(block);
 		}
@@ -65,6 +69,7 @@ public class ConsistencyChecker {
 		else {
 			usedCells[xCoordinate][yCoordinate]= true;
 		}
+		*/
 		
 	}
 

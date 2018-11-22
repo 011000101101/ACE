@@ -2,12 +2,18 @@ package designAnalyzer.structures;
 
 import java.util.HashMap;
 
+import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.blocks.NetlistBlock;
 import designAnalyzer.structures.nets.Net;
 
 public class StructureManager {
 
+	
+	/**
+	 * Singleton instance of ParameterManager
+	 */
+	ParameterManager parameterManager;
 
 	
 	/**
@@ -26,20 +32,38 @@ public class StructureManager {
 	 */
 	private HashMap<String, NetlistBlock> blockMap;
 	
-	/**
-	 * counter keeping track of the number of the number of nets in existence <br>
-	 * -used for setting unique id for each new net
-	 */
-	private int numberOfBlocks;
+	private NetlistBlock[][] blockIndex;
 	
+	
+	/**
+	 * Singleton instance of StructureManager
+	 */
 	private static StructureManager instance= null;
 	
 	
 	private StructureManager() {
 
+		parameterManager= ParameterManager.getInstance();
+		
 		netMap= new HashMap<String, Net>();
 		numberOfNets= 0;
 		
+		blockMap= new HashMap<String, NetlistBlock>();
+		blockIndex= new NetlistBlock[parameterManager.getXGridSize() + 2][parameterManager.getYGridSize() + 2];
+		
+		
+	}
+
+
+	/**
+	 * statically returns a single instance of this class
+	 * @return the single StructureManager instance
+	 */
+	public static StructureManager getInstance() {
+		if(instance == null) {
+			instance= new StructureManager();
+		}
+		return instance;
 	}
 	
 
@@ -78,7 +102,6 @@ public class StructureManager {
 			ErrorReporter.reportDuplicateBlockError(currentBlock);
 		}
 		else {
-			numberOfBlocks++;
 			blockMap.put(currentBlock.getName(),  currentBlock);
 		}
 		
@@ -93,16 +116,28 @@ public class StructureManager {
 	}
 
 
-	// TODO check if correct style
 	/**
-	 * statically returns a single instance of this class
-	 * @return the single StructureManager instance
+	 * inserts given block into the block indexing structure with coordinates as key if coordinates are valid and free <br>
+	 * reports appropriate errors if coordinates of the block are not initialized, out of bounds or already occupied <br>
+	 * @param xCoordinate X coordinate of the block (part of key)
+	 * @param yCoordinate Y coordinate of the block (part of key)
+	 * @param currentBlock the block to be inserted (value)
 	 */
-	public static StructureManager getInstance() {
-		if(instance == null) {
-			instance= new StructureManager();
+	public void insertIntoBlockIndexingStructure(int xCoordinate, int yCoordinate, NetlistBlock currentBlock) {
+
+		if(xCoordinate == -1 || yCoordinate == -1) {
+			ErrorReporter.reportBlockNotPlacedError(currentBlock);
 		}
-		return instance;
+		else if(xCoordinate < 0 || xCoordinate > (parameterManager.getXGridSize() + 1) || yCoordinate < 0 || yCoordinate > (parameterManager.getYGridSize() + 1) ) {
+			ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
+		}
+		if(blockIndex[xCoordinate][yCoordinate] != null) {
+			ErrorReporter.reportDuplicateBlockPlacementError(currentBlock);
+		}
+		else {
+			blockIndex[xCoordinate][yCoordinate]= currentBlock;
+		}
+			
 	}
 	
 	

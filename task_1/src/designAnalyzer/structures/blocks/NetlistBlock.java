@@ -1,6 +1,7 @@
 package designAnalyzer.structures.blocks;
 
 import designAnalyzer.errorReporter.ErrorReporter;
+import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.nets.Net;
 
 public abstract class NetlistBlock {
@@ -65,16 +66,34 @@ public abstract class NetlistBlock {
 	 * standard setter method
 	 * @param newXCoordinate
 	 */
+	/* TODO remove in final version
 	public void setXCoordinate(int newXCoordinate) {
 		xCoordinate= newXCoordinate;
 	}
+	*/
 
 	/**
 	 * standard setter method
 	 * @param newYCoordinate
 	 */
+	/* TODO remove in final version
 	public void setYCoordinate(int newYCoordinate) {
 		yCoordinate= newYCoordinate;
+	}
+	*/
+	
+	/**
+	 * sets X and Y coordinate of this block <br>
+	 * and adds it to an indexing structure allowing for efficient lookup by coordinates
+	 * @param newXCoordinate the X coordinate of this block
+	 * @param newYCoordinate the Y coordinate of this block
+	 */
+	public void setCoordinates(int newXCoordinate, int newYCoordinate) {
+		xCoordinate= newXCoordinate;
+		yCoordinate= newYCoordinate;
+		
+		StructureManager.getInstance().insertIntoBlockIndexingStructure(xCoordinate, yCoordinate, this);
+		
 	}
 	
 	public void connect(Net netToConnect, int pinNumber) {
