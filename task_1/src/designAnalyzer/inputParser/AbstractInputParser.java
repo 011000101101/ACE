@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+
+import designAnalyzer.ParameterManager;
 import designAnalyzer.structures.*;
 
 public abstract class AbstractInputParser {
@@ -40,6 +42,11 @@ public abstract class AbstractInputParser {
 	 */
 	protected StructureManager structureManager;
 	
+	/**
+	 * object managing all structural parameters 
+	 */
+	protected ParameterManager parameterManager;
+	
 	
 	
 	
@@ -51,6 +58,7 @@ public abstract class AbstractInputParser {
 		inputFileReader= new BufferedReader(new FileReader(inputFile));
 		currentLineNumber= 0;
 		structureManager= StructureManager.getInstance();
+		parameterManager= ParameterManager.getInstance();
 		
 	}
 	
