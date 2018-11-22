@@ -3,6 +3,7 @@ package designAnalyzer.errorReporter;
 import designAnalyzer.inputParser.AbstractInputParser;
 import designAnalyzer.inputParser.NetlistParser;
 import designAnalyzer.inputParser.PlacementParser;
+import designAnalyzer.inputParser.RoutingParser;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
@@ -72,7 +73,7 @@ public class ErrorReporter {
 		
 	}
 
-	public static void reportInvalidRoutingError(PathElement ioBlock, PathElement nextNode) {
+	public static void reportInvalidRoutingError(PathElement alreadyRouted, PathElement nextNode, String message, AbstractInputParser routingParser) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -92,6 +93,24 @@ public class ErrorReporter {
 	}
 
 	public static void reportBlockNotFoundError(AbstractInputParser parser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportInvalidSourceRoutingNetError(Net currentNet, NetlistBlock invalidSource,
+			AbstractInputParser routingParser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportExcessSinkRoutingNetError(Net currentNet, NetlistBlock excessSink,
+			AbstractInputParser routingParser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportPinConnectionRoutingError(NetlistBlock lastBlock, String pinType, String coordinates,
+			String pad, AbstractInputParser routingParser) {
 		// TODO Auto-generated method stub
 		
 	}

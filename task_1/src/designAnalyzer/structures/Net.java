@@ -31,9 +31,9 @@ public class Net {
 	private NetlistBlock source;
 
 	/**
-	 * last parsed block
+	 * last parsed path element
 	 */
-	private NetlistBlock currentBlock;
+	private PathElement activePathElement;
 	
 	/**
 	 * list of sink Blocks
@@ -138,9 +138,29 @@ public class Net {
 	}
 
 
-	public void setActiveBlock(NetlistBlock newCurrentBlock) {
-		currentBlock= newCurrentBlock;
+	public void setActivePathElement(PathElement currentPathElement) {
+		activePathElement= currentPathElement;
 		
+	}
+
+
+	public boolean containsSink(NetlistBlock checkSink) {
+		for(NetlistBlock b : sinks){
+			if(b.equals(checkSink)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	public NetlistBlock getSource() {
+		return source;
+	}
+
+
+	public PathElement getActivePathElement() {
+		return activePathElement;
 	}
 
 	// TODO remove in final version

@@ -100,5 +100,18 @@ public abstract class AbstractChannel extends PathElement{
 		
 	}
 	
+	public int getWire(){
+		return wire;
+	}
+	
+	public abstract boolean isHorizontal();
+
+	@Override
+	public void setCoordinates(int newXCoordinate, int newYCoordinate) {
+		xCoordinate= newXCoordinate;
+		yCoordinate= newYCoordinate;
+		
+	}
+	
 	
 }

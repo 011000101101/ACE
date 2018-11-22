@@ -102,6 +102,11 @@ public class LogicBlock extends NetlistBlock {
 	public void setClass(Integer newBlockClass) {
 		blockClass= newBlockClass;
 	}
+
+
+	public Integer getBlockClass() {
+		return blockClass;
+	}
 	
 	
 	

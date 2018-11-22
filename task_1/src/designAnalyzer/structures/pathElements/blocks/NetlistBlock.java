@@ -32,9 +32,6 @@ public abstract class NetlistBlock extends PathElement{
 	 */
 	protected Net[] pinAssignments;
 	
-	protected int xCoordinate= -1;
-	protected int yCoordinate= -1;
-	
 	
 	/**
 	 * internal blocknumber for debugging purposes
@@ -124,24 +121,9 @@ public abstract class NetlistBlock extends PathElement{
 	public String getName() {
 		return name;
 	}
-
-
-	/**
-	 * standard getter
-	 * @return the X coordinate of this block if it has been placed, '-1' if not
-	 */
-	public int getX() {
-		return xCoordinate;
-	}
-
-
-
-	/**
-	 * standard getter
-	 * @return the Y coordinate of this block if it has been placed, '-1' if not
-	 */
-	public int getY() {
-		return yCoordinate;
+	
+	public boolean getSubblk_1(){
+		return subblk_1;
 	}
 	
 }
