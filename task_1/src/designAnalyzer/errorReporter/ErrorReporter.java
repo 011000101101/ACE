@@ -2,8 +2,8 @@ package designAnalyzer.errorReporter;
 
 import designAnalyzer.inputParser.AbstractInputParser;
 import designAnalyzer.inputParser.NetlistParser;
-import designAnalyzer.structures.blocks.NetlistBlock;
-import designAnalyzer.structures.nets.Net;
+import designAnalyzer.structures.Net;
+import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class ErrorReporter {
 

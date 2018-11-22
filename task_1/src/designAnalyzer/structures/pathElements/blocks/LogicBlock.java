@@ -1,6 +1,6 @@
-package designAnalyzer.structures.blocks;
+package designAnalyzer.structures.pathElements.blocks;
 
-import designAnalyzer.structures.nets.Net;
+import designAnalyzer.structures.Net;
 
 public class LogicBlock extends NetlistBlock {
 

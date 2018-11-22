@@ -1,11 +1,11 @@
-package designAnalyzer.structures.nets;
+package designAnalyzer.structures;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import designAnalyzer.errorReporter.ErrorReporter;
-import designAnalyzer.structures.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.PathElement;
+import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class Net {
 

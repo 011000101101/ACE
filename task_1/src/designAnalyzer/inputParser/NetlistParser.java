@@ -2,10 +2,10 @@ package designAnalyzer.inputParser;
 
 import java.io.FileNotFoundException;
 import designAnalyzer.errorReporter.ErrorReporter;
-import designAnalyzer.structures.blocks.IOBlock;
-import designAnalyzer.structures.blocks.LogicBlock;
-import designAnalyzer.structures.blocks.NetlistBlock;
-import designAnalyzer.structures.nets.Net;
+import designAnalyzer.structures.Net;
+import designAnalyzer.structures.pathElements.blocks.IOBlock;
+import designAnalyzer.structures.pathElements.blocks.LogicBlock;
+import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class NetlistParser extends AbstractInputParser {
 

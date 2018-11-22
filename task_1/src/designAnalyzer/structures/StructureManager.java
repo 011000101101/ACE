@@ -4,8 +4,7 @@ import java.util.HashMap;
 
 import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
-import designAnalyzer.structures.blocks.NetlistBlock;
-import designAnalyzer.structures.nets.Net;
+import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class StructureManager {
 

@@ -1,8 +1,8 @@
-package designAnalyzer.structures.blocks;
+package designAnalyzer.structures.pathElements.blocks;
 
 import designAnalyzer.errorReporter.ErrorReporter;
+import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
-import designAnalyzer.structures.nets.Net;
 
 public abstract class NetlistBlock {
 

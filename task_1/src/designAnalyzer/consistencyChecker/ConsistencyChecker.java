@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.StructureManager;
-import designAnalyzer.structures.blocks.NetlistBlock;
+import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class ConsistencyChecker {
 	
