@@ -31,9 +31,9 @@ public class Net {
 	private List<NetlistBlock> sinks;
 	
 	/**
-	 * path from source to all destinations
+	 * path from source to all destinations, excluding source, stored as root of sub-tree
 	 */
-	private PathElement path;
+	private PathElement firstInternalNode;
 	
 	private boolean isClockNet= false;
 	
@@ -85,6 +85,37 @@ public class Net {
 		//TODO revisit and check if sufficient
 		sinks.add(currentBlock);
 		
+	}
+
+
+	/**
+	 * standard getter
+	 * @return first node directly after source
+	 * @see designAnalyzer.structures.Net#firstInternalNode
+	 */
+	public PathElement getFirstInternalNode() {
+		return firstInternalNode;
+	}
+	
+	/**
+	 * computes the critical path length for this net
+	 * @return critical path length if this is not a clock net, '-1' else
+	 */
+	public int beginAnalyzeTiming(){
+		if(isClockNet){	//clock nets are ignored during timing analysis
+			return -1;	//send negative value so it will be ignored in maximum computation
+		}
+		else{
+			return source.startAnalyzeTiming(); //compute critical path length starting at source and return
+		}
+		
+	}
+	
+	/**
+	 * prints the critical path of this net
+	 */
+	public void printCriticalPath(){
+		source.printCriticalPath();
 	}
 
 	// TODO remove in final version

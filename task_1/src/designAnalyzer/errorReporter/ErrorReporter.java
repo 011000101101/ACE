@@ -3,6 +3,7 @@ package designAnalyzer.errorReporter;
 import designAnalyzer.inputParser.AbstractInputParser;
 import designAnalyzer.inputParser.NetlistParser;
 import designAnalyzer.structures.Net;
+import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class ErrorReporter {
@@ -65,6 +66,11 @@ public class ErrorReporter {
 	}
 
 	public static void reportDuplicateSourceError(Net net, NetlistBlock currentBlock) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportInvalidRoutingError(PathElement ioBlock, PathElement nextNode) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -3,8 +3,9 @@ package designAnalyzer.structures.pathElements.blocks;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
+import designAnalyzer.structures.pathElements.PathElement;
 
-public abstract class NetlistBlock {
+public abstract class NetlistBlock extends PathElement{
 
 	/**
 	 * name from netlist file
@@ -19,11 +20,12 @@ public abstract class NetlistBlock {
 	/**
 	 * saves net assignments to pins <br>
 	 * <br>
-	 * if IOBlock: <br>
+	 * <b>if IOBlock:</b> <br>
 	 * 		pin 0: input pin <br>
 	 * 		pin 1: output pin <br>
+	 * 		<b>constraint:</b> (pinAssignments[0] == null || pinAssignments[1] == null)<br>
 	 * <br>
-	 * if LogicBlock: <br>
+	 * <b>if LogicBlock:</b> <br>
 	 * 		pin 0 - 3: input pins <br>
 	 * 		pin 4: output pin (2 physical pins, but only one connection to a net) <br>
 	 * 		pin 5: clock pin <br>
@@ -104,6 +106,13 @@ public abstract class NetlistBlock {
 			ErrorReporter.reportDuplicatePinAssignmentError(this, pinNumber, netToConnect);
 		}
 	}
+	
+	
+	/**
+	 * method to start timing analysis on the source node of a net
+	 * @return
+	 */
+	public abstract int startAnalyzeTiming();
 
 
 	/**
