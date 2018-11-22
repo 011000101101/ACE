@@ -13,6 +13,8 @@ public class LogicBlock extends NetlistBlock {
 	 */
 	protected boolean analyzed= false;
 	
+	private int blockClass;
+	
 	
 	
 	
@@ -90,6 +92,15 @@ public class LogicBlock extends NetlistBlock {
 		
 		return ParameterManager.T_CONNECT_CHANNEL_LOGIC_BLOCK;
 		
+	}
+
+
+	/**
+	 * standard setter
+	 * @param newBlockClass value to be set for variable
+	 */
+	public void setClass(Integer newBlockClass) {
+		blockClass= newBlockClass;
 	}
 	
 	

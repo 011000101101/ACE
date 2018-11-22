@@ -74,4 +74,20 @@ public class ErrorReporter {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public static void reportInconsistentArgumentError(int xGridSize, String string, String string2,
+			AbstractInputParser routingParser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportMissingBlockError(int xCoordinate, int yCoordinate, AbstractInputParser routingParser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportMissingNetError(String name, AbstractInputParser routingParser) {
+		// TODO Auto-generated method stub
+		
+	}
 }

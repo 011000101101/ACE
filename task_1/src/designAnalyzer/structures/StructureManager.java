@@ -138,6 +138,26 @@ public class StructureManager {
 		}
 			
 	}
+
+
+	public NetlistBlock retrieveBlockByCoordinates(int xCoordinate, int yCoordinate) {
+		return blockIndex[xCoordinate][yCoordinate];
+	}
+
+
+	/**
+	 * retrieves a net from the net map, returning null if no net with the given name exists
+	 * @param name name of the net to retrieve
+	 * @return the net that was requested, or null if no such net exists
+	 */
+	public Net retrieveNetNoInsert(String name) {
+		if(netMap.containsKey(name)) {
+			return netMap.get(name);
+		}
+		else{
+			return null;
+		}
+	}
 	
 	
 }

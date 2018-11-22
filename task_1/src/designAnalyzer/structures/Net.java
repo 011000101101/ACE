@@ -14,6 +14,11 @@ public class Net {
 	 */
 	private String name; 
 	
+	/**
+	 * unique number for debug purposes
+	 */
+	private int netNumber;
+	
 	
 	/**
 	 * unique identifier
@@ -24,6 +29,11 @@ public class Net {
 	 * source block
 	 */
 	private NetlistBlock source;
+
+	/**
+	 * last parsed block
+	 */
+	private NetlistBlock currentBlock;
 	
 	/**
 	 * list of sink Blocks
@@ -116,6 +126,21 @@ public class Net {
 	 */
 	public void printCriticalPath(){
 		source.printCriticalPath();
+	}
+
+
+	/**
+	 * standard setter
+	 * @param newBlockClass value to be set for variable
+	 */
+	public void setNetNumber(int newNetNumber) {
+		netNumber= newNetNumber;
+	}
+
+
+	public void setActiveBlock(NetlistBlock newCurrentBlock) {
+		currentBlock= newCurrentBlock;
+		
 	}
 
 	// TODO remove in final version
