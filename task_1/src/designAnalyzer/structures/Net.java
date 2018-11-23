@@ -41,6 +41,11 @@ public class Net {
 	private List<NetlistBlock> sinks;
 	
 	/**
+	 * sink reached by following the critical path
+	 */
+	private NetlistBlock criticalSink;
+	
+	/**
 	 * path from source to all destinations, excluding source, stored as root of sub-tree
 	 */
 	private PathElement firstInternalNode;
@@ -138,6 +143,10 @@ public class Net {
 	}
 
 
+	/**
+	 * standard setter
+	 * @param newBlockClass value to be set for variable
+	 */
 	public void setActivePathElement(PathElement currentPathElement) {
 		activePathElement= currentPathElement;
 		
@@ -154,13 +163,38 @@ public class Net {
 	}
 
 
+	/**
+	 * standard getter
+	 * @return the requested value
+	 */
 	public NetlistBlock getSource() {
 		return source;
 	}
 
 
+	/**
+	 * standard getter
+	 * @return the requested value
+	 */
 	public PathElement getActivePathElement() {
 		return activePathElement;
+	}
+	
+	/**
+	 * standard setter
+	 * @param newBlockClass value to be set for variable
+	 */
+	public void setCriticalSink(NetlistBlock newCriticalSink){
+		criticalSink= newCriticalSink;
+	}
+
+
+	/**
+	 * standard getter
+	 * @return the requested value
+	 */
+	public List<NetlistBlock> getSinks() {
+		return sinks;
 	}
 
 	// TODO remove in final version

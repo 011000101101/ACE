@@ -1,5 +1,6 @@
 package designAnalyzer.structures;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import designAnalyzer.ParameterManager;
@@ -167,6 +168,10 @@ public class StructureManager {
 		else{
 			return null;
 		}
+	}
+	
+	public Collection<Net> getNetCollection(){
+		return netMap.values();
 	}
 	
 	

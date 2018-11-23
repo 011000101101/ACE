@@ -2,6 +2,7 @@ package designAnalyzer;
 
 import java.io.FileNotFoundException;
 
+import TimingAnalyzer.TimingAnalyzer;
 import designAnalyzer.consistencyChecker.ConsistencyChecker;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.ArchitectureParser;
@@ -20,6 +21,8 @@ public class DesignAnalyzer {
 	
 	private static ConsistencyChecker consistencyChecker;
 	
+	private static TimingAnalyzer timingAnalyzer;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
@@ -34,6 +37,7 @@ public class DesignAnalyzer {
 		
 		
 		consistencyChecker= new ConsistencyChecker(xSize, ySize);
+		timingAnalyzer= new TimingAnalyzer();
 		
 		try {
 			
@@ -75,7 +79,7 @@ public class DesignAnalyzer {
 	private static void analyze() {
 		
 		
-		analyzeTiming(routingFileProvided);
+		timingAnalyzer.analyzeTiming(routingFileProvided);
 		
 	}
 
