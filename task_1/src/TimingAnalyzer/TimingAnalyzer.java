@@ -136,6 +136,9 @@ public class TimingAnalyzer {
 				if(source.getY() == 0){ //[...] is iopad at bottom, use top out pin and channel instead of right, rout it to vertical channel at top right
 					horizontalChannelsUsed++;
 					verticalChannelsUsed--;
+					if(sink.getY() == 1) { //sink directly above source
+						verticalChannelsUsed= 0;
+					}
 				}
 				if(sink.getY() == yMax){ //[...] is iopad at top, use bottom out pin and channel instead of right, rout it to vertical channel at bottom right
 					horizontalChannelsUsed++;
@@ -146,44 +149,43 @@ public class TimingAnalyzer {
 			
 			case 4: // sink directly below source
 				
-				if(sink.getY() + 1 == source.getY()){
+				
+				horizontalChannelsUsed= 2; //use bottom output and top input pin of source and sink
+				verticalChannelsUsed= source.getY() - sink.getY() -1; 
+
+				if(source.getX() == 0){ //[...] is iopad at left border
+					horizontalChannelsUsed= 0;
+					verticalChannelsUsed+= 2;
+				}
+				else if(source.getX() == xMax){ //[...] is iopad at right border
+					horizontalChannelsUsed= 0;
+					verticalChannelsUsed+= 2;
+				}
+				// not left or right IOBlocks
+				else if(sink.getY() + 1 == source.getY()){
 					horizontalChannelsUsed= 1;
 					verticalChannelsUsed=0;
-				}
-				else{
-					horizontalChannelsUsed= 2; //use bottom output and top input pin of source and sink
-					verticalChannelsUsed= source.getY() - sink.getY() -1; 
-
-					if(source.getX() == 0){ //[...] is iopad at left border
-						horizontalChannelsUsed= 0;
-						verticalChannelsUsed+= 2;
-					}
-					if(source.getX() == xMax){ //[...] is iopad at right border
-						horizontalChannelsUsed= 0;
-						verticalChannelsUsed+= 2;
-					}
 				}
 				
 			break;
 			
 			case 2: // sink directly right of source
 				
-				if(sink.getX() - 1 == source.getX()){
+				horizontalChannelsUsed= sink.getX() - source.getX() - 1;
+				verticalChannelsUsed= 2; 
+
+				if(source.getY() == 0){ //[...] is iopad at bottom border
+					verticalChannelsUsed = 0;
+					horizontalChannelsUsed+= 2;
+				}
+				else if(source.getY() == yMax){ //[...] is iopad at top border
+					verticalChannelsUsed= 0;
+					horizontalChannelsUsed += 2;
+				}
+				// not top or bottom IOBlocks
+				else if(sink.getX() - 1 == source.getX()){ //if directly next to each other
 					horizontalChannelsUsed= 0;
 					verticalChannelsUsed=1;
-				}
-				else{
-					horizontalChannelsUsed= sink.getX() - source.getX() - 1;
-					verticalChannelsUsed= 2; 
-
-					if(source.getY() == 0){ //[...] is iopad at bottom border
-						verticalChannelsUsed = 0;
-						horizontalChannelsUsed+= 2;
-					}
-					if(source.getY() == yMax){ //[...] is iopad at top border
-						verticalChannelsUsed= 0;
-						horizontalChannelsUsed += 2;
-					}
 				}
 				
 			break;
@@ -194,12 +196,18 @@ public class TimingAnalyzer {
 				 verticalChannelsUsed= 1; //right in
 
 				if(source.getY() == 0){ //[...] is iopad at bottom
-					horizontalChannelsUsed--; //top in
-					verticalChannelsUsed++;
+					verticalChannelsUsed = 0;
+					horizontalChannelsUsed+= 1;
 				}
-				if(source.getY() == yMax){ //[...] is iopad at top
-					horizontalChannelsUsed--; //bottom in
-					verticalChannelsUsed++;
+				else if(source.getY() == yMax){ //[...] is iopad at top
+					verticalChannelsUsed = 0;
+					horizontalChannelsUsed+= 1;
+				}
+				else if(source.getX() == xMax){
+					horizontalChannelsUsed--; //left out instead of bottom
+					if(!(source.getX() - 1 == sink.getX())){
+						verticalChannelsUsed++; //first and last channel are not the same
+					}
 				}
 				
 			break;
@@ -287,8 +295,8 @@ public class TimingAnalyzer {
 				}
 				
 				if(sink.getY() == yMax) { // sink is at top
-					horizontalChannelsUsed --; // bottom in instead of right
-					verticalChannelsUsed ++;
+					horizontalChannelsUsed ++; // bottom in instead of right
+					verticalChannelsUsed --;
 				}
 			
 			break;
