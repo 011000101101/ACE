@@ -205,6 +205,11 @@ public class TimingAnalyzer {
 			break;
 			
 			case 1: //sink top right of source
+				//  ----------X    ---------- 
+				// | ^------^ |   | ^------^ |
+				// | |sourceO-|   | | sink I |
+				// | L------J |   | L---I--J |
+				//  ----------    X-----|---- 
 				
 				horizontalChannelsUsed= sink.getX() - source.getX(); //right out
 				verticalChannelsUsed= sink.getY() - source.getY(); //bottom in
@@ -220,15 +225,77 @@ public class TimingAnalyzer {
 				
 			break;
 			
-			//TODO cases 3, 5, 7 (copy pattern of case 1)
+			case 3: //sink bottom right of source
+				//  ----------    X----T----- 
+				// | ^------^ |   | ^--I---^ |
+				// | |sourceO-|   | | sink | |
+				// | L------J |   | L------J |
+				//  ----------X    ---------- 
+				
+				horizontalChannelsUsed = sink.getX() - source.getX(); //right out
+				verticalChannelsUsed = source.getY() - sink.getY(); //top in
+				
+				if(source.getY() == yMax) { // source is iopad at top
+					horizontalChannelsUsed++; // bottom out
+					verticalChannelsUsed--;
+				}
+				
+				if(sink.getX() == xMax) { // sink is iopad at right border
+					horizontalChannelsUsed--; //left in
+					verticalChannelsUsed++;
+				}
+				
+			break;
+			
+			case 5: //sink is bottom left of source
+				//  ----------     ----------X
+				// | ^------^ |   | ^------^ |
+				// | |source| |   | | sink I-|
+				// | L--O---J |   | L------J |
+				// X----|-----     ---------- 
+				
+				horizontalChannelsUsed = source.getX() - sink.getX(); //bottom out
+				verticalChannelsUsed = source.getY() - sink.getY(); //right in
+				
+				if(source.getX() == xMax) { // source is iopad at right border
+					verticalChannelsUsed ++; //left out
+					horizontalChannelsUsed --;
+				}
+				
+				if(sink.getY() == 0) { // sink is iopad at bottom
+					verticalChannelsUsed --; // top in
+					horizontalChannelsUsed ++;
+				}
+			
+			break;
+			
+			case 7: //sink is top left of source
+				// X----------     ---------- 
+				// | ^------^ |   | ^------^ |
+				// | |source| |   | | sink I-|
+				// | L--O---J |   | L------J |
+				// L----|-----     ----------X
+				
+				horizontalChannelsUsed = source.getX() - sink.getX(); // bottom out
+				verticalChannelsUsed = sink.getY() - source.getY() + 1; // right in
+				
+				if(source.getY() == 0) { //source is at bottom
+					verticalChannelsUsed --; //top out
+				}
+				if(source.getX() == xMax) { //source is at right
+					horizontalChannelsUsed--; //left out instead of right out
+				}
+				
+				if(sink.getY() == yMax) { // sink is at top
+					horizontalChannelsUsed --; // bottom in instead of right
+					verticalChannelsUsed ++;
+				}
+			
+			break;
 				
 		}
 		
-		if(source instanceof IOBlock){
-			if(sink instanceof IOBlock){
-				
-			}
-		}
+		return tIn + tOut + ( (horizontalChannelsUsed + verticalChannelsUsed - 1) * tChanToChan );
 	}
 	
 	/**
