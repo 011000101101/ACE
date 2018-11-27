@@ -1,6 +1,7 @@
 package designAnalyzer.errorReporter;
 
 import designAnalyzer.inputParser.AbstractInputParser;
+import designAnalyzer.inputParser.ArchitectureParser;
 import designAnalyzer.inputParser.NetlistParser;
 import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.inputParser.RoutingParser;
@@ -117,6 +118,11 @@ public class ErrorReporter {
 
 	public static void reportInvalidConnectionPointRoutingError(Net currentNet, int parseXCoordinate,
 			int parseYCoordinate, Integer valueOf, boolean equals) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportArchFileNotComplete(int iteration, ArchitectureParser architectureParser) {
 		// TODO Auto-generated method stub
 		
 	}

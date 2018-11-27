@@ -8,7 +8,7 @@ import designAnalyzer.errorReporter.ErrorReporter;
 public class PlacementParser extends AbstractInputParser {
 
 	
-	public PlacementParser(String newFilePath, int width) throws FileNotFoundException {
+	public PlacementParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
 		// TODO Auto-generated constructor stub
 		

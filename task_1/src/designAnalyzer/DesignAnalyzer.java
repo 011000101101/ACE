@@ -22,27 +22,37 @@ public class DesignAnalyzer {
 	private static ConsistencyChecker consistencyChecker;
 	
 	private static TimingAnalyzer timingAnalyzer;
+	//public static int[] parameterInitialized;
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
 		//TODO parse command line arguments
-		String netlistFilePath= null;
-		String architectureFilePath= null;
-		String placementFilePath= null;
-		String routingFilePath= null;
+		String netlistFilePath= args[0];
+		String architectureFilePath= args[1];
+		String placementFilePath= args[2];
+		String routingFilePath = null;
+		if(args.length < 4 && args[3].endsWith(".r")) {
+			routingFileProvided= true;
+			routingFilePath= args[3];
+		}
 		
-		int xSize= null;
-		int ySize= null;
+		//TODO is x and y obligated?
+		//int xSize= null;
+		//int ySize= null;
 		
 		
-		consistencyChecker= new ConsistencyChecker(xSize, ySize);
+		//consistencyChecker= new ConsistencyChecker(xSize, ySize);
 		timingAnalyzer= new TimingAnalyzer();
 		
 		try {
+			int[] commandLineInput = parseCommandlineArguments(args); //array in form from int to initialize architectureParser with
+			architectureParser= new ArchitectureParser(architectureFilePath, commandLineInput);
+
+			architectureParser.parseAll();
+			ParameterManager.initialize(netlistFilePath, architectureFilePath, placementFilePath, architectureParser.getAllParameters());
 			
+
 			netlistParser= new NetlistParser(netlistFilePath);
-			architectureParser= new ArchitectureParser(architectureFilePath);
 			placementParser= new PlacementParser(placementFilePath);
 			if(routingFileProvided) {
 				routingParser= new RoutingParser(routingFilePath);
@@ -60,13 +70,71 @@ public class DesignAnalyzer {
 	}
 	
 	/**
+	 * stores every argument beside args[0,1,2,3] (path arguments) for the initialization of the arch file in an array
+	 * @param args 
+	 * @return
+	 */
+	private static int[] parseCommandlineArguments(String[] args) {
+		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1};
+		for(int i = (routingFileProvided ? 4 : 3); i< args.length; i++) {
+			switch(args[i]) {
+			case "-X":
+				i++;
+				parameterInitialized[0]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Y":
+				i++;
+				parameterInitialized[1]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-W":
+				i++;
+				parameterInitialized[2]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Tipad":
+				i++;
+				parameterInitialized[3]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Topad":
+				i++;
+				parameterInitialized[4]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Tswitch":
+				i++;
+				parameterInitialized[5]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Tcomb":
+				i++;
+				parameterInitialized[6]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-TFFin":
+				i++;
+				parameterInitialized[7]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-TFFout":
+				i++;
+				parameterInitialized[8]= Integer.valueOf(args[i]);
+			break;
+			
+			}
+		}
+		return parameterInitialized;
+	}
+	
+
+	/**
 	 * parses all given input files<br>
 	 * <b>requires:</b> routing parser is either marked as not used via routingFileProvided, or initialized, all other parsers are initialized<br>
 	 * <b>post-state:</b> all provided input files have been parsed into consistent data structures managed by the StructureManager, or errors have been printed
 	 */
 	private static void parse() {
-
-		architectureParser.parseAll();
 		
 		netlistParser.parseAll();
 		placementParser.parseAll();

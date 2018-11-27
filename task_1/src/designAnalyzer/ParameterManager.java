@@ -14,17 +14,17 @@ public class ParameterManager {
 	
 	
 	
-	public static final int T_IPAD=0;
+	public final int T_IPAD;
 	
-	public static final int T_OPAD=0;
+	public final int T_OPAD;
 	
-	public static final int T_SWITCH=0;
+	public final int T_SWITCH;
 	
-	public static final int T_COMB=0;
+	public final int T_COMB;
 	
-	public static final int T_FFIN=0;
+	public final int T_FFIN;
 	
-	public static final int T_FFOUT=0;
+	public final int T_FFOUT;
 
 
 	
@@ -37,38 +37,65 @@ public class ParameterManager {
 	/**
 	 * number of configurable logic blocks in X direction
 	 */
-	private int xGridSize;
+	private final int X_GRID_SIZE;
 	
 	/**
 	 * number of configurable logic blocks in Y direction
 	 */
-	private int yGridSize;
+	private final int Y_GRID_SIZE;
 	
 	
 	/**
 	 * path of netlist file
 	 */
-	private String netlistPath;
+	public final String NETLIST_PATH;
+	
+	/**
+	 * path of architecture file
+	 */
+	public final String ARCHITECTURE_PATH;
+	
+	/**
+	 * path of placement file
+	 */
+	public final String PLACEMENT_PATH;
 	
 	
 	/**
 	 * number of parallel wires in each communication channel
 	 */
-	private int channelWidth;
+	public final int CHANNEL_WIDTH;
 	
-	private ParameterManager() {
+	private ParameterManager(String netlistFilePath, String architectureFilePath, String placementFilePath, int[] parameter) {
+		NETLIST_PATH = netlistFilePath;
+		ARCHITECTURE_PATH = architectureFilePath;
+		PLACEMENT_PATH = placementFilePath;
+		X_GRID_SIZE = parameter[0];
+		Y_GRID_SIZE = parameter[1];
+		CHANNEL_WIDTH = parameter[2];
+		T_IPAD = parameter[3];
+		T_OPAD = parameter[4];
+		T_SWITCH = parameter[5];
+		T_COMB = parameter[6];
+		T_FFIN = parameter[7];
+		T_FFOUT = parameter[8];
+	}
+	
+
+	public static void initialize(String netlistFilePath, String architectureFilePath, String placementFilePath, int[] parameter) {
+		if(instance == null) {
+			instance= new ParameterManager(netlistFilePath, architectureFilePath, placementFilePath, parameter);
+		}
 		
 	}
+	
 	
 	public static ParameterManager getInstance() {
 		
-		if(instance == null) {
-			instance= new ParameterManager();
-		}
 		return instance;
 		
 	}
-
+/*
 	public void setXGridSize(int xSize) {
 		xGridSize= xSize;
 	}
@@ -90,10 +117,11 @@ public class ParameterManager {
 	}
 	
 	public String getNetlistPath() {
-		return netlistPath;
+		return NETLIST_PATH;
 	}
 	
 	public void setNetlistName(String newVal) {
 		netlistPath = newVal;
-	}
+	}*/
+
 }
