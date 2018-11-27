@@ -42,7 +42,6 @@ public class DesignAnalyzer {
 		
 		
 		//consistencyChecker= new ConsistencyChecker(xSize, ySize);
-		timingAnalyzer= new TimingAnalyzer();
 		
 		try {
 			int[] commandLineInput = parseCommandlineArguments(args); //array in form from int to initialize architectureParser with
@@ -50,7 +49,8 @@ public class DesignAnalyzer {
 
 			architectureParser.parseAll();
 			ParameterManager.initialize(netlistFilePath, architectureFilePath, placementFilePath, architectureParser.getAllParameters());
-			
+
+			timingAnalyzer= new TimingAnalyzer();
 
 			netlistParser= new NetlistParser(netlistFilePath);
 			placementParser= new PlacementParser(placementFilePath);
@@ -65,6 +65,7 @@ public class DesignAnalyzer {
 			analyze();
 			
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			ErrorReporter.reportFileNotFoundError(e.toString());
 		}
 	}
