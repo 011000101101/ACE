@@ -111,7 +111,9 @@ public abstract class NetlistBlock extends PathElement{
 	 * method to start timing analysis on the source node of a net
 	 * @return
 	 */
+	/* alternative critical path computation, not needed
 	public abstract int startAnalyzeTiming();
+	*/
 
 
 	/**

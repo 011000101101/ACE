@@ -68,6 +68,7 @@ public abstract class AbstractChannel extends PathElement{
 	private PathElement criticalNext;
 	
 
+	/* alternative critical path computation, not needed
 	public int analyzeTiming(){
 		
 		for(int i= 0; i < connectedNodes.length; i++){ //process all connected output nodes (PathElements)
@@ -88,6 +89,7 @@ public abstract class AbstractChannel extends PathElement{
 		}
 		return t;
 	}
+	*/
 	
 	public void printCriticalPath(){
 		printThisNode();

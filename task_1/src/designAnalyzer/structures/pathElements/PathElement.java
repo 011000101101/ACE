@@ -24,8 +24,9 @@ public abstract class PathElement {
 	protected int xCoordinate= -1;
 	protected int yCoordinate= -1;
 	
-	
+	/* alternative critical path computation, not needed
 	public abstract int analyzeTiming();
+	*/
 
 	/**
 	 * prints the critical path of the subnet represented by this PathElement
@@ -37,7 +38,9 @@ public abstract class PathElement {
 	 * returns value of parameter constant stored in the ParameterManager
 	 * @return the requested value
 	 */
+	/* not needed
 	public abstract int getTConnectToChannel();
+	*/
 	
 	public abstract boolean isNeighbour(PathElement neighbour);
 

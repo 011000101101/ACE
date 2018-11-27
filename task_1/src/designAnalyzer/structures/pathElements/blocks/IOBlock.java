@@ -40,7 +40,8 @@ public class IOBlock extends NetlistBlock {
 	}
 
 	//only called on input blocks
-	@Override
+	//@Override
+	/* alternative critical path computation, not needed
 	public int startAnalyzeTiming() {
 		
 		PathElement nextNode= pinAssignments[1].getFirstInternalNode(); //save next node for reuse
@@ -54,21 +55,26 @@ public class IOBlock extends NetlistBlock {
 		}
 		
 	}
+	*/
 
 	//only called on output blocks
-	@Override
+	//@Override
+	/* alternative critical path computation, not needed
 	public int analyzeTiming() {
 		
 		return 0; //is output block, critical path length to all sinks is 0 (this is the only sink)
 		
 	}
+	*/
 
-	@Override
+	//@Override
+	/* not needed
 	public int getTConnectToChannel() {
 		
 		return ParameterManager.T_CONNECT_CHANNEL_IOBLOCK;
 		
 	}
+	*/
 	
 	protected int annotateTA() {
 

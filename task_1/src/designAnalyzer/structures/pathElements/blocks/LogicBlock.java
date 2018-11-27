@@ -62,6 +62,7 @@ public class LogicBlock extends NetlistBlock {
 	}
 
 	//only called on source or output "side" of logic blocks (clocked and unclocked)
+	/* alternative critical path computation, not needed
 	@Override
 	public int startAnalyzeTiming() {
 		
@@ -75,9 +76,11 @@ public class LogicBlock extends NetlistBlock {
 			return 0;
 		}
 	}
+	*/
 
 	//only called on sink or input "side" of clocked sequential logic blocks and on unclocked combinatorial logic blocks
-	@Override
+	//@Override
+	/* alternative critical path computation, not needed
 	public int analyzeTiming() {
 		
 		if(isClocked()){ //is clocked block, critical path length to all sinks is 0 (this is the only sink)
@@ -92,25 +95,30 @@ public class LogicBlock extends NetlistBlock {
 		}
 		
 	}
+	*/
 
 
 	/**
 	 * returns value of parameter constant stored in the ParameterManager
 	 * @return the requested value
 	 */
+	/* not needed
 	private int getTConnectLogicBlockInternal() {
 		
 		return ParameterManager.T_CONNECT_LOGIC_BLOCK_INTERNAL;
 		
 	}
+	*/
 
 
-	@Override
+	//@Override
+	/* not needed
 	public int getTConnectToChannel() {
 		
 		return ParameterManager.T_CONNECT_CHANNEL_LOGIC_BLOCK;
 		
 	}
+	*/
 
 
 	/**

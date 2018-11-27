@@ -48,7 +48,7 @@ public class RoutingParser extends AbstractInputParser {
 			ErrorReporter.reportSyntaxError("x", currentLine[3], this);
 		}
 		if(!(Integer.valueOf(currentLine[4]) == parameterManager.getYGridSize())){
-			ErrorReporter.reportInconsistentArgumentError(parameterManager.getXGridSize(), currentLine[2], "xGridSize", this);
+			ErrorReporter.reportInconsistentArgumentError(parameterManager.getYGridSize(), currentLine[2], "xGridSize", this);
 		}
 		
 		
@@ -136,8 +136,6 @@ public class RoutingParser extends AbstractInputParser {
 		} else {
 			parseChanY(currentNet);
 		}
-	}
-		
 	}
 
 	/**
