@@ -37,6 +37,10 @@ public class TimingAnalyzer {
 		
 	}
 	
+	/**
+	 * analyzes the timings of the design and outputs the results
+	 * @param routingFileProvided true if a routing file has been provided and the timing can be analyzed exactly, false if timing has to be estimated
+	 */
 	public void analyzeTiming(boolean routingFileProvided){
 		
 		nets= structureManager.getNetCollection();
@@ -64,6 +68,8 @@ public class TimingAnalyzer {
 				criticalNet= n;
 			}
 		}
+		
+		//TODO output results of timing estimation
 		
 	}
 
@@ -348,7 +354,35 @@ public class TimingAnalyzer {
 		return 0;
 	}
 
+	/**
+	 * computes the exact timings and outputs the critical path
+	 */
 	private void startAnalyzeTiming() {
+		
+		/**
+		 * keep track of the net containing the critical path
+		 */
+		Net criticalNet= null; 
+		int criticalPathLength= -1;
+		
+		for(Net n : nets) {
+			int temp= n.annotateTA();
+			if(temp > criticalPathLength){
+				criticalPathLength= temp;
+				criticalNet= n;
+			}
+		}
+		
+		//does not effect the output, but only annotates the data structures with tR and slack values, therefore can be disabled to improve performance
+		for(Net n : nets) {
+			n.annotateTRAndSlack(criticalPathLength);
+		}
+		
+		printCriticalPath(criticalNet); //output the critical path
+		
+	}
+
+	private void printCriticalPath(Net criticalNet) {
 		// TODO Auto-generated method stub
 		
 	}

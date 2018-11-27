@@ -11,6 +11,20 @@ public class ParameterManager {
 	public static final int T_CONNECT_CHANNEL_CHANNEL = 0;
 
 	public static final int T_CONNECT_CHANNEL_LOGIC_BLOCK = 0;
+	
+	
+	
+	public static final int T_IPAD=0;
+	
+	public static final int T_OPAD=0;
+	
+	public static final int T_SWITCH=0;
+	
+	public static final int T_COMB=0;
+	
+	public static final int T_FFIN=0;
+	
+	public static final int T_FFOUT=0;
 
 
 	

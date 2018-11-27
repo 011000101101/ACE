@@ -16,4 +16,8 @@ public class ChannelX extends AbstractChannel {
 		return false;
 	}
 
+	protected boolean matchesIsChanX(boolean isChanX) {
+		return true;
+	}
+	
 }

@@ -1,7 +1,19 @@
 package designAnalyzer.structures.pathElements.channels;
 
 import designAnalyzer.ParameterManager;
+
+import java.util.List;
+import java.util.Map;
+
 import designAnalyzer.structures.pathElements.PathElement;
+import designAnalyzer.structures.pathElements.blocks.IOBlock;
+import designAnalyzer.structures.pathElements.blocks.LogicBlock;
+import static designAnalyzer.ParameterManager.T_IPAD;
+import static designAnalyzer.ParameterManager.T_OPAD;
+import static designAnalyzer.ParameterManager.T_SWITCH;
+import static designAnalyzer.ParameterManager.T_COMB;
+import static designAnalyzer.ParameterManager.T_FFIN;
+import static designAnalyzer.ParameterManager.T_FFOUT;
 
 public abstract class AbstractChannel extends PathElement{
 
@@ -41,6 +53,19 @@ public abstract class AbstractChannel extends PathElement{
 	 * @see designAnalyzer.structures.pathElements.PathElement#connectedNodes
 	 */
 	private int criticalPathIndex;
+
+	/**
+	 * previous node (in signal flow direction)
+	 */
+	private PathElement previous;
+	
+	/**
+	 * next nodes and slack of connection to them (in signal flow direction)
+	 */
+	private Map<PathElement, Integer> next;
+	
+	//TODO check if needed
+	private PathElement criticalNext;
 	
 
 	public int analyzeTiming(){
@@ -111,6 +136,63 @@ public abstract class AbstractChannel extends PathElement{
 		xCoordinate= newXCoordinate;
 		yCoordinate= newYCoordinate;
 		
+	}
+	
+	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX) {
+		return matchesIsChanX(isChanX) && (checkXCoordinate == xCoordinate) && (checkYCoordinate == yCoordinate) && (checkTrack == wire);
+	}
+
+	/**
+	 * checks if the class of this object matches the wanted ones
+	 * @param isChanX describes the class of the wanted channel: true -> ChannelX, false -> ChannelY
+	 * @return true if this is the wanted channel, false else
+	 */
+	protected abstract boolean matchesIsChanX(boolean isChanX);
+	
+	protected PathElement getSingleSource() {
+		return connectedNodes[sourceIndex];
+	}
+	
+	
+	protected int annotateTA() {
+		
+		int tA= previous.analyzeTA();
+		if(previous instanceof IOBlock) {
+			tA+= T_IPAD + T_SWITCH;
+		}
+		else if(previous instanceof LogicBlock) {
+			tA+= T_SWITCH;
+		}
+		else if(previous instanceof AbstractChannel) {
+			tA+= T_SWITCH;
+		}
+		return tA;
+	}
+	
+	protected int annotateTRAndSlack(int criticalPathLength) {
+
+		int tR= Integer.MAX_VALUE;
+		for(PathElement p : next.keySet()) {
+			int temp= p.analyzeTRAndSlack(criticalPathLength); //p.tR
+			int w= p.analyzeTA() - tA; //p.tA already computed -> retrieve, path length is difference to local
+			int slack= temp - tA - w; //slack of connection from this to p
+			next.replace(p, -1, slack); //store slack
+			temp-= w; //compute tR candidate
+			if(temp < tR) { //store if better than last candidate
+				tR= temp;
+				criticalNext= p;
+			}
+		}
+		return tR;
+		
+	}
+	
+	public void addPrevious(PathElement newPrevious) {
+		previous= newPrevious;
+	}
+	
+	public void addNext(PathElement newNext) {
+		next.put(newNext, -1);
 	}
 	
 	

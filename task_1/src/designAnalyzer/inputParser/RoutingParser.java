@@ -66,13 +66,13 @@ public class RoutingParser extends AbstractInputParser {
 		
 		currentLine= readLineAndTokenize();
 		
-		parseUntilFirstSink(currentNet);
+		parseUntilNextSink(currentNet);
 		
 		currentLine= readLineAndTokenize();
 		
 		while(!NET_TOKEN.equals(currentLine[0])){
 			
-			parseNextSink(currentNet);
+			connectPathAndParseNextSink(currentNet);
 			
 			currentLine= readLineAndTokenize();
 			
@@ -80,7 +80,38 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
-	private void parseUntilFirstSink(Net currentNet) {
+	/**
+	 * connects the next partial path to a sink to the appropriate previous node and parses the path to the next sink
+	 * <b>requires:<br> currentLine contains a duplicate occurrence of a PathElement that has already been parsed (connection point)
+	 * @param currentNet the net currently being parsed
+	 */
+	private void connectPathAndParseNextSink(Net currentNet) {
+		connectPath(currentNet);
+		parseUntilNextSink(currentNet);
+		
+	}
+
+	/**
+	 * connects the next partial path to a sink to the appropriate previous node by setting currentNet.activeNode to the next PathElement, which has already been parsed at least once<br>
+	 * <b>requires:</b> currentLine contains a PathElement that has already been parsed at least once in the current net
+	 * @param currentNet the net currently being parsed
+	 */
+	private void connectPath(Net currentNet) {
+
+		if(!currentNet.recoverCurrentPathElement(parseXCoordinate(), parseYCoordinate(), Integer.valueOf(currentLine[3]), CHANX_TOKEN.equals(currentLine[0]))) {
+			ErrorReporter.reportInvalidConnectionPointRoutingError(currentNet, parseXCoordinate(), parseYCoordinate(), Integer.valueOf(currentLine[3]), CHANX_TOKEN.equals(currentLine[0]));
+		}
+		
+		currentLine= readLineAndTokenize();
+		
+	}
+
+	/**
+	 * parses the path from the activeElement of the currentNet to the next sink in the PathElement input sequence<br>
+	 * <b>requires:</b> activeElement of currentNet has just been parsed (and connected to appropriate node if the first source has already been parsed)
+	 * @param currentNet the net currently being parsed
+	 */
+	private void parseUntilNextSink(Net currentNet) {
 		
 		while(!SINK_TOKEN.equals(currentLine[0])){
 			
@@ -158,6 +189,9 @@ public class RoutingParser extends AbstractInputParser {
 		checkSameCoordinates(currentBlock, xCoordinate, yCoordinate);
 		checkSamePadOrPin(currentBlock, currentLine[3]);
 		checkValidCoordinates(currentNet.getActivePathElement(), currentBlock);
+		
+		currentNet.getActivePathElement().addNext(currentBlock); //link graph node with previous node and vice versa
+		currentBlock.addPrevious(currentNet.getActivePathElement());
 		
 		currentNet.setActivePathElement(currentBlock);
 		

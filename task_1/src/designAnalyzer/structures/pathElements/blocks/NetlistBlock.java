@@ -126,4 +126,17 @@ public abstract class NetlistBlock extends PathElement{
 		return subblk_1;
 	}
 	
+	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack) {
+		return false;
+	}
+	
+	protected PathElement getSingleSource() {
+		return null;
+	}
+	
+	public abstract int startAnalyzeTA();
+	
+	public abstract void startAnalyzeTRAndSlack(int criticalPathLength);
+
+	
 }

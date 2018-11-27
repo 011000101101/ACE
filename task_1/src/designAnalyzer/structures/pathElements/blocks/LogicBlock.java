@@ -1,5 +1,15 @@
 package designAnalyzer.structures.pathElements.blocks;
 
+
+import static designAnalyzer.ParameterManager.T_IPAD;
+import static designAnalyzer.ParameterManager.T_OPAD;
+import static designAnalyzer.ParameterManager.T_SWITCH;
+import static designAnalyzer.ParameterManager.T_COMB;
+import static designAnalyzer.ParameterManager.T_FFIN;
+import static designAnalyzer.ParameterManager.T_FFOUT;
+
+import java.util.List;
+
 import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
@@ -14,6 +24,14 @@ public class LogicBlock extends NetlistBlock {
 	protected boolean analyzed= false;
 	
 	private int blockClass;
+	
+	private List<PathElement> previous;
+	private PathElement next;
+	
+	//TODO check if needed
+	private PathElement criticalPrevious;
+
+	private int slackToNext;
 	
 	
 	
@@ -106,6 +124,80 @@ public class LogicBlock extends NetlistBlock {
 
 	public Integer getBlockClass() {
 		return blockClass;
+	}
+	
+	protected int annotateTA() {
+
+		if(pinAssignments[5] == null) { //is combinatorial block
+			int tA= -1;
+			for(PathElement p : previous) { // find critical previous node and its tA
+				int temp= p.analyzeTA();
+				if(temp > tA) {
+					tA= temp;
+					criticalPrevious= p;
+				}
+			}
+			tA+= T_SWITCH + T_COMB; //always connected to a channel, is combinatorial Block
+		}
+		else {
+			tA= T_FFOUT; //is sequential block, starting point for annotation algorithm
+		}
+		return tA;
+		
+	}
+	
+	public int startAnalyzeTA() {
+
+		if(pinAssignments[5] != null) {
+			int tA= -1;
+			for(PathElement p : previous) {
+				int temp= p.analyzeTA();
+				if(temp > tA) {
+					tA= temp;
+					criticalPrevious= p;
+				}
+			}
+			tA+= T_SWITCH + T_FFIN; //always connected to a channel, is sequential Block
+			return tA;
+		}
+		else {
+			return -1; //internal node of path(s) running through this combinatorial lgic block, will be ignored in critical path computation
+		}
+	}
+	
+
+	protected int annotateTRAndSlack(int criticalPathLength) {
+
+		if(pinAssignments[5] == null) { //is combinatorial block
+			int tR= next.analyzeTRAndSlack(criticalPathLength); //next.tR
+			int w= next.analyzeTA() - tA; //next.tA already computed -> retrieve, path length is difference to local
+			int slack= tR - tA - w; //slack of connection from this to p
+			slackToNext= slack; //store slack
+			tR-= w; //compute local tR
+		}
+		else {
+			tR= criticalPathLength; //is sequential block, starting point for annotation algorithm
+		}
+		return tR;
+	}
+		
+	
+	public void startAnalyzeTRAndSlack(int criticalPathLength) {
+
+		if(pinAssignments[5] != null) {
+			next.analyzeTRAndSlack(criticalPathLength);
+		}
+		else {
+			//do nothing
+		}
+	}
+	
+	public void addPrevious(PathElement newPrevious) {
+		previous.add(newPrevious);
+	}
+	
+	public void addNext(PathElement newNext) {
+		next= newNext;
 	}
 	
 	

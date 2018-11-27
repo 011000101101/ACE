@@ -197,6 +197,42 @@ public class Net {
 		return sinks;
 	}
 
+
+	public boolean recoverCurrentPathElement(int xCoordinate, int yCoordinate, int track, boolean isChanX) {
+
+		activePathElement= activePathElement.getBranchingElement(xCoordinate, yCoordinate , track, isChanX);
+		if(activePathElement == null) {
+			return false;
+		}
+		else {
+			return true;
+		}
+		
+	}
+
+	/**
+	 * annotates tA on all paths and subsequently computes the critical path
+	 * @return length of the critical path
+	 */
+	public int annotateTA() {
+		int criticalLength= -1;
+		for(NetlistBlock b : sinks) {
+			int temp= b.startAnalyzeTA();
+			if(temp > criticalLength) {
+				criticalLength= temp;
+				criticalSink= b;
+			}
+		}
+		return criticalLength;
+	}
+
+	/**
+	 * annotates tR and slack on all paths
+	 */
+	public void annotateTRAndSlack(int criticalPathLength) {
+		source.startAnalyzeTRAndSlack(criticalPathLength);
+	}
+
 	// TODO remove in final version
 	/*
 	public void setIsClockNet(boolean newIsClockNet) {

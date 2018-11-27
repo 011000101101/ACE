@@ -114,4 +114,10 @@ public class ErrorReporter {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public static void reportInvalidConnectionPointRoutingError(Net currentNet, int parseXCoordinate,
+			int parseYCoordinate, Integer valueOf, boolean equals) {
+		// TODO Auto-generated method stub
+		
+	}
 }
