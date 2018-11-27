@@ -125,33 +125,18 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
+	/**
+	 * requires: the loaded line has to start with CHANX or CHANY
+	 * @param currentNet
+	 */
 	private void parseSinglePathElement(Net currentNet) {
 		
-		switch(currentLine[0]){
-			
-			case OPIN_TOKEN:
-				
-				
-				
-			break;
-			case IPIN_TOKEN:
-				
-				
-				
-			break;
-			case CHANX_TOKEN:
-				
-				parseChanX(currentNet);
-				
-			break;
-			case CHANY_TOKEN:
-				
-				parseChanY(currentNet);
-				
-			break;
-				
-		
+		if(currentLine[0].equals(CHANX_TOKEN)) {
+			parseChanX(currentNet);
+		} else {
+			parseChanY(currentNet);
 		}
+	}
 		
 	}
 
@@ -356,10 +341,18 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
+	/**
+	 * parse x coordinate of format "(x,y)" in currentLine[1]
+	 * @return x coordinate
+	 */
 	private int parseXCoordinate() {
 		return Integer.valueOf(currentLine[1].substring(1, currentLine[1].indexOf(",") - 1));
 	}
 
+	/**
+	 * parse x coordinate of format "(x,y)" in currentLine[1]
+	 * @return y coordinate
+	 */
 	private int parseYCoordinate() {
 		return Integer.valueOf(currentLine[1].substring(currentLine[1].indexOf(",") - 1, currentLine[1].length() - 2));
 	}
