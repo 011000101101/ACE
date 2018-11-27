@@ -37,12 +37,12 @@ public class ParameterManager {
 	/**
 	 * number of configurable logic blocks in X direction
 	 */
-	private final int X_GRID_SIZE;
+	public final int X_GRID_SIZE;
 	
 	/**
 	 * number of configurable logic blocks in Y direction
 	 */
-	private final int Y_GRID_SIZE;
+	public final int Y_GRID_SIZE;
 	
 	
 	/**

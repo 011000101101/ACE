@@ -19,21 +19,14 @@ public class TimingAnalyzer {
 	private int xMax;
 	private int yMax;
 	
-	private int tIOToChan;
-	private int tChanToIO;
-	private int tChanToChan;
-	private int tLBToChan;
-	private int tChanToLB;
 	
 	public TimingAnalyzer(){
 		
 		structureManager= StructureManager.getInstance();
 		parameterManager= ParameterManager.getInstance();
 
-		xMax= parameterManager.getXGridSize();
-		yMax= parameterManager.getYGridSize();
-		
-		//TODO initialize times
+		xMax= parameterManager.X_GRID_SIZE + 1;
+		yMax= parameterManager.Y_GRID_SIZE + 1;
 		
 	}
 	
@@ -115,19 +108,19 @@ public class TimingAnalyzer {
 		/**
 		 * delay from channel into sink
 		 */
-		int tIn= tChanToLB;
+		int tIn= parameterManager.T_FFIN + parameterManager.T_SWITCH;
 		
 		/**
 		 * delay from source to channel
 		 */
-		int tOut= tLBToChan;
+		int tOut= parameterManager.T_FFOUT + parameterManager.T_SWITCH;
 		
 		if(source instanceof IOBlock){
-			tOut= tChanToIO;
+			tOut= parameterManager.T_IPAD + parameterManager.T_SWITCH;
 		}
 
 		if(sink instanceof IOBlock){
-			tIn= tIOToChan;
+			tIn= parameterManager.T_OPAD + parameterManager.T_SWITCH;
 		}
 		
 		int direction= computeDirection(source.getX(), source.getY(), sink.getX(), sink.getY());
@@ -309,7 +302,7 @@ public class TimingAnalyzer {
 				
 		}
 		
-		return tIn + tOut + ( (horizontalChannelsUsed + verticalChannelsUsed - 1) * tChanToChan );
+		return tIn + tOut + ( (horizontalChannelsUsed + verticalChannelsUsed - 1) * parameterManager.T_SWITCH );
 	}
 	
 	/**

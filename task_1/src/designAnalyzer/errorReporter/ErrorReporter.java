@@ -110,8 +110,7 @@ public class ErrorReporter {
 		
 	}
 
-	public static void reportPinConnectionRoutingError(NetlistBlock lastBlock, String pinType, String coordinates,
-			String pad, AbstractInputParser routingParser) {
+	public static void reportPinConnectionRoutingError(NetlistBlock lastBlock, String pinType, AbstractInputParser routingParser) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -122,7 +121,32 @@ public class ErrorReporter {
 		
 	}
 
-	public static void reportArchFileNotComplete(int iteration, ArchitectureParser architectureParser) {
+	public static void reportArchFileNotComplete(int iteration, AbstractInputParser parser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportParameterOutOfBoundsError(int bound, int actualValue, String message,
+			AbstractInputParser parser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportDuplicateChannelUsageError(int xCoordinate, int yCoordinate, int trackNum, boolean isChanX,
+			AbstractInputParser parser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	 /**
+	  * pin not on same coordinates as owning block
+	  * @param lastBlock owner of this pin
+	  * @param xCoordinate X coordinate of this pin
+	  * @param yCoordinate Y coordinate of this pin
+	  * @param parser instance of calling parser for retrieval of current line number etc.
+	  */
+	public static void reportPinPlacementRoutingError(NetlistBlock lastBlock, int xCoordinate, int yCoordinate,
+			AbstractInputParser parser) {
 		// TODO Auto-generated method stub
 		
 	}

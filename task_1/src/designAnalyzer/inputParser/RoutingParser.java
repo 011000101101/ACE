@@ -41,14 +41,14 @@ public class RoutingParser extends AbstractInputParser {
 		if(!"size:".equals(currentLine[1])){
 			ErrorReporter.reportSyntaxError("Array", currentLine[1], this);
 		}
-		if(!(Integer.valueOf(currentLine[2]) == parameterManager.getXGridSize())){
-			ErrorReporter.reportInconsistentArgumentError(parameterManager.getXGridSize(), currentLine[2], "xGridSize", this);
+		if(!(Integer.valueOf(currentLine[2]) == parameterManager.X_GRID_SIZE)){
+			ErrorReporter.reportInconsistentArgumentError(parameterManager.X_GRID_SIZE, currentLine[2], "xGridSize", this);
 		}
 		if(!"x".equals(currentLine[3])){
 			ErrorReporter.reportSyntaxError("x", currentLine[3], this);
 		}
-		if(!(Integer.valueOf(currentLine[4]) == parameterManager.getYGridSize())){
-			ErrorReporter.reportInconsistentArgumentError(parameterManager.getYGridSize(), currentLine[2], "xGridSize", this);
+		if(!(Integer.valueOf(currentLine[4]) == parameterManager.Y_GRID_SIZE)){
+			ErrorReporter.reportInconsistentArgumentError(parameterManager.Y_GRID_SIZE, currentLine[2], "xGridSize", this);
 		}
 		
 		
@@ -113,7 +113,8 @@ public class RoutingParser extends AbstractInputParser {
 	 */
 	private void parseUntilNextSink(Net currentNet) {
 		
-		while(!SINK_TOKEN.equals(currentLine[0])){
+		//TODO wrong token: need pad token
+		while(!IPIN_TOKEN.equals(currentLine[0])){
 			
 			parseSinglePathElement(currentNet);
 			
@@ -143,6 +144,27 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
+	private void parseChanY(Net currentNet) {
+
+		int xCoordinate= parseXCoordinate();
+		int yCoordinate= parseYCoordinate();
+		if(!TRACK_TOKEN.equals(currentLine[2])) {
+			ErrorReporter.reportSyntaxError(TRACK_TOKEN, currentLine[2], this);
+		}
+		int trackNum= Integer.valueOf(currentLine[3]);
+		structureManager.useChan(xCoordinate , yCoordinate , trackNum , false, this);
+		
+	}
+
+	private void parseChanX(Net currentNet) {
+
+		int xCoordinate= parseXCoordinate();
+		int yCoordinate= parseYCoordinate();
+		int trackNum= Integer.valueOf(currentLine[3]);
+		structureManager.useChan(xCoordinate , yCoordinate , trackNum , true, this);
+		
+	}
+
 	/**
 	 * parses a single sink line
 	 * @param currentNet the net which is being parsed
@@ -151,7 +173,7 @@ public class RoutingParser extends AbstractInputParser {
 		
 		int xCoordinate= parseXCoordinate();
 		int yCoordinate= parseYCoordinate();
-		int pad= Integer.valueOf(currentLine[3]);
+		String pad= currentLine[3];
 		
 		
 		
@@ -171,7 +193,7 @@ public class RoutingParser extends AbstractInputParser {
 		}
 		
 		checkSameCoordinates(currentBlock, xCoordinate, yCoordinate);
-		checkSamePadOrPin(currentBlock, currentLine[3]);
+		checkSamePadOrPin(currentBlock, pad);
 		
 		//checkValidCoordinates(currentNet.getActivePathElement(), currentBlock);
 		
@@ -201,25 +223,6 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
-	private void checkValidCoordinates(PathElement activePathElement, PathElement currentElement) {
-		
-		int activeX= activePathElement.getX();
-		int activeY= activePathElement.getY();
-		int currentX= currentElement.getX();
-		int currentY= currentElement.getY();
-		
-		if(activePathElement instanceof AbstractChannel){
-			if(currentElement instanceof AbstractChannel){
-				int activeWire= ((AbstractChannel) activePathElement).getWire();
-				int currentWire= ((AbstractChannel) currentElement).getWire();
-			}
-		}
-		else{
-			
-		}
-		
-	}
-
 	private void parseSource(Net currentNet) {
 		
 		if(!SOURCE_TOKEN.equals(currentLine[0])){
@@ -242,6 +245,9 @@ public class RoutingParser extends AbstractInputParser {
 		
 		
 		//parse OPIN
+		if(!OPIN_TOKEN.equals(currentLine[0])) {
+			ErrorReporter.reportSyntaxError(OPIN_TOKEN, currentLine[0], this);
+		}
 		checkSameCoordinates(currentBlock, parseXCoordinate(), parseYCoordinate());
 		checkSamePadOrPin(currentBlock, currentLine[3]);
 		
@@ -251,19 +257,11 @@ public class RoutingParser extends AbstractInputParser {
 				ErrorReporter.reportSyntaxError(PAD_TOKEN, currentLine[2], this);
 			}
 			
-			if(!((IOBlock) currentBlock).getSubblk_1() == (ONE_TOKEN.equals(currentLine[3])) ){
-				ErrorReporter.reportPinConnectionRoutingError(currentBlock, currentLine[0], currentLine[1], currentLine[3], this);
-			}
-			
 		}
 		else{
 			
 			if(!PIN_TOKEN.equals(currentLine[2])){
 				ErrorReporter.reportSyntaxError(PIN_TOKEN, currentLine[2], this);
-			}
-			
-			if(! ( Integer.valueOf(currentLine[3]) == 4) ){
-				ErrorReporter.reportPinConnectionRoutingError(currentBlock, currentLine[0], currentLine[1], currentLine[3], this);
 			}
 			
 		}
@@ -276,14 +274,14 @@ public class RoutingParser extends AbstractInputParser {
 		if(currentBlock instanceof IOBlock){
 			
 			if(! (currentBlock.getSubblk_1() == (ONE_TOKEN.equals(padOrPinNumber))) ){
-				ErrorReporter.reportPinConnectionRoutingError(currentBlock, currentLine[0], currentLine[1], currentLine[3], this);
+				ErrorReporter.reportPinConnectionRoutingError(currentBlock, padOrPinNumber, this);
 			}
 			
 		}
 		else{
 			
-			if(! (((LogicBlock) currentBlock).getBlockClass() == Integer.valueOf(currentLine[3])) ){
-				ErrorReporter.reportPinConnectionRoutingError(currentBlock, currentLine[0], currentLine[1], currentLine[3], this);
+			if(! (((LogicBlock) currentBlock).getBlockClass() == Integer.valueOf(padOrPinNumber)) ){
+				ErrorReporter.reportPinConnectionRoutingError(currentBlock, padOrPinNumber, this);
 			}
 			
 		}
@@ -359,6 +357,7 @@ public class RoutingParser extends AbstractInputParser {
 		return currentBlock;
 		
 	}
+	
 
 	/**
 	 * parse x coordinate of format "(x,y)" in currentLine[1]
@@ -378,7 +377,7 @@ public class RoutingParser extends AbstractInputParser {
 
 	private void checkSameCoordinates(NetlistBlock lastBlock, int xCoordinate, int yCoordinate) {
 		if(!(lastBlock.getX() == xCoordinate && lastBlock.getY() == yCoordinate)){
-			ErrorReporter.reportPinConnectionRoutingError(lastBlock, currentLine[0], currentLine[1], currentLine[3], this);
+			ErrorReporter.reportPinPlacementRoutingError(lastBlock, xCoordinate, yCoordinate, this);
 		}
 	}
 

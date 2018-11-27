@@ -32,7 +32,7 @@ public class PlacementParser extends AbstractInputParser {
 			}
 			
 			//checks whether the name of the netlist file is consistent
-			String[] tmpArray = parameterManager.getNetlistPath().split("\\|/"); //string array with elements representing the path//TODO escape https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#sum
+			String[] tmpArray = parameterManager.NETLIST_PATH.split("\\|/"); //string array with elements representing the path//TODO escape https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#sum
 			String tmpString = tmpArray[tmpArray.length-1];// string(name of netlist file) to be compared with
 			if(!currentLine[2].equals(tmpString)) {
 				ErrorReporter.reportInconsistentNamingError(tmpString, currentLine[2], this);
@@ -63,14 +63,14 @@ public class PlacementParser extends AbstractInputParser {
 			if(!"size:".equals(currentLine[1])){
 				ErrorReporter.reportSyntaxError("Array", currentLine[1], this);
 			}
-			if(!(Integer.valueOf(currentLine[2]) == parameterManager.getXGridSize())){
-				ErrorReporter.reportInconsistentArgumentError(parameterManager.getXGridSize(), currentLine[2], "xGridSize", this);
+			if(!(Integer.valueOf(currentLine[2]) == parameterManager.X_GRID_SIZE)){
+				ErrorReporter.reportInconsistentArgumentError(parameterManager.X_GRID_SIZE, currentLine[2], "xGridSize", this);
 			}
 			if(!"x".equals(currentLine[3])){
 				ErrorReporter.reportSyntaxError("x", currentLine[3], this);
 			}
-			if(!(Integer.valueOf(currentLine[4]) == parameterManager.getYGridSize())){
-				ErrorReporter.reportInconsistentArgumentError(parameterManager.getXGridSize(), currentLine[2], "xGridSize", this);
+			if(!(Integer.valueOf(currentLine[4]) == parameterManager.Y_GRID_SIZE)){
+				ErrorReporter.reportInconsistentArgumentError(parameterManager.Y_GRID_SIZE, currentLine[2], "xGridSize", this);
 			}
 			if(!"logic".equals(currentLine[5])){
 				ErrorReporter.reportSyntaxError("logic", currentLine[5], this);

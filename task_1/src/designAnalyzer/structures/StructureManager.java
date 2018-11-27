@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
+import designAnalyzer.inputParser.AbstractInputParser;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class StructureManager {
@@ -34,6 +35,9 @@ public class StructureManager {
 	
 	private NetlistBlock[][] blockIndex;
 	
+	private boolean[][][] chanXUsed= new boolean[parameterManager.X_GRID_SIZE][parameterManager.Y_GRID_SIZE + 1][parameterManager.CHANNEL_WIDTH];
+	private boolean[][][] chanYUsed= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE][parameterManager.CHANNEL_WIDTH];
+	
 	
 	/**
 	 * Singleton instance of StructureManager
@@ -49,7 +53,7 @@ public class StructureManager {
 		numberOfNets= 0;
 		
 		blockMap= new HashMap<String, NetlistBlock>();
-		blockIndex= new NetlistBlock[parameterManager.getXGridSize() + 2][parameterManager.getYGridSize() + 2];
+		blockIndex= new NetlistBlock[parameterManager.X_GRID_SIZE + 2][parameterManager.Y_GRID_SIZE + 2];
 		
 		
 	}
@@ -138,7 +142,7 @@ public class StructureManager {
 		if(xCoordinate == -1 || yCoordinate == -1) {
 			ErrorReporter.reportBlockNotPlacedError(currentBlock);
 		}
-		else if(xCoordinate < 0 || xCoordinate > (parameterManager.getXGridSize() + 1) || yCoordinate < 0 || yCoordinate > (parameterManager.getYGridSize() + 1) ) {
+		else if(xCoordinate < 0 || xCoordinate > (parameterManager.X_GRID_SIZE + 1) || yCoordinate < 0 || yCoordinate > (parameterManager.Y_GRID_SIZE + 1) ) {
 			ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
 		}
 		if(blockIndex[xCoordinate][yCoordinate] != null) {
@@ -172,6 +176,69 @@ public class StructureManager {
 	
 	public Collection<Net> getNetCollection(){
 		return netMap.values();
+	}
+
+
+	/**
+	 * checks if a certain channel track is available for use<br>
+	 * if so, marks it as used<br>
+	 * if not, reports appropriate error
+	 * @param xCoordinate X coordinate of the channel
+	 * @param yCoordinate Y coordinate of the channel
+	 * @param trackNum track number of the track to be used
+	 * @param isChanX if channel is chanX or chanY
+	 * @param parser parser instance for reference in error case
+	 */
+	public void useChan(int xCoordinate, int yCoordinate, int trackNum, boolean isChanX, AbstractInputParser parser) {
+
+		if(trackNum > parameterManager.CHANNEL_WIDTH - 1) {
+			ErrorReporter.reportParameterOutOfBoundsError(parameterManager.CHANNEL_WIDTH - 1, trackNum, "track number of channel - upper boundary", parser);
+		}
+		if(isChanX) {
+			
+			if(xCoordinate < 1 ) {
+				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.X_GRID_SIZE , xCoordinate, "X coordinate of ChanX - lower boundary", parser);
+			}
+			else if( xCoordinate > parameterManager.X_GRID_SIZE) {
+				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.X_GRID_SIZE , xCoordinate, "X coordinate of ChanX - upper boundary", parser);
+			}
+			else if(yCoordinate < 0  ) {
+				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.Y_GRID_SIZE , yCoordinate, "Y coordinate of ChanX - lower boundary", parser);
+			}
+			else if( yCoordinate > parameterManager.Y_GRID_SIZE) {
+				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.Y_GRID_SIZE , yCoordinate, "Y coordinate of ChanX - upper boundary", parser);
+			}
+			else if(chanXUsed[xCoordinate - 1][yCoordinate][trackNum]) {
+				ErrorReporter.reportDuplicateChannelUsageError(xCoordinate, yCoordinate, trackNum, isChanX, parser);
+			}
+			else{
+				chanXUsed[xCoordinate - 1][yCoordinate][trackNum]= true; //mark as used
+			}
+			
+		}
+		else {
+			
+			if(xCoordinate < 0 ) {
+				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.X_GRID_SIZE , xCoordinate, "X coordinate of ChanY - lower boundary", parser);
+			}
+			else if(xCoordinate > parameterManager.X_GRID_SIZE) {
+				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.X_GRID_SIZE , xCoordinate, "X coordinate of ChanY - upper boundary", parser);
+			}
+			else if(yCoordinate < 1) {
+				ErrorReporter.reportParameterOutOfBoundsError(1 , yCoordinate, "Y coordinate of ChanY - lower boundary", parser);
+			}
+			else if(yCoordinate > parameterManager.Y_GRID_SIZE ) {
+				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.Y_GRID_SIZE , yCoordinate, "Y coordinate of ChanY - upper boundary", parser);
+			}
+			else if(chanXUsed[xCoordinate - 1][yCoordinate][trackNum]) {
+				ErrorReporter.reportDuplicateChannelUsageError(xCoordinate, yCoordinate, trackNum, isChanX, parser);
+			}
+			else{
+				chanYUsed[xCoordinate][yCoordinate - 1][trackNum]= true; //mark as used
+			}
+			
+		}
+		
 	}
 	
 	
