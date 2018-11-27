@@ -131,11 +131,16 @@ public class RoutingParser extends AbstractInputParser {
 	 */
 	private void parseSinglePathElement(Net currentNet) {
 		
-		if(currentLine[0].equals(CHANX_TOKEN)) {
+		if(CHANX_TOKEN.equals(currentLine[0])) {
 			parseChanX(currentNet);
-		} else {
+		} 
+		else if(CHANY_TOKEN.equals(currentLine[0])) {
 			parseChanY(currentNet);
 		}
+		else {
+			ErrorReporter.reportSyntaxMultipleChoiceError(new String[] {CHANX_TOKEN,  CHANY_TOKEN}, currentLine[0], this );
+		}
+		
 	}
 
 	/**
@@ -165,18 +170,34 @@ public class RoutingParser extends AbstractInputParser {
 			ErrorReporter.reportExcessSinkRoutingNetError(currentNet, currentBlock, this);
 		}
 		
-		if(!currentNet.getActivePathElement().isNeighbour(currentBlock)){
-			ErrorReporter.reportInvalidRoutingError(currentNet.getActivePathElement(), currentBlock, this);
-		}
-		
 		checkSameCoordinates(currentBlock, xCoordinate, yCoordinate);
 		checkSamePadOrPin(currentBlock, currentLine[3]);
-		checkValidCoordinates(currentNet.getActivePathElement(), currentBlock);
+		
+		//checkValidCoordinates(currentNet.getActivePathElement(), currentBlock);
+		
+		linkAndSetActive(currentNet, currentBlock);
+		
+		
+		
+	}
+	
+	/**
+	 * checks for validity of connection (direct connection possible),<br>
+	 * links graph node with previous node and vice versa<br>
+	 * and updates currentNet.activePathElement
+	 * @param currentNet the Net currently being parsed/routed
+	 * @param currentBlock the block currently being parsed/routed
+	 */
+	private void linkAndSetActive(Net currentNet, PathElement currentBlock) {
+		
+		if(!currentNet.getActivePathElement().isNeighbour(currentBlock)){ //check validity of connection, throw error if invalid
+			ErrorReporter.reportInvalidRoutingError(currentNet.getActivePathElement(), currentBlock, "PathElements not directly adjacent, no direct routing possible", this);
+		} 
 		
 		currentNet.getActivePathElement().addNext(currentBlock); //link graph node with previous node and vice versa
 		currentBlock.addPrevious(currentNet.getActivePathElement());
 		
-		currentNet.setActivePathElement(currentBlock);
+		currentNet.setActivePathElement(currentBlock); //update activePathElement
 		
 	}
 
