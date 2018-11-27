@@ -8,7 +8,6 @@ import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
-import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 
 public class RoutingParser extends AbstractInputParser {
 
@@ -113,7 +112,6 @@ public class RoutingParser extends AbstractInputParser {
 	 */
 	private void parseUntilNextSink(Net currentNet) {
 		
-		//TODO wrong token: need pad token
 		while(!IPIN_TOKEN.equals(currentLine[0])){
 			
 			parseSinglePathElement(currentNet);

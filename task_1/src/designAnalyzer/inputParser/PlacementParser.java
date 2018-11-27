@@ -1,7 +1,6 @@
 package designAnalyzer.inputParser;
 
 import java.io.FileNotFoundException;
-import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.errorReporter.ErrorReporter;
 
