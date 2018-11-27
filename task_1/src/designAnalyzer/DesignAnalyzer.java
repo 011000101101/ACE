@@ -2,13 +2,13 @@ package designAnalyzer;
 
 import java.io.FileNotFoundException;
 
-import TimingAnalyzer.TimingAnalyzer;
 import designAnalyzer.consistencyChecker.ConsistencyChecker;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.ArchitectureParser;
 import designAnalyzer.inputParser.NetlistParser;
 import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.inputParser.RoutingParser;
+import designAnalyzer.timingAnalyzer.TimingAnalyzer;
 
 public class DesignAnalyzer {
 	
