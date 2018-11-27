@@ -99,7 +99,7 @@ public class RoutingParser extends AbstractInputParser {
 	private void connectPath(Net currentNet) {
 
 		if(!currentNet.recoverCurrentPathElement(parseXCoordinate(), parseYCoordinate(), Integer.valueOf(currentLine[3]), CHANX_TOKEN.equals(currentLine[0]))) {
-			ErrorReporter.reportInvalidConnectionPointRoutingError(currentNet, parseXCoordinate(), parseYCoordinate(), Integer.valueOf(currentLine[3]), CHANX_TOKEN.equals(currentLine[0]));
+			ErrorReporter.reportInvalidConnectionPointRoutingError(currentNet, parseXCoordinate(), parseYCoordinate(), currentLine[3], CHANX_TOKEN.equals(currentLine[0]), this);
 		}
 		
 		currentLine= readLineAndTokenize();
@@ -166,7 +166,7 @@ public class RoutingParser extends AbstractInputParser {
 	}
 
 	/**
-	 * parses a single sink line
+	 * parses two lines: one starting with ipin and the second one with sink
 	 * @param currentNet the net which is being parsed
 	 */
 	private void parseSink(Net currentNet) {
@@ -272,7 +272,7 @@ public class RoutingParser extends AbstractInputParser {
 	private void checkSamePadOrPin(NetlistBlock currentBlock, String padOrPinNumber) {
 		
 		if(currentBlock instanceof IOBlock){
-			
+			//warum funktioniert das
 			if(! (currentBlock.getSubblk_1() == (ONE_TOKEN.equals(padOrPinNumber))) ){
 				ErrorReporter.reportPinConnectionRoutingError(currentBlock, padOrPinNumber, this);
 			}

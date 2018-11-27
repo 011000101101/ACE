@@ -153,5 +153,9 @@ public abstract class AbstractInputParser {
 		return currentLineNumber;
 	}
 	
+	public String getFileName() {
+		String fileName = this.inputFile.getName();
+		return fileName;
+	}
 	
 }

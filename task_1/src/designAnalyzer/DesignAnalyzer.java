@@ -66,7 +66,7 @@ public class DesignAnalyzer {
 			
 		} catch (FileNotFoundException e) {
 			ErrorReporter.reportFileNotFoundError(e.toString());
-		}
+		} 
 	}
 	
 	/**

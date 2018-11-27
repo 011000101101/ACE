@@ -34,6 +34,7 @@ public class ArchitectureParser extends AbstractInputParser {
 			}
 			currentLine = readLineAndTokenize();
 		}
+		//maybe check if currentline is null and throw error
 	}
 
 	

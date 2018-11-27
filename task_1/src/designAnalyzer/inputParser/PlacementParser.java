@@ -70,7 +70,7 @@ public class PlacementParser extends AbstractInputParser {
 				ErrorReporter.reportSyntaxError("x", currentLine[3], this);
 			}
 			if(!(Integer.valueOf(currentLine[4]) == parameterManager.Y_GRID_SIZE)){
-				ErrorReporter.reportInconsistentArgumentError(parameterManager.Y_GRID_SIZE, currentLine[2], "xGridSize", this);
+				ErrorReporter.reportInconsistentArgumentError(parameterManager.Y_GRID_SIZE, currentLine[2], "yGridSize", this);
 			}
 			if(!"logic".equals(currentLine[5])){
 				ErrorReporter.reportSyntaxError("logic", currentLine[5], this);

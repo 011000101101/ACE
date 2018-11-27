@@ -139,10 +139,7 @@ public class StructureManager {
 	 */
 	public void insertIntoBlockIndexingStructure(int xCoordinate, int yCoordinate, NetlistBlock currentBlock) {
 
-		if(xCoordinate == -1 || yCoordinate == -1) {
-			ErrorReporter.reportBlockNotPlacedError(currentBlock);
-		}
-		else if(xCoordinate < 0 || xCoordinate > (parameterManager.X_GRID_SIZE + 1) || yCoordinate < 0 || yCoordinate > (parameterManager.Y_GRID_SIZE + 1) ) {
+		if(xCoordinate < 0 || xCoordinate > (parameterManager.X_GRID_SIZE + 1) || yCoordinate < 0 || yCoordinate > (parameterManager.Y_GRID_SIZE + 1) ) {
 			ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
 		}
 		if(blockIndex[xCoordinate][yCoordinate] != null) {
@@ -230,7 +227,7 @@ public class StructureManager {
 			else if(yCoordinate > parameterManager.Y_GRID_SIZE ) {
 				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.Y_GRID_SIZE , yCoordinate, "Y coordinate of ChanY - upper boundary", parser);
 			}
-			else if(chanXUsed[xCoordinate - 1][yCoordinate][trackNum]) {
+			else if(chanYUsed[xCoordinate - 1][yCoordinate][trackNum]) {
 				ErrorReporter.reportDuplicateChannelUsageError(xCoordinate, yCoordinate, trackNum, isChanX, parser);
 			}
 			else{

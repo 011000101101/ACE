@@ -147,4 +147,5 @@ public abstract class PathElement {
 	 */
 	public abstract void addNext(PathElement newNext);
 
+	public abstract String getName();
 }

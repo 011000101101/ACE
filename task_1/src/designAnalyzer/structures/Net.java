@@ -233,6 +233,24 @@ public class Net {
 		source.startAnalyzeTRAndSlack(criticalPathLength);
 	}
 
+/**
+ * Standard Getter
+ * @return name of net
+ */
+	public String getName() {
+		
+		return name;
+	}
+
+/**
+ * Standard Getter
+ * @return number of net
+ */
+	public int getNumber() {
+	
+		return netNumber;
+	}
+
 	// TODO remove in final version
 	/*
 	public void setIsClockNet(boolean newIsClockNet) {
