@@ -1,6 +1,6 @@
 package designAnalyzer.structures.pathElements;
 
-
+import designAnalyzer.ParameterManager;
 
 public abstract class PathElement {
 	
@@ -24,6 +24,16 @@ public abstract class PathElement {
 	protected int xCoordinate= -1;
 	protected int yCoordinate= -1;
 	
+	protected ParameterManager parameterManager;
+	
+	public PathElement() {
+
+		parameterManager= ParameterManager.getInstance();
+		
+	}
+	
+	
+	
 	/* alternative critical path computation, not needed
 	public abstract int analyzeTiming();
 	*/
@@ -31,8 +41,22 @@ public abstract class PathElement {
 	/**
 	 * prints the critical path of the subnet represented by this PathElement
 	 */
-	public abstract void printCriticalPath();
+	public abstract void printCriticalPath (StringBuilder output, int lastTA);
 
+	/**
+	 * prints this node as part of the critical path
+	 */
+	protected void printThisNode(StringBuilder output, int lastTA) {
+		getInfo(output);
+		output.append("\t");
+		output.append(tA - lastTA);
+		output.append("\t");
+		output.append(tA);
+		output.append(System.getProperty("line.separator"));
+	}
+
+
+	public abstract void getInfo(StringBuilder output);
 
 	/**
 	 * returns value of parameter constant stored in the ParameterManager

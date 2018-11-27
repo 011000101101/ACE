@@ -26,7 +26,7 @@ public class DesignAnalyzer {
 	
 	public static void main(String[] args) {
 
-		//TODO parse command line arguments
+		
 		String netlistFilePath= args[0];
 		String architectureFilePath= args[1];
 		String placementFilePath= args[2];
@@ -36,13 +36,12 @@ public class DesignAnalyzer {
 			routingFilePath= args[3];
 		}
 		
-		//TODO is x and y obligated?
+		//T ODO is x and y obligated?
 		//int xSize= null;
 		//int ySize= null;
 		
 		
 		//consistencyChecker= new ConsistencyChecker(xSize, ySize);
-		timingAnalyzer= new TimingAnalyzer();
 		
 		try {
 			int[] commandLineInput = parseCommandlineArguments(args); //array in form from int to initialize architectureParser with
@@ -50,7 +49,8 @@ public class DesignAnalyzer {
 
 			architectureParser.parseAll();
 			ParameterManager.initialize(netlistFilePath, architectureFilePath, placementFilePath, architectureParser.getAllParameters());
-			
+
+			timingAnalyzer= new TimingAnalyzer();
 
 			netlistParser= new NetlistParser(netlistFilePath);
 			placementParser= new PlacementParser(placementFilePath);
@@ -65,6 +65,7 @@ public class DesignAnalyzer {
 			analyze();
 			
 		} catch (FileNotFoundException e) {
+			e.printStackTrace();
 			ErrorReporter.reportFileNotFoundError(e.toString());
 		} 
 	}

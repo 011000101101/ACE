@@ -62,7 +62,63 @@ public class TimingAnalyzer {
 			}
 		}
 		
-		//TODO output results of timing estimation
+		printEstimatedCriticalPath(criticalNet, criticalPathLength);
+		
+	}
+
+	private void printEstimatedCriticalPath(Net criticalNet, int criticalPathLength) {
+
+		StringBuilder output= new StringBuilder();
+		
+		output.append("estimated critical path: \n \n");
+		
+		addTimingHeader(output);
+		
+		NetlistBlock source= criticalNet.getSource();
+		NetlistBlock sink= criticalNet.getCriticalSink();
+		
+		//print source
+		output.append((source instanceof IOBlock) ? "I_BLOCK" : "CLB(seq)");
+		output.append("\t");
+		output.append(source.getName());
+		output.append("\t");
+		output.append("(");
+		output.append(source.getX());
+		output.append(",");
+		output.append(source.getY());
+		output.append(")");
+		if(source instanceof IOBlock) {
+			output.append(source.getSubblk_1() ? 1 : 0);
+		}
+		output.append("\t");
+		output.append("\t");
+		output.append(0);
+		
+
+		output.append("\n"); //new line
+		
+		//print sink
+		output.append((sink instanceof IOBlock) ? "O_BLOCK" : "CLB(seq)");
+		output.append("\t");
+		output.append(sink.getName());
+		output.append("\t");
+		output.append("(");
+		output.append(sink.getX());
+		output.append(",");
+		output.append(sink.getY());
+		output.append(")");
+		if(sink instanceof IOBlock) {
+			output.append(sink.getSubblk_1() ? 1 : 0);
+		}
+		output.append("\t");
+		output.append("\t");
+		output.append(criticalPathLength);
+
+		output.append("\n"); //new line
+		
+		
+		//TODO file output?
+		System.out.println(output.toString());
 		
 	}
 
@@ -342,10 +398,11 @@ public class TimingAnalyzer {
 		}
 	}
 
+	/*
 	private int estimateDelayBetweenTwoChannels(){
-		// TODO Auto-generated method stub
+		//T ODO Auto-generated method stub
 		return 0;
-	}
+	}*/
 
 	/**
 	 * computes the exact timings and outputs the critical path
@@ -376,7 +433,54 @@ public class TimingAnalyzer {
 	}
 
 	private void printCriticalPath(Net criticalNet) {
-		// TODO Auto-generated method stub
+		
+		StringBuilder output= new StringBuilder();
+		
+		output.append("exact critical path: \n \n");
+		
+		addTimingHeader(output);
+		
+		criticalNet.printCriticalPath(output);
+		
+		//TODO file output?
+		System.out.println(output.toString());
+		
+	}
+
+	private void addTimingHeader(StringBuilder output) {
+
+
+		output.append("Node:");
+		output.append("\t");
+		output.append("\t");
+		output.append("\t");
+		output.append("Time:");
+		
+		output.append("\n");
+		
+		output.append("Type:");
+		output.append("\t");
+		output.append("Name:");
+		output.append("\t");
+		output.append("Location:");
+		output.append("\t");
+		output.append("Delay:");
+		output.append("\t");
+		output.append("tA ('T-Arrival'):");
+		
+		output.append("\n");
+
+		output.append("--");
+		output.append("\t");
+		output.append("--");
+		output.append("\t");
+		output.append("--");
+		output.append("\t");
+		output.append("--");
+		output.append("\t");
+		output.append("--");
+		
+		output.append("\n");
 		
 	}
 

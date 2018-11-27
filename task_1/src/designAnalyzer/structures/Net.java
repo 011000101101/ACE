@@ -116,6 +116,7 @@ public class Net {
 	 * computes the critical path length for this net
 	 * @return critical path length if this is not a clock net, '-1' else
 	 */
+	/* different implementation of critical path discovery, no longer needed
 	public int beginAnalyzeTiming(){
 		if(isClockNet){	//clock nets are ignored during timing analysis
 			return -1;	//send negative value so it will be ignored in maximum computation
@@ -124,13 +125,13 @@ public class Net {
 			return source.startAnalyzeTiming(); //compute critical path length starting at source and return
 		}
 		
-	}
+	}*/
 	
 	/**
 	 * prints the critical path of this net
 	 */
-	public void printCriticalPath(){
-		source.printCriticalPath();
+	public void printCriticalPath(StringBuilder output){
+		source.printCriticalPath(output, 0);
 	}
 
 
@@ -233,6 +234,7 @@ public class Net {
 		source.startAnalyzeTRAndSlack(criticalPathLength);
 	}
 
+<<<<<<< HEAD
 /**
  * Standard Getter
  * @return name of net
@@ -249,6 +251,11 @@ public class Net {
 	public int getNumber() {
 	
 		return netNumber;
+=======
+
+	public NetlistBlock getCriticalSink() {
+		return criticalSink;
+>>>>>>> ce8ef968ea20cab52ac0b16df672b6972787d9b0
 	}
 
 	// TODO remove in final version

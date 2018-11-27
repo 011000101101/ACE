@@ -4,6 +4,8 @@ import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
+import designAnalyzer.structures.pathElements.channels.ChannelX;
+import designAnalyzer.structures.pathElements.channels.ChannelY;
 
 public abstract class NetlistBlock extends PathElement{
 
@@ -128,10 +130,12 @@ public abstract class NetlistBlock extends PathElement{
 		return subblk_1;
 	}
 	
-	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack) {
+	@Override
+	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX) {
 		return false;
 	}
 	
+	@Override
 	protected PathElement getSingleSource() {
 		return null;
 	}
@@ -142,6 +146,25 @@ public abstract class NetlistBlock extends PathElement{
 	public abstract int startAnalyzeTA();
 	
 	public abstract void startAnalyzeTRAndSlack(int criticalPathLength);
+
+
+	@Override
+	public boolean isNeighbour(PathElement neighbour) {
+
+		if(neighbour instanceof ChannelX) {
+			
+			return ( ( xCoordinate == neighbour.getX() ) && ( ( yCoordinate == neighbour.getY() ) || ( yCoordinate - 1 == neighbour.getY() ) ) );
+			
+		}
+		else if(neighbour instanceof ChannelY) {
+			
+			return ( ( yCoordinate == neighbour.getY() ) && ( ( xCoordinate == neighbour.getX() ) || ( xCoordinate - 1 == neighbour.getX() ) ) );
+			
+		}
+		else {
+			return false;
+		}
+	}
 
 	
 }

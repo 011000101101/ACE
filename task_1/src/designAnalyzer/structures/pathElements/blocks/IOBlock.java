@@ -1,17 +1,9 @@
 package designAnalyzer.structures.pathElements.blocks;
 
 
-import static designAnalyzer.ParameterManager.T_IPAD;
-import static designAnalyzer.ParameterManager.T_OPAD;
-import static designAnalyzer.ParameterManager.T_SWITCH;
-import static designAnalyzer.ParameterManager.T_COMB;
-import static designAnalyzer.ParameterManager.T_FFIN;
-import static designAnalyzer.ParameterManager.T_FFOUT;
-import designAnalyzer.ParameterManager;
-import designAnalyzer.errorReporter.ErrorReporter;
+
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
-import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 
 public class IOBlock extends NetlistBlock {
 
@@ -76,6 +68,7 @@ public class IOBlock extends NetlistBlock {
 	}
 	*/
 	
+	@Override
 	protected int annotateTA() {
 
 		tA= 0;	//is external input block
@@ -83,21 +76,24 @@ public class IOBlock extends NetlistBlock {
 		
 	}
 	
+	@Override
 	public int startAnalyzeTA() { //is external output block
 
 		int tA= previous.analyzeTA();
-		tA+= T_SWITCH; //always connected to a channel
+		tA+= parameterManager.T_SWITCH + parameterManager.T_OPAD; //always connected to a channel
 		return tA;
 		
 	}
 	
-	protected int annotateTR(int criticalPathLength) {
+	@Override
+	protected int annotateTRAndSlack(int criticalPathLength) {
 
 		tR= criticalPathLength;	//is external Output block
 		return tR;
 		
 	}
 	
+	@Override
 	public void startAnalyzeTRAndSlack(int criticalPathLength) { //is external input block
 
 		int tR= next.analyzeTRAndSlack(criticalPathLength); //next.tR
@@ -108,14 +104,42 @@ public class IOBlock extends NetlistBlock {
 		
 	}
 	
+	@Override
 	public void addPrevious(PathElement newPrevious) {
 		previous= newPrevious;
 		//TODO check if connectivity has to be verified here
 	}
 	
+	@Override
 	public void addNext(PathElement newNext) {
 		next= newNext;
 		//TODO check if connectivity has to be verified here
+	}
+
+	@Override
+	public void printCriticalPath(StringBuilder output, int lastTA) {
+		
+		printThisNode(output, lastTA);
+		if(pinAssignments[1] != null) { //is input block
+			next.printCriticalPath(output, tA);
+		}
+		
+	}
+
+	@Override
+	public void getInfo(StringBuilder output) {
+		output.append((pinAssignments[1] != null) ? "I_Block" : "O_BLOCK");
+		output.append("\t");
+		output.append(name);
+		output.append("\t");
+		output.append("(");
+		output.append(xCoordinate);
+		output.append(",");
+		output.append(yCoordinate);
+		output.append(").");
+		output.append(subblk_1 ? 1 : 0);
+		
+		
 	}
 	
 }

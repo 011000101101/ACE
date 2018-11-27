@@ -1,12 +1,6 @@
 package designAnalyzer.structures.pathElements.blocks;
 
 
-import static designAnalyzer.ParameterManager.T_IPAD;
-import static designAnalyzer.ParameterManager.T_OPAD;
-import static designAnalyzer.ParameterManager.T_SWITCH;
-import static designAnalyzer.ParameterManager.T_COMB;
-import static designAnalyzer.ParameterManager.T_FFIN;
-import static designAnalyzer.ParameterManager.T_FFOUT;
 
 import java.util.List;
 
@@ -15,6 +9,8 @@ import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.channels.AbstractChannel;
+import designAnalyzer.structures.pathElements.channels.ChannelX;
+import designAnalyzer.structures.pathElements.channels.ChannelY;
 
 public class LogicBlock extends NetlistBlock {
 
@@ -134,6 +130,7 @@ public class LogicBlock extends NetlistBlock {
 		return blockClass;
 	}
 	
+	@Override
 	protected int annotateTA() {
 
 		if(pinAssignments[5] == null) { //is combinatorial block
@@ -145,15 +142,16 @@ public class LogicBlock extends NetlistBlock {
 					criticalPrevious= p;
 				}
 			}
-			tA+= T_SWITCH + T_COMB; //always connected to a channel, is combinatorial Block
+			tA+= parameterManager.T_SWITCH + parameterManager.T_COMB; //always connected to a channel, is combinatorial Block
 		}
 		else {
-			tA= T_FFOUT; //is sequential block, starting point for annotation algorithm
+			tA= parameterManager.T_FFOUT; //is sequential block, starting point for annotation algorithm
 		}
 		return tA;
 		
 	}
 	
+	@Override
 	public int startAnalyzeTA() {
 
 		if(pinAssignments[5] != null) {
@@ -165,7 +163,7 @@ public class LogicBlock extends NetlistBlock {
 					criticalPrevious= p;
 				}
 			}
-			tA+= T_SWITCH + T_FFIN; //always connected to a channel, is sequential Block
+			tA+= parameterManager.T_SWITCH + parameterManager.T_FFIN; //always connected to a channel, is sequential Block
 			return tA;
 		}
 		else {
@@ -174,6 +172,7 @@ public class LogicBlock extends NetlistBlock {
 	}
 	
 
+	@Override
 	protected int annotateTRAndSlack(int criticalPathLength) {
 
 		if(pinAssignments[5] == null) { //is combinatorial block
@@ -190,6 +189,7 @@ public class LogicBlock extends NetlistBlock {
 	}
 		
 	
+	@Override
 	public void startAnalyzeTRAndSlack(int criticalPathLength) {
 
 		if(pinAssignments[5] != null) {
@@ -200,12 +200,54 @@ public class LogicBlock extends NetlistBlock {
 		}
 	}
 	
+	@Override
 	public void addPrevious(PathElement newPrevious) {
 		previous.add(newPrevious);
 	}
 	
+	@Override
 	public void addNext(PathElement newNext) {
 		next= newNext;
+	}
+
+
+	@Override
+	public void printCriticalPath(StringBuilder output, int lastTA) {
+		
+		if(pinAssignments[5] != null) { //is sequential logic block
+			
+			printThisNode(output, lastTA);
+			
+			if(lastTA == 0) { //acts as source
+				next.printCriticalPath(output, tA);
+			}
+			
+		}
+		else { // is combinatorial logic block
+			
+			printThisNode(output, lastTA);
+			next.printCriticalPath(output, tA);
+			
+		}
+		
+		
+	}
+
+
+	@Override
+	public void getInfo(StringBuilder output) {
+		output.append("CLB(");
+		output.append((pinAssignments[5] != null) ? "seq" : "comb");
+		output.append(")");
+		output.append("\t");
+		output.append(name);
+		output.append("\t");
+		output.append("(");
+		output.append(xCoordinate);
+		output.append(",");
+		output.append(yCoordinate);
+		output.append(")");
+		
 	}
 	
 	
