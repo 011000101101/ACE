@@ -26,7 +26,7 @@ public class DesignAnalyzer {
 	
 	public static void main(String[] args) {
 
-		//TODO parse command line arguments
+		
 		String netlistFilePath= args[0];
 		String architectureFilePath= args[1];
 		String placementFilePath= args[2];
@@ -36,7 +36,7 @@ public class DesignAnalyzer {
 			routingFilePath= args[3];
 		}
 		
-		//TODO is x and y obligated?
+		//T ODO is x and y obligated?
 		//int xSize= null;
 		//int ySize= null;
 		

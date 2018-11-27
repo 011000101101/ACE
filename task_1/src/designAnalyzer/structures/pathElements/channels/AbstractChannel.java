@@ -1,19 +1,10 @@
 package designAnalyzer.structures.pathElements.channels;
 
-import designAnalyzer.ParameterManager;
-
-import java.util.List;
 import java.util.Map;
 
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
-import static designAnalyzer.ParameterManager.T_IPAD;
-import static designAnalyzer.ParameterManager.T_OPAD;
-import static designAnalyzer.ParameterManager.T_SWITCH;
-import static designAnalyzer.ParameterManager.T_COMB;
-import static designAnalyzer.ParameterManager.T_FFIN;
-import static designAnalyzer.ParameterManager.T_FFOUT;
 
 public abstract class AbstractChannel extends PathElement{
 
@@ -67,6 +58,7 @@ public abstract class AbstractChannel extends PathElement{
 	//TODO check if needed
 	private PathElement criticalNext;
 	
+	
 
 	/* alternative critical path computation, not needed
 	public int analyzeTiming(){
@@ -91,20 +83,17 @@ public abstract class AbstractChannel extends PathElement{
 	}
 	*/
 	
-	public void printCriticalPath(){
-		printThisNode();
-		connectedNodes[criticalPathIndex].printCriticalPath();
+	@Override
+	public void printCriticalPath(StringBuilder output, int lastTA){
+		printThisNode(output, lastTA);
+		connectedNodes[criticalPathIndex].printCriticalPath(output, tA);
 	}
-
-	/**
-	 * prints this node as part of the critical path
-	 */
-	protected abstract void printThisNode();
 
 	/**
 	 * returns value of parameter constant stored in the ParameterManager
 	 * @return the requested value
 	 */
+	/*
 	public int getTConnectToIOBlock() {
 		
 		return ParameterManager.T_CONNECT_CHANNEL_IOBLOCK;
@@ -115,17 +104,18 @@ public abstract class AbstractChannel extends PathElement{
 		
 		return ParameterManager.T_CONNECT_CHANNEL_CHANNEL;
 		
-	}
+	}*/
 
 	/**
 	 * returns value of parameter constant stored in the ParameterManager
 	 * @return the requested value
 	 */
+	/*
 	public int getTConnectToLogicBlock() {
 		
 		return ParameterManager.T_CONNECT_CHANNEL_LOGIC_BLOCK;
 		
-	}
+	}*/
 	
 	public int getWire(){
 		return wire;
@@ -160,13 +150,13 @@ public abstract class AbstractChannel extends PathElement{
 		
 		int tA= previous.analyzeTA();
 		if(previous instanceof IOBlock) {
-			tA+= T_IPAD + T_SWITCH;
+			tA+= parameterManager.T_IPAD + parameterManager.T_SWITCH;
 		}
 		else if(previous instanceof LogicBlock) {
-			tA+= T_SWITCH;
+			tA+= parameterManager.T_SWITCH;
 		}
 		else if(previous instanceof AbstractChannel) {
-			tA+= T_SWITCH;
+			tA+= parameterManager.T_SWITCH;
 		}
 		return tA;
 	}

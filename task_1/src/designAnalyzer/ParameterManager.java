@@ -3,7 +3,7 @@ package designAnalyzer;
 public class ParameterManager {
 
 	//global constants for efficient access from everywhere
-	
+	/*
 	public static final int T_CONNECT_LOGIC_BLOCK_INTERNAL = 0;
 
 	public static final int T_CONNECT_CHANNEL_IOBLOCK = 0;
@@ -11,19 +11,37 @@ public class ParameterManager {
 	public static final int T_CONNECT_CHANNEL_CHANNEL = 0;
 
 	public static final int T_CONNECT_CHANNEL_LOGIC_BLOCK = 0;
+	*/
 	
 	
-	
+	/**
+	 * delay out of input block (source)
+	 */
 	public final int T_IPAD;
 	
+	/**
+	 * delay into output block (sink)
+	 */
 	public final int T_OPAD;
 	
+	/**
+	 * delay of one switching element
+	 */
 	public final int T_SWITCH;
 	
+	/**
+	 * internal delay of a combinatorial (unclocked) logic block
+	 */
 	public final int T_COMB;
 	
+	/**
+	 * delay into clocked logic block (sink)
+	 */
 	public final int T_FFIN;
 	
+	/**
+	 * delay out of clocked logic block (source)
+	 */
 	public final int T_FFOUT;
 
 
