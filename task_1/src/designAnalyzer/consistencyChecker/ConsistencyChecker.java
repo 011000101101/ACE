@@ -61,10 +61,12 @@ public class ConsistencyChecker {
 		Collection<Net> nets= structureManager.getNetCollection();
 		
 		for(Net n : nets) {
-			checkAtLeastOneSource(n);
-			checkAtLeastOneSink(n);
-			if(routingFileProvided) {
-				checkAllSinksRouted(n);
+			if(!n.getIsClocknNet()) { // ignore clock nets
+				checkAtLeastOneSource(n);
+				checkAtLeastOneSink(n);
+				if(routingFileProvided) {
+					checkAllSinksRouted(n);
+				}
 			}
 		}
 		

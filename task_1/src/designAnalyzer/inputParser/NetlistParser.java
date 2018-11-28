@@ -110,7 +110,9 @@ public class NetlistParser extends AbstractInputParser {
 			
 			Net currentNet= structureManager.retrieveNet(currentLine[1], false);
 			currentBlock.connect(currentNet, 1); //connect specified net to output pin of input block
-			currentNet.setSource(currentBlock); //link block to net as only source
+			if(!currentNet.getIsClocknNet()) { // ignore clock nets
+				currentNet.setSource(currentBlock); //link block to net as only source
+			}
 			
 		}
 		else {
