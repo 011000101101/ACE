@@ -1,6 +1,8 @@
 package designAnalyzer.structures.pathElements.channels;
 
 import designAnalyzer.structures.pathElements.PathElement;
+import designAnalyzer.structures.pathElements.pins.IPin;
+import designAnalyzer.structures.pathElements.pins.OPin;
 
 public class ChannelY extends AbstractChannel {
 
@@ -32,24 +34,24 @@ public class ChannelY extends AbstractChannel {
 	@Override
 	public boolean isNeighbour(PathElement neighbour) {
 		
-		boolean temp= true;
+		boolean temp= false;
 		
 		if(neighbour instanceof ChannelY) {
 			
-			temp= temp && (xCoordinate == neighbour.getX());
+			temp= (xCoordinate == neighbour.getX());
 			temp= temp && ((yCoordinate - 1 == neighbour.getY()) || (yCoordinate + 1 == neighbour.getY()));
 			
 		}
 		else if(neighbour instanceof ChannelX) {
 			
-			temp= temp && ((xCoordinate + 1 == neighbour.getX()) || (xCoordinate == neighbour.getX()));
+			temp= ((xCoordinate + 1 == neighbour.getX()) || (xCoordinate == neighbour.getX()));
 			temp= temp && ((yCoordinate  == neighbour.getY()) || (yCoordinate - 1 == neighbour.getY()));
 			
 		}
-		else { // nighbour is block
+		else if(neighbour instanceof IPin || neighbour instanceof OPin){ // neighbour is pin
 			
-			temp= temp && (yCoordinate == neighbour.getY());
-			temp= temp && ((xCoordinate - 1 == neighbour.getX()) || (xCoordinate + 1 == neighbour.getX()));
+			temp= (yCoordinate == neighbour.getY());
+			temp= temp && ((xCoordinate == neighbour.getX()) || (xCoordinate + 1 == neighbour.getX()));
 			
 		}
 		

@@ -146,21 +146,15 @@ public abstract class NetlistBlock extends PathElement{
 	public abstract void startAnalyzeTRAndSlack(int criticalPathLength);
 
 	/**
-	 * checks if the inpin or outpin is a neighbour of the opin <br>
+	 * checks if the inpin or outpin is a neighbour of this block <br>
 	 * pinNumber not relevant
 	 */
 	@Override
 	public boolean isNeighbour(PathElement neighbour) {
- //TODO
 		
-		if(neighbour instanceof IPin) {
+		if(neighbour instanceof IPin || neighbour instanceof OPin) {
 			
 			return ( ( xCoordinate == neighbour.getX() ) && ( yCoordinate == neighbour.getY() );
-			
-		}
-		else if(neighbour instanceof OPin) {
-
-			return ( ( yCoordinate == neighbour.getY() ) && ( xCoordinate == neighbour.getX() ) );
 			
 		}
 		else {
