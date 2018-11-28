@@ -89,6 +89,7 @@ public abstract class AbstractChannel extends PathElement{
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA){
 
+		System.out.println("test");
 		printThisNode(output, lastTA);
 		criticalNext.printCriticalPath(output, tA);
 	}
