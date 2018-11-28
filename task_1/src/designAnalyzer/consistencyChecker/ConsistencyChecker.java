@@ -54,7 +54,7 @@ public class ConsistencyChecker {
 		int yCoordinate= block.getY();
 
 		if(xCoordinate == -1 || yCoordinate == -1) {
-			ErrorReporter.reportBlockNotPlacedError(block);
+			ErrorReporter.reportBlockNotFoundError(block);
 		}
 		
 		/*//TODO remove in final version

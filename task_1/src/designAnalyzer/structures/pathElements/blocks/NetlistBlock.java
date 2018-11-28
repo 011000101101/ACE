@@ -6,6 +6,9 @@ import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
+import designAnalyzer.structures.pathElements.pins.IPin;
+import designAnalyzer.structures.pathElements.pins.OPin;
+
 
 public abstract class NetlistBlock extends PathElement{
 
@@ -142,18 +145,22 @@ public abstract class NetlistBlock extends PathElement{
 	
 	public abstract void startAnalyzeTRAndSlack(int criticalPathLength);
 
-
+	/**
+	 * checks if the inpin or outpin is a neighbour of the opin <br>
+	 * pinNumber not relevant
+	 */
 	@Override
 	public boolean isNeighbour(PathElement neighbour) {
-
-		if(neighbour instanceof ChannelX) {
+ //TODO
+		
+		if(neighbour instanceof IPin) {
 			
-			return ( ( xCoordinate == neighbour.getX() ) && ( ( yCoordinate == neighbour.getY() ) || ( yCoordinate - 1 == neighbour.getY() ) ) );
+			return ( ( xCoordinate == neighbour.getX() ) && ( yCoordinate == neighbour.getY() );
 			
 		}
-		else if(neighbour instanceof ChannelY) {
+		else if(neighbour instanceof OPin) {
 
-			return ( ( yCoordinate == neighbour.getY() ) && ( ( xCoordinate == neighbour.getX() ) || ( xCoordinate - 1 == neighbour.getX() ) ) );
+			return ( ( yCoordinate == neighbour.getY() ) && ( xCoordinate == neighbour.getX() ) );
 			
 		}
 		else {

@@ -12,9 +12,19 @@ public class OPin extends PathElement {
 
 	@Override
 	public void getInfo(StringBuilder output) {
-		// TODO Auto-generated method stub
-
+		output.append("O_Block");
+		output.append("\t");
+		output.append(this.getName());
+		output.append("\t");
+		output.append("(");
+		output.append(xCoordinate);
+		output.append(",");
+		output.append(yCoordinate);
+		output.append(").");
+		output.append("1");
+				
 	}
+
 
 	@Override
 	public boolean isNeighbour(PathElement neighbour) {
