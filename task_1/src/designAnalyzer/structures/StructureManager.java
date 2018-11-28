@@ -9,6 +9,11 @@ import designAnalyzer.inputParser.AbstractInputParser;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class StructureManager {
 
 	

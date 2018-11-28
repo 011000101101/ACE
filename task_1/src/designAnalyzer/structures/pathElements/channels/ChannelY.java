@@ -4,6 +4,11 @@ import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.pins.IPin;
 import designAnalyzer.structures.pathElements.pins.OPin;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class ChannelY extends AbstractChannel {
 
 

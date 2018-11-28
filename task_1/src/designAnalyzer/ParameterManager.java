@@ -1,5 +1,10 @@
 package designAnalyzer;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class ParameterManager {
 
 	//global constants for efficient access from everywhere

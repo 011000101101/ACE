@@ -2,6 +2,11 @@ package designAnalyzer.structures.pathElements;
 
 import designAnalyzer.ParameterManager;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public abstract class PathElement {
 	
 	/**

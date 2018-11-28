@@ -5,6 +5,11 @@ package designAnalyzer.structures.pathElements.blocks;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class IOBlock extends NetlistBlock {
 
 	/**

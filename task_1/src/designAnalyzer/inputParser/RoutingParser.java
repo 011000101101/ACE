@@ -15,6 +15,11 @@ import designAnalyzer.structures.pathElements.channels.ChannelY;
 import designAnalyzer.structures.pathElements.pins.IPin;
 import designAnalyzer.structures.pathElements.pins.OPin;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class RoutingParser extends AbstractInputParser {
 
 	private static final String NET_TOKEN = "Net";

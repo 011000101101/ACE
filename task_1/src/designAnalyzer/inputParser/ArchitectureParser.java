@@ -4,6 +4,11 @@ import java.io.FileNotFoundException;
 
 import designAnalyzer.errorReporter.ErrorReporter;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class ArchitectureParser extends AbstractInputParser {
 
 	private int[] allParameters; //array with every parameter

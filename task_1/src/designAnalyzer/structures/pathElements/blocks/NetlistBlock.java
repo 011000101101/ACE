@@ -9,7 +9,11 @@ import designAnalyzer.structures.pathElements.channels.ChannelY;
 import designAnalyzer.structures.pathElements.pins.IPin;
 import designAnalyzer.structures.pathElements.pins.OPin;
 
-
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public abstract class NetlistBlock extends PathElement{
 
 	/**
