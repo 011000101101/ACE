@@ -222,22 +222,17 @@ public class LogicBlock extends NetlistBlock {
 		
 		if(pinAssignments[5] != null) { //is sequential logic block
 			
-			if(lastTA == 0) { //acts as source
-				criticalPrevious.printCriticalPath(output, tA);
-			}
-			
 			printThisNode(output, lastTA);
 			
-			/*if(lastTA == 0) { //acts as source
+			if(lastTA == 0) { //acts as source
 				next.printCriticalPath(output, tA);
-			}*/
+			}
 			
 		}
 		else { // is combinatorial logic block
 			
-			criticalPrevious.printCriticalPath(output, tA);
 			printThisNode(output, lastTA);
-			//next.printCriticalPath(output, tA);
+			next.printCriticalPath(output, tA);
 			
 		}
 		
