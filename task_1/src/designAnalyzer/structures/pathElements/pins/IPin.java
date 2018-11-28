@@ -75,7 +75,15 @@ public class IPin extends PathElement{
 			case 2:
 				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
 			case -1: //this pin is attached to a logic block
-				return ( ( xCoordinate == neighbour.getX())  && (yCoordinate == neighbour.getY() || yCoordinate == neighbour.getY() + 1 ) );
+				if(pinNumber == 2) {
+					return ( ( xCoordinate == neighbour.getX())  && (yCoordinate == neighbour.getY() ) );
+				}
+				else if(pinNumber == 0) {
+					return ( ( xCoordinate == neighbour.getX())  && (yCoordinate == neighbour.getY() + 1 ) );
+				}
+				else {
+					return false;
+				}
 			default:
 				return false;
 			}
@@ -88,7 +96,16 @@ public class IPin extends PathElement{
 			case 3:
 				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
 			case -1: //this pin is attached to a logic block
-				return ( ( xCoordinate == neighbour.getX() || xCoordinate == neighbour.getX() + 1 )  && yCoordinate == neighbour.getY()  );
+				if(pinNumber == 3) {
+					return ( (xCoordinate == neighbour.getX())  && yCoordinate == neighbour.getY() );
+				}
+				else if(pinNumber == 1) {
+					return ( (xCoordinate == neighbour.getX() + 1 )  && yCoordinate == neighbour.getY()  );
+				}
+				else {
+					return false;
+				}
+				
 			default:
 				return false;
 			}

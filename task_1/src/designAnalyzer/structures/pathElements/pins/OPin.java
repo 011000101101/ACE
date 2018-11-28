@@ -8,6 +8,9 @@ import java.util.Map;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
+import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
+import designAnalyzer.structures.pathElements.channels.ChannelX;
+import designAnalyzer.structures.pathElements.channels.ChannelY;
 
 public class OPin extends PathElement {
 
@@ -52,8 +55,43 @@ public class OPin extends PathElement {
 
 	@Override
 	public boolean isNeighbour(PathElement neighbour) {
-		// TODO Auto-generated method stub
-		return false;
+
+		if(neighbour instanceof NetlistBlock) {
+			
+			return ( ( xCoordinate == neighbour.getX() ) &&  ( yCoordinate == neighbour.getY() )  );
+			
+		}
+		int i = this.getBoundary();
+		if(neighbour instanceof ChannelX) {
+
+			switch (i) {
+			case 0:
+				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() + 1  );
+			case 2:
+				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
+			case -1: //this pin is attached to a logic block
+				return ( ( xCoordinate == neighbour.getX())  && (yCoordinate == neighbour.getY() + 1 ) );
+			default:
+				return false;
+			}
+		}
+		else if(neighbour instanceof ChannelY) {
+
+			switch (i) {
+			case 1:
+				return ( ( xCoordinate == neighbour.getX() + 1) && yCoordinate == neighbour.getY() );
+			case 3:
+				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
+			case -1: //this pin is attached to a logic block
+				return ( ( xCoordinate == neighbour.getX())  && yCoordinate == neighbour.getY()  );
+			default:
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+
 	}
 
 	@Override
@@ -145,4 +183,27 @@ public class OPin extends PathElement {
 		return "IPIN(" + xCoordinate + "," + yCoordinate + ")";
 	}
 
+	/**
+	 * tells us where the block of the pin is placed
+	 * @return 0 for upper boundary, 1 for right, 2 for lower and 3 for left 
+	 */
+	public int getBoundary() {
+		 
+		if(parameterManager.Y_GRID_SIZE + 1 == this.getY()) { //top
+			return 0;
+		} 
+		else if(this.getX() == parameterManager.X_GRID_SIZE +1) {
+			return 1;
+		}
+		else if (this.getY() == 0) {
+			return 2;
+		}
+		else if (this.getX() == 0) {
+			return 3;
+		}
+		else {
+			return -1;
+		}
+		
+	}
 }
