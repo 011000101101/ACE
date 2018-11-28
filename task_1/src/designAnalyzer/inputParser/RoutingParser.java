@@ -392,10 +392,16 @@ public class RoutingParser extends AbstractInputParser {
 			if(!CLASS_TOKEN.equals(currentLine[2])){
 				ErrorReporter.reportSyntaxError(CLASS_TOKEN, currentLine[2], this);
 			}
-			if(!(1 == Integer.valueOf(currentLine[3]))) { //TODO class not correctly set in logic block
-				ErrorReporter.reportInconsistentArgumentError(1, currentLine[3], "Class value of logic block" + currentBlock.getName(), this);
+			if(SOURCE_TOKEN.equals(currentLine[0])) {
+				if(!(1 == Integer.valueOf(currentLine[3]))) { //TODO class not correctly set in logic block
+					ErrorReporter.reportInconsistentArgumentError(1, currentLine[3], "Class value of Source logic block" + currentBlock.getName(), this);
+				}
 			}
-			
+			else if(SINK_TOKEN.equals(currentLine[0])) {
+				if(!(0 == Integer.valueOf(currentLine[3]))) { //TODO class not correctly set in logic block
+					ErrorReporter.reportInconsistentArgumentError(0, currentLine[3], "Class value of Sink logic block" + currentBlock.getName(), this);
+				}
+			}
 		}
 	
 	}
