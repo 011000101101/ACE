@@ -20,7 +20,7 @@ public class ConsistencyChecker {
 	StructureManager structureManager;
 	ParameterManager parameterManager;
 	
-	public ConsistencyChecker(int newXSize, int newYSize) {
+	public ConsistencyChecker() {
 		
 		structureManager= StructureManager.getInstance();
 		parameterManager= ParameterManager.getInstance();

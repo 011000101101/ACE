@@ -17,18 +17,49 @@ import designAnalyzer.timingAnalyzer.TimingAnalyzer;
  */
 public class DesignAnalyzer {
 	
+	/**
+	 * flag indicating if a routing file has been provided by the user
+	 */
 	private static boolean routingFileProvided= false;
 
+	/**
+	 * reference to instance of input parser
+	 */
 	private static NetlistParser netlistParser;
+	
+	/**
+	 * reference to instance of input parser
+	 */
 	private static ArchitectureParser architectureParser;
+	
+	/**
+	 * reference to instance of input parser
+	 */
 	private static PlacementParser placementParser;
+	
+	/**
+	 * reference to instance of input parser
+	 */
 	private static RoutingParser routingParser;
 	
+	
+	/**
+	 * reference to instance of consistency checker
+	 */
 	private static ConsistencyChecker consistencyChecker;
 	
+	
+	/**
+	 * reference to instance of timing analyzer
+	 */
 	private static TimingAnalyzer timingAnalyzer;
 	//public static int[] parameterInitialized;
 	
+	
+	/**
+	 * main method
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
 		
@@ -36,18 +67,15 @@ public class DesignAnalyzer {
 		String architectureFilePath= args[1];
 		String placementFilePath= args[2];
 		String routingFilePath = null;
+		
 		if(args.length >= 4 && args[3].endsWith(".r")) {
 			System.out.println("checkpoint");
 			routingFileProvided= true;
 			routingFilePath= args[3];
 		}
 		
-		//T ODO is x and y obligated?
-		//int xSize= null;
-		//int ySize= null;
 		
 		
-		//consistencyChecker= new ConsistencyChecker(xSize, ySize);
 		
 		try {
 			int[] commandLineInput = parseCommandlineArguments(args); //array in form from int to initialize architectureParser with
@@ -63,8 +91,9 @@ public class DesignAnalyzer {
 			}
 			
 			parse();
-			
-			//consistencyChecker.checkConsistency(routingFileProvided);
+
+			consistencyChecker= new ConsistencyChecker();
+			consistencyChecker.checkConsistency(routingFileProvided);
 
 			timingAnalyzer= new TimingAnalyzer();
 			
