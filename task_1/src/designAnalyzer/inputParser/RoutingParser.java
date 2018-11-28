@@ -12,6 +12,8 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
+import designAnalyzer.structures.pathElements.pins.IPin;
+import designAnalyzer.structures.pathElements.pins.OPin;
 
 public class RoutingParser extends AbstractInputParser {
 
@@ -112,11 +114,7 @@ public class RoutingParser extends AbstractInputParser {
 	 */
 	private void connectPath(Net currentNet) {
 
-		//String lineStartToken;
-		//if(OPIN_TOKEN.equals(currentLine[0])) {
-		//	currentLine= readLineAndTokenize;
-		//}
-		if(!currentNet.recoverCurrentPathElement(parseXCoordinate(), parseYCoordinate(), Integer.valueOf(currentLine[3]), CHANX_TOKEN.equals(currentLine[0]))) {
+		if(!currentNet.recoverCurrentPathElement(parseXCoordinate(), parseYCoordinate(), Integer.valueOf(currentLine[3]), CHANX_TOKEN.equals(currentLine[0]), ( OPIN_TOKEN.equals(currentLine[0]) || IPIN_TOKEN.equals(currentLine[0]) ) )) {
 			ErrorReporter.reportInvalidConnectionPointRoutingError(currentNet, parseXCoordinate(), parseYCoordinate(), currentLine[3], CHANX_TOKEN.equals(currentLine[0]), this);
 		}
 		
@@ -214,6 +212,11 @@ public class RoutingParser extends AbstractInputParser {
 		int yCoordinate= parseYCoordinate();
 		int pad= Integer.valueOf(currentLine[3]);
 		
+		IPin currentIPin= new IPin();
+		currentIPin.setCoordinates(xCoordinate, yCoordinate);
+		currentIPin.setPinNumber(pad);
+		
+		linkAndSetActive(currentNet, currentIPin);
 		
 		
 		currentLine= readLineAndTokenize();
@@ -284,15 +287,18 @@ public class RoutingParser extends AbstractInputParser {
 		
 		currentLine= readLineAndTokenize();
 		
+		int xCoordinate= parseXCoordinate();
+		int yCoordinate= parseYCoordinate();
+		int pinNum= Integer.valueOf(currentLine[3]);
 		
 		//parse OPIN
 		if(!OPIN_TOKEN.equals(currentLine[0])) {
 			ErrorReporter.reportSyntaxError(OPIN_TOKEN, currentLine[0], this);
 		}
-		checkSameCoordinates(currentBlock, parseXCoordinate(), parseYCoordinate());
+		checkSameCoordinates(currentBlock, xCoordinate , yCoordinate );
 		//TODO check OPIN uses valid output pin
 		
-		checkValidPin(currentBlock, Integer.valueOf(currentLine[3]), true);
+		checkValidPin(currentBlock, pinNum, true);
 		
 		if(currentBlock instanceof IOBlock){
 			
@@ -309,6 +315,12 @@ public class RoutingParser extends AbstractInputParser {
 			
 		}
 		
+		OPin currentOPin= new OPin();
+		currentOPin.setCoordinates(xCoordinate, yCoordinate);
+		
+		linkAndSetActive(currentNet, currentOPin);
+		
+		
 		
 	}
 	
@@ -316,9 +328,14 @@ public class RoutingParser extends AbstractInputParser {
 
 		if(currentBlock instanceof LogicBlock) {
 			if(isInput && !(padOrPin == 4)) {
-				
+				//TODO throw errors
 			}
 			else if(!isInput && !(padOrPin == 0 || padOrPin == 1 || padOrPin == 2 || padOrPin == 3)) {
+				
+			}
+		}
+		else {
+			if(!(padOrPin == 1)) {
 				
 			}
 		}

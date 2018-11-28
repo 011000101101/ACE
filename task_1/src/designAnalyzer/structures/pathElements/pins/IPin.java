@@ -194,4 +194,10 @@ public class IPin extends PathElement{
 		}
 		
 	}
+
+	public void setPinNumber(int newPinNum) {
+
+		pinNumber= newPinNum;
+		
+	}
 }

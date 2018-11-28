@@ -134,7 +134,7 @@ public abstract class NetlistBlock extends PathElement{
 	}
 	
 	@Override
-	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX) {
+	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin) {
 		return false;
 	}
 	

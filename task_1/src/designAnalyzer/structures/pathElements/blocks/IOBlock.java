@@ -157,10 +157,10 @@ public class IOBlock extends NetlistBlock {
 	
 
 	@Override
-	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init) {
+	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin, boolean init) {
 		
 		if(init) { //is input block
-			return next.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, false);
+			return next.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, isPin, false);
 		}
 		else {
 			return null;

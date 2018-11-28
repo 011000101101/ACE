@@ -199,9 +199,9 @@ public class Net {
 	}
 
 
-	public boolean recoverCurrentPathElement(int xCoordinate, int yCoordinate, int track, boolean isChanX) {
+	public boolean recoverCurrentPathElement(int xCoordinate, int yCoordinate, int track, boolean isChanX, boolean isPin) {
 
-		activePathElement= source.getBranchingElement(xCoordinate, yCoordinate , track, isChanX, true);
+		activePathElement= source.getBranchingElement(xCoordinate, yCoordinate , track, isChanX, isPin, true);
 		if(activePathElement == null) {
 			return false;
 		}
