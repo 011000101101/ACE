@@ -87,21 +87,34 @@ public class RoutingParser extends AbstractInputParser {
 		
 		Net currentNet= parseBlockHeader();
 		
-		currentLine= readLineAndTokenize();
+		if(!currentNet.getIsClocknNet()) {
 		
-		parseSource(currentNet);
-		
-		currentLine= readLineAndTokenize();
-		
-		parseUntilNextSink(currentNet);
-		
-		currentLine= readLineAndTokenize();
-		
-		while(!(currentLine == null) && !NET_TOKEN.equals(currentLine[0])){
-			
-			connectPathAndParseNextSink(currentNet);
-			
 			currentLine= readLineAndTokenize();
+		
+			parseSource(currentNet);
+		
+			currentLine= readLineAndTokenize();
+		
+			parseUntilNextSink(currentNet);
+		
+			currentLine= readLineAndTokenize();
+		
+			while(!(currentLine == null) && !NET_TOKEN.equals(currentLine[0])){
+			
+				connectPathAndParseNextSink(currentNet);
+			
+				currentLine= readLineAndTokenize();
+			
+			}
+			
+		}
+		else { //is clock net, don't parse
+			
+			while(!(currentLine == null) && !NET_TOKEN.equals(currentLine[0])){
+				
+				currentLine= readLineAndTokenize();
+				
+			}
 			
 		}
 		
@@ -346,45 +359,35 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 	
-	
+	/**
+	 * checks if the given pin may be used for input or output of the currentBlock depending on isInput
+	 * @param currentBlock
+	 * @param padOrPin
+	 * @param isInput
+	 */
 	private void checkValidPin(NetlistBlock currentBlock, Integer padOrPin, boolean isInput) {
 
 		if(currentBlock instanceof LogicBlock) {
 			if(isInput && !(padOrPin == 4)) {
-				//TODO throw errors
+				ErrorReporter.reportInvalidPinError(currentBlock, padOrPin, isInput);
 			}
 			else if(!isInput && !(padOrPin == 0 || padOrPin == 1 || padOrPin == 2 || padOrPin == 3)) {
-				
+				ErrorReporter.reportInvalidPinError(currentBlock, padOrPin, isInput);
 			}
 		}
 		else {
 			if(!(padOrPin == 1)) {
-				
+				ErrorReporter.reportInvalidPinError(currentBlock, padOrPin, isInput);
 			}
 		}
 		
 	}
 
-	/*
-	private void checkSamePadOrPin(NetlistBlock currentBlock, String padOrPinNumber) {
-		
-		if(currentBlock instanceof IOBlock){
-			//warum funktioniert das
-			if(! (currentBlock.getSubblk_1() == (ONE_TOKEN.equals(padOrPinNumber))) ){
-				ErrorReporter.reportPinConnectionRoutingError(currentBlock, padOrPinNumber, this);
-			}
-			
-		}
-		else{
-			
-			if(! (((LogicBlock) currentBlock).getBlockClass() == Integer.valueOf(padOrPinNumber)) ){
-				ErrorReporter.reportPinConnectionRoutingError(currentBlock, padOrPinNumber, this);
-			}
-			
-		}
-		
-	}*/
 
+	/**
+	 * parses class or pad attribute of the current block
+	 * @param currentBlock
+	 */
 	private void parseClassOrPad(NetlistBlock currentBlock){
 		
 		if(currentBlock instanceof IOBlock){

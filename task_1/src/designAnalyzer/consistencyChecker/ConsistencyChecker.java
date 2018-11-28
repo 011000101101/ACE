@@ -17,9 +17,21 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
  */
 public class ConsistencyChecker {
 	
+	
+	/**
+	 * object managing all datastructure instances <br>
+	 * -handling insertion, retrieval and others
+	 */
 	StructureManager structureManager;
+	
+	/**
+	 * object managing all structural parameters 
+	 */
 	ParameterManager parameterManager;
 	
+	/**
+	 * constructor
+	 */
 	public ConsistencyChecker() {
 		
 		structureManager= StructureManager.getInstance();
@@ -27,6 +39,10 @@ public class ConsistencyChecker {
 		
 	}
 
+	/**
+	 * execute remaining consistency checks on design that weren't already done by parsers
+	 * @param routingFileProvided flag if routing file has been provided by the user
+	 */
 	public void checkConsistency(boolean routingFileProvided) {
 		
 		checkPlacement();
@@ -35,6 +51,11 @@ public class ConsistencyChecker {
 		
 	}
 	
+	
+	/**
+	 * perform necessary checks on all nets
+	 * @param routingFileProvided flag if routing file has been provided by the user
+	 */
 	private void checkNets(boolean routingFileProvided) {
 
 		Collection<Net> nets= structureManager.getNetCollection();
@@ -49,6 +70,11 @@ public class ConsistencyChecker {
 		
 	}
 
+	
+	/**
+	 * checks if all sinks of this net have been routed
+	 * @param n net to be checked
+	 */
 	private void checkAllSinksRouted(Net n) {
 
 		Map<NetlistBlock, Boolean> sinks= n.getSinkMap();
@@ -61,6 +87,11 @@ public class ConsistencyChecker {
 		
 	}
 
+	
+	/**
+	 * checks that the net has at least one sink
+	 * @param n net to be checked
+	 */
 	private void checkAtLeastOneSink(Net n) {
 
 		if(n.getSinks().isEmpty()) {
@@ -69,6 +100,11 @@ public class ConsistencyChecker {
 		
 	}
 
+	
+	/**
+	 * checks that the net has a source
+	 * @param n net to be checked
+	 */
 	private void checkAtLeastOneSource(Net n) {
 
 		if(n.getSource() == null) {
@@ -76,7 +112,11 @@ public class ConsistencyChecker {
 		}
 		
 	}
+	
 
+	/**
+	 * checks that all blocks have been placed
+	 */
 	private void checkPlacement() {
 		
 		Collection<NetlistBlock> blocks=  structureManager.getBlockMap().values();
@@ -86,7 +126,12 @@ public class ConsistencyChecker {
 		}
 		
 	}
+	
 
+	/**
+	 * checks if the block has been placed
+	 * @param b block to be checked
+	 */
 	private void checkIfPlaced(NetlistBlock b) {
 
 		if(b.getX() == -1 || b.getY() == -1) {

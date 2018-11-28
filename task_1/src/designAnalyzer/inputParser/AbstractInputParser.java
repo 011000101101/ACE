@@ -21,6 +21,7 @@ public abstract class AbstractInputParser {
 	protected static final String ONE_TOKEN= "1";
 	
 	protected static final String ZERO_TOKEN= "0";
+	
 	/**
 	 * path to the file to be parsed
 	 */

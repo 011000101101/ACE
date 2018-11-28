@@ -20,6 +20,9 @@ public class NetlistParser extends AbstractInputParser {
 	private static final String CLB_TOKEN= ".clb";
 	private static final String GLOBAL_TOKEN= ".global";
 	
+	/**
+	 * number of blocks already parsed
+	 */
 	private int numberOfBlocks=0;
 	
 	public NetlistParser(String newFilePath) throws FileNotFoundException {

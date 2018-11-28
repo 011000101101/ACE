@@ -180,6 +180,9 @@ public class DesignAnalyzer {
 		
 	}
 	
+	/**
+	 * analyze or estimate timing depending on rountingFileProvided and output results
+	 */
 	private static void analyze() {
 		
 		

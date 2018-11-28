@@ -16,8 +16,20 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
  */
 public class TimingAnalyzer {
 	
+	/**
+	 * object managing all datastructure instances <br>
+	 * -handling insertion, retrieval and others
+	 */
 	private StructureManager structureManager;
+	
+	/**
+	 * object managing all structural parameters 
+	 */
 	private ParameterManager parameterManager;
+	
+	/**
+	 * collection containing all nets
+	 */
 	private Collection<Net> nets;
 	
 
@@ -71,6 +83,12 @@ public class TimingAnalyzer {
 		
 	}
 
+	
+	/**
+	 * prints the estimated critical path by printing source and sink
+	 * @param criticalNet
+	 * @param criticalPathLength
+	 */
 	private void printEstimatedCriticalPath(Net criticalNet, int criticalPathLength) {
 
 		StringBuilder output= new StringBuilder();
@@ -403,11 +421,6 @@ public class TimingAnalyzer {
 		}
 	}
 
-	/*
-	private int estimateDelayBetweenTwoChannels(){
-		//T ODO Auto-generated method stub
-		return 0;
-	}*/
 
 	/**
 	 * computes the exact timings and outputs the critical path
@@ -437,6 +450,10 @@ public class TimingAnalyzer {
 		
 	}
 
+	/**
+	 * print the critical path by making the pathelements recursively print themselves.
+	 * @param criticalNet
+	 */
 	private void printCriticalPath(Net criticalNet) {
 		
 		StringBuilder output= new StringBuilder();
@@ -451,7 +468,11 @@ public class TimingAnalyzer {
 		System.out.println(output.toString());
 		
 	}
-
+	
+	/**
+	 * adds timing header to the stringbuilder
+	 * @param output
+	 */
 	private void addTimingHeader(StringBuilder output) {
 
 		output.append("(time in ns) \n \n");

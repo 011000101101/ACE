@@ -11,7 +11,10 @@ import designAnalyzer.errorReporter.ErrorReporter;
  */
 public class ArchitectureParser extends AbstractInputParser {
 
-	private int[] allParameters; //array with every parameter
+	/**
+	 * array with every parameter
+	 */
+	private int[] allParameters; 
 	
 	public ArchitectureParser(String newFilePath, int[] commandLineInput) throws FileNotFoundException {
 		super(newFilePath);
