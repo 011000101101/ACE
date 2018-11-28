@@ -11,7 +11,7 @@ public class ChannelY extends AbstractChannel {
 	}
 	
 	protected boolean matchesIsChanX(boolean isChanX) {
-		return false;
+		return !isChanX;
 	}
 	
 
@@ -54,5 +54,10 @@ public class ChannelY extends AbstractChannel {
 		}
 		
 		return temp;
+	}
+
+	@Override
+	public String getName() {
+		return "ChanY(" + xCoordinate + "," + yCoordinate + ")";
 	}
 }

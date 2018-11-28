@@ -31,7 +31,8 @@ public class DesignAnalyzer {
 		String architectureFilePath= args[1];
 		String placementFilePath= args[2];
 		String routingFilePath = null;
-		if(args.length < 4 && args[3].endsWith(".r")) {
+		if(args.length >= 4 && args[3].endsWith(".r")) {
+			System.out.println("checkpoint");
 			routingFileProvided= true;
 			routingFilePath= args[3];
 		}
@@ -50,8 +51,6 @@ public class DesignAnalyzer {
 			architectureParser.parseAll();
 			ParameterManager.initialize(netlistFilePath, architectureFilePath, placementFilePath, architectureParser.getAllParameters());
 
-			timingAnalyzer= new TimingAnalyzer();
-
 			netlistParser= new NetlistParser(netlistFilePath);
 			placementParser= new PlacementParser(placementFilePath);
 			if(routingFileProvided) {
@@ -60,7 +59,9 @@ public class DesignAnalyzer {
 			
 			parse();
 			
-			consistencyChecker.checkConsistency(routingFileProvided);
+			//consistencyChecker.checkConsistency(routingFileProvided);
+
+			timingAnalyzer= new TimingAnalyzer();
 			
 			analyze();
 			

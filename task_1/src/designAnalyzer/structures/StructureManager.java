@@ -6,6 +6,7 @@ import java.util.HashMap;
 import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.AbstractInputParser;
+import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class StructureManager {
@@ -33,10 +34,12 @@ public class StructureManager {
 	 */
 	private HashMap<String, NetlistBlock> blockMap;
 	
-	private NetlistBlock[][] blockIndex;
+	private NetlistBlock[][] logicBlockIndex;
+	private NetlistBlock[][][] ioBlockLRIndex;
+	private NetlistBlock[][][] ioBlockTBIndex;
 	
-	private boolean[][][] chanXUsed= new boolean[parameterManager.X_GRID_SIZE][parameterManager.Y_GRID_SIZE + 1][parameterManager.CHANNEL_WIDTH];
-	private boolean[][][] chanYUsed= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE][parameterManager.CHANNEL_WIDTH];
+	private boolean[][][] chanXUsed;
+	private boolean[][][] chanYUsed;
 	
 	
 	/**
@@ -53,8 +56,12 @@ public class StructureManager {
 		numberOfNets= 0;
 		
 		blockMap= new HashMap<String, NetlistBlock>();
-		blockIndex= new NetlistBlock[parameterManager.X_GRID_SIZE + 2][parameterManager.Y_GRID_SIZE + 2];
+		logicBlockIndex= new NetlistBlock[parameterManager.X_GRID_SIZE][parameterManager.Y_GRID_SIZE];
+		ioBlockLRIndex= new NetlistBlock[2][parameterManager.Y_GRID_SIZE][2];
+		ioBlockTBIndex= new NetlistBlock[parameterManager.X_GRID_SIZE][2][2];
 		
+		chanXUsed= new boolean[parameterManager.X_GRID_SIZE][parameterManager.Y_GRID_SIZE + 1][parameterManager.CHANNEL_WIDTH];
+		chanYUsed= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE][parameterManager.CHANNEL_WIDTH];
 		
 	}
 
@@ -137,23 +144,92 @@ public class StructureManager {
 	 * @param yCoordinate Y coordinate of the block (part of key)
 	 * @param currentBlock the block to be inserted (value)
 	 */
-	public void insertIntoBlockIndexingStructure(int xCoordinate, int yCoordinate, NetlistBlock currentBlock) {
+	public void insertIntoBlockIndexingStructure(int xCoordinate, int yCoordinate, int pad, NetlistBlock currentBlock) {
 
-		if(xCoordinate < 0 || xCoordinate > (parameterManager.X_GRID_SIZE + 1) || yCoordinate < 0 || yCoordinate > (parameterManager.Y_GRID_SIZE + 1) ) {
-			ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
-		}
-		if(blockIndex[xCoordinate][yCoordinate] != null) {
-			ErrorReporter.reportDuplicateBlockPlacementError(currentBlock);
+		if(currentBlock instanceof LogicBlock) {
+			if(xCoordinate < 1 || xCoordinate > parameterManager.X_GRID_SIZE || yCoordinate < 1 || yCoordinate > parameterManager.Y_GRID_SIZE ) {
+				ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
+			}
+			if(logicBlockIndex[xCoordinate - 1][yCoordinate - 1] != null) {
+				ErrorReporter.reportDuplicateBlockPlacementError(currentBlock);
+			}
+			else {
+				logicBlockIndex[xCoordinate - 1][yCoordinate - 1]= currentBlock;
+			}
 		}
 		else {
-			blockIndex[xCoordinate][yCoordinate]= currentBlock;
+			if(xCoordinate == 0) {
+				if(yCoordinate < 1 || yCoordinate > parameterManager.Y_GRID_SIZE) {
+					ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
+				}
+				else if(ioBlockLRIndex[0][yCoordinate - 1][pad] != null) {
+					ErrorReporter.reportDuplicateBlockPlacementError(currentBlock);
+				}
+				else {
+					ioBlockLRIndex[0][yCoordinate - 1][pad]= currentBlock;
+				}
+			}
+			else if(xCoordinate == parameterManager.X_GRID_SIZE + 1) {
+				if(yCoordinate < 1 || yCoordinate > parameterManager.Y_GRID_SIZE) {
+					ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
+				}
+				else if(ioBlockLRIndex[1][yCoordinate - 1][pad] != null) {
+					ErrorReporter.reportDuplicateBlockPlacementError(currentBlock);
+				}
+				else {
+					ioBlockLRIndex[1][yCoordinate - 1][pad]= currentBlock;
+				}
+			}
+			else if(yCoordinate == 0) {
+				if(xCoordinate < 1 || xCoordinate > parameterManager.X_GRID_SIZE) {
+					ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
+				}
+				else if(ioBlockTBIndex[xCoordinate - 1][0][pad] != null) {
+					ErrorReporter.reportDuplicateBlockPlacementError(currentBlock);
+				}
+				else {
+					ioBlockTBIndex[xCoordinate - 1][0][pad]= currentBlock;
+				}
+			}
+			else if(yCoordinate == parameterManager.Y_GRID_SIZE + 1) {
+				if(xCoordinate < 1 || xCoordinate > parameterManager.X_GRID_SIZE) {
+					ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
+				}
+				else if(ioBlockTBIndex[xCoordinate - 1][1][pad] != null) {
+					ErrorReporter.reportDuplicateBlockPlacementError(currentBlock);
+				}
+				else {
+					ioBlockTBIndex[xCoordinate - 1][1][pad]= currentBlock;
+				}
+			}
+			else {
+				ErrorReporter.reportBlockPlacedOutOfBoundsError(currentBlock);
+			}
 		}
 			
 	}
 
 
-	public NetlistBlock retrieveBlockByCoordinates(int xCoordinate, int yCoordinate) {
-		return blockIndex[xCoordinate][yCoordinate];
+	public NetlistBlock retrieveBlockByCoordinates(int xCoordinate, int yCoordinate, int pad) {
+		
+		if(xCoordinate == 0) {
+			return ioBlockLRIndex[0][yCoordinate - 1][pad];
+		}
+		else if(xCoordinate == parameterManager.X_GRID_SIZE + 1) {
+			return ioBlockLRIndex[1][yCoordinate - 1][pad];
+		}
+		else if(yCoordinate == 0) {
+			return ioBlockTBIndex[xCoordinate - 1][0][pad];
+		}
+		else if(yCoordinate == parameterManager.Y_GRID_SIZE + 1) {
+			return ioBlockTBIndex[xCoordinate - 1][1][pad];
+		}
+		else {
+			return logicBlockIndex[xCoordinate - 1][yCoordinate - 1];
+		}
+		
+		
+		
 	}
 
 
@@ -227,7 +303,7 @@ public class StructureManager {
 			else if(yCoordinate > parameterManager.Y_GRID_SIZE ) {
 				ErrorReporter.reportParameterOutOfBoundsError(parameterManager.Y_GRID_SIZE , yCoordinate, "Y coordinate of ChanY - upper boundary", parser);
 			}
-			else if(chanYUsed[xCoordinate - 1][yCoordinate][trackNum]) {
+			else if(chanYUsed[xCoordinate][yCoordinate - 1][trackNum]) {
 				ErrorReporter.reportDuplicateChannelUsageError(xCoordinate, yCoordinate, trackNum, isChanX, parser);
 			}
 			else{

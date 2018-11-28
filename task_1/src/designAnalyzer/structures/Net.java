@@ -201,7 +201,7 @@ public class Net {
 
 	public boolean recoverCurrentPathElement(int xCoordinate, int yCoordinate, int track, boolean isChanX) {
 
-		activePathElement= activePathElement.getBranchingElement(xCoordinate, yCoordinate , track, isChanX);
+		activePathElement= source.getBranchingElement(xCoordinate, yCoordinate , track, isChanX, true);
 		if(activePathElement == null) {
 			return false;
 		}
@@ -234,28 +234,27 @@ public class Net {
 		source.startAnalyzeTRAndSlack(criticalPathLength);
 	}
 
-<<<<<<< HEAD
-/**
- * Standard Getter
- * @return name of net
- */
+
+	/**
+	 * Standard Getter
+	 * @return name of net
+	 */
 	public String getName() {
 		
 		return name;
 	}
-
-/**
- * Standard Getter
- * @return number of net
- */
+	
+	/**
+	 * Standard Getter
+	 * @return number of net
+	 */
 	public int getNumber() {
 	
 		return netNumber;
-=======
+	}
 
 	public NetlistBlock getCriticalSink() {
 		return criticalSink;
->>>>>>> ce8ef968ea20cab52ac0b16df672b6972787d9b0
 	}
 
 	// TODO remove in final version

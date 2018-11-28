@@ -141,5 +141,30 @@ public class IOBlock extends NetlistBlock {
 		
 		
 	}
+
+	/*
+	@Override
+	protected PathElement getSingleSource() {
+
+		if(pinAssignments[1] != null) { //is input block
+			return null;
+		}
+		else {
+			return previous;
+		}
+		
+	}*/
+	
+
+	@Override
+	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init) {
+		
+		if(init) { //is input block
+			return next.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, false);
+		}
+		else {
+			return null;
+		}
+	}
 	
 }

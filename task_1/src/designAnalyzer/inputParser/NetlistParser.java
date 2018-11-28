@@ -3,6 +3,7 @@ package designAnalyzer.inputParser;
 import java.io.FileNotFoundException;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
+import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
@@ -19,6 +20,7 @@ public class NetlistParser extends AbstractInputParser {
 	public NetlistParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
 		// TODO Auto-generated constructor stub
+		structureManager= StructureManager.getInstance();
 		
 		currentLine= readLineAndTokenize();
 		
@@ -73,6 +75,8 @@ public class NetlistParser extends AbstractInputParser {
 			numberOfBlocks++;
 			structureManager.insertBlock(currentBlock);
 		}
+		
+		currentLine= readLineAndTokenize();
 		
 	}
 	

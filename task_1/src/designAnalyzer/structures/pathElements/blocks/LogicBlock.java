@@ -2,6 +2,7 @@ package designAnalyzer.structures.pathElements.blocks;
 
 
 
+import java.util.LinkedList;
 import java.util.List;
 
 import designAnalyzer.ParameterManager;
@@ -21,7 +22,7 @@ public class LogicBlock extends NetlistBlock {
 	
 	private int blockClass;
 	
-	private List<PathElement> previous;
+	private List<PathElement> previous= new LinkedList<PathElement>();
 	private PathElement next;
 	
 	//TODO check if needed
@@ -248,6 +249,25 @@ public class LogicBlock extends NetlistBlock {
 		output.append(yCoordinate);
 		output.append(")");
 		
+	}
+
+
+	/*
+	@Override
+	protected PathElement getSingleSource() {
+		//TODO this also returns a previous element if it is source
+		return previous.get(previous.size() - 1);
+	}*/
+	
+	@Override
+	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init) {
+		
+		if(init) { //is input block
+			return next.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, false);
+		}
+		else {
+			return null;
+		}
 	}
 	
 	

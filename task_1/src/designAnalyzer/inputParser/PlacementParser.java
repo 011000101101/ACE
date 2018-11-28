@@ -1,6 +1,9 @@
 package designAnalyzer.inputParser;
 
 import java.io.FileNotFoundException;
+
+import designAnalyzer.structures.StructureManager;
+import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.errorReporter.ErrorReporter;
 
@@ -10,6 +13,7 @@ public class PlacementParser extends AbstractInputParser {
 	public PlacementParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
 		// TODO Auto-generated constructor stub
+		structureManager= StructureManager.getInstance();
 		
 		currentLine= readLineAndTokenize();
 	}
@@ -37,7 +41,7 @@ public class PlacementParser extends AbstractInputParser {
 				ErrorReporter.reportInconsistentNamingError(tmpString, currentLine[2], this);
 			}
 			
-			if(!"Architecture:".equals(currentLine[3])) {
+			if(!"Architecture".equals(currentLine[3])) {
 				ErrorReporter.reportSyntaxError("Architecture", currentLine[3], this);
 			}
 			
@@ -74,7 +78,7 @@ public class PlacementParser extends AbstractInputParser {
 			if(!"logic".equals(currentLine[5])){
 				ErrorReporter.reportSyntaxError("logic", currentLine[5], this);
 			}
-			if(!"block".equals(currentLine[6])){
+			if(!"blocks".equals(currentLine[6])){
 				ErrorReporter.reportSyntaxError("block", currentLine[6], this);
 			}
 		} else {
@@ -98,17 +102,22 @@ public class PlacementParser extends AbstractInputParser {
 			if(tmp == null) {
 				ErrorReporter.reportBlockNotFoundError(this);
 			} 
-			
-			tmp.setCoordinates(Integer.valueOf(currentLine[1]), Integer.valueOf(currentLine[2])); 
-			
+
 			//set subblocknumber
 			if(ONE_TOKEN.equals(currentLine[3])) {
 				tmp.setSubblk_1(true);
 			} else if(ZERO_TOKEN.equals(currentLine[3])){
 				tmp.setSubblk_1(false);
+				if(tmp instanceof LogicBlock) {
+					((LogicBlock) tmp).setClass(0);
+				}
 			} else { //checks whether the argument is valid
 				ErrorReporter.reportSyntaxMultipleChoiceError(new String[]{ONE_TOKEN, ZERO_TOKEN}, currentLine[3], this);
 			}
+			
+			
+			tmp.setCoordinates(Integer.valueOf(currentLine[1]), Integer.valueOf(currentLine[2])); 
+			
 			
 			tmp.setBlockNumber(Integer.valueOf(currentLine[4].substring(1)));
 			
@@ -116,6 +125,9 @@ public class PlacementParser extends AbstractInputParser {
 		} else {
 			ErrorReporter.reportInvalidTokenCount(5, this);
 		}
+		
+		
+		currentLine= readLineAndTokenize();
 		
 		
 	}

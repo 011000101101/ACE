@@ -97,21 +97,20 @@ public abstract class PathElement {
 	 * @param isChanX boolean to indicate if the wanted channel is instanceof ChannelX or ChannelY
 	 * @return the wanted Channel or null, if not found
 	 */
-	public PathElement getBranchingElement(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX) {
+	public PathElement getBranchingElement(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init) {
 		
 		if(checkIfBranchingPoint(checkXCoordinate, checkYCoordinate, checkTrack, isChanX)) {
 			return this;
 		}
 		else {
-			if(getSingleSource() == null) {
-				return null;
-			}
-			else {
-				return getSingleSource().getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX);
-			}
+			return searchAllNext(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, init);
 		}
 		
 	}
+
+	protected abstract PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init);
+
+
 
 	/**
 	 * checks if this is the Channel defined by coordinates and track number
@@ -127,7 +126,9 @@ public abstract class PathElement {
 	 * returns the single signal source of this PathElement, if present, else returns null
 	 * @return the PathElement that acts as source to this PathElement
 	 */
+	/*
 	protected abstract PathElement getSingleSource();
+	*/
 
 	public int analyzeTA() {
 		if(tA != -1) {

@@ -1,5 +1,6 @@
 package designAnalyzer.structures.pathElements.channels;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import designAnalyzer.structures.pathElements.PathElement;
@@ -8,15 +9,6 @@ import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 
 public abstract class AbstractChannel extends PathElement{
 
-	/**
-	 * X coordinate of this channel
-	 */
-	protected int xCoordinate;
-	
-	/**
-	 * Y coordinate of this channel
-	 */
-	protected int yCoordinate;
 	
 	/**
 	 * wire this channel uses<br>
@@ -31,13 +23,17 @@ public abstract class AbstractChannel extends PathElement{
 	 * at most 1 stored path element can be the (local) signal source <br>
 	 * all other connected path elements are (local) sinks
 	 */
+	/*
 	protected PathElement[] connectedNodes;
+	*/
 	
 	/**
 	 * stores the location of the source node in the connection array connectedNodes
 	 * @see designAnalyzer.structures.pathElements.PathElement#connectedNodes
 	 */
+	/*
 	protected int sourceIndex= -1;
+	*/
 	
 	/**
 	 * stores the location of the output node that lies on the critical path in the connection array connectedNodes
@@ -53,7 +49,7 @@ public abstract class AbstractChannel extends PathElement{
 	/**
 	 * next nodes and slack of connection to them (in signal flow direction)
 	 */
-	private Map<PathElement, Integer> next;
+	private Map<PathElement, Integer> next= new HashMap<PathElement, Integer>();
 	
 	//TODO check if needed
 	private PathElement criticalNext;
@@ -86,7 +82,7 @@ public abstract class AbstractChannel extends PathElement{
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA){
 		printThisNode(output, lastTA);
-		connectedNodes[criticalPathIndex].printCriticalPath(output, tA);
+		criticalNext.printCriticalPath(output, tA);
 	}
 
 	/**
@@ -121,6 +117,10 @@ public abstract class AbstractChannel extends PathElement{
 		return wire;
 	}
 	
+	public void setWire(int newWire) {
+		wire= newWire;
+	}
+	
 	public abstract boolean isHorizontal();
 
 	@Override
@@ -141,9 +141,22 @@ public abstract class AbstractChannel extends PathElement{
 	 */
 	protected abstract boolean matchesIsChanX(boolean isChanX);
 	
-	protected PathElement getSingleSource() {
-		return connectedNodes[sourceIndex];
+	
+	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init) {
+		PathElement found= null;
+		for(PathElement p : next.keySet()) {
+			if(found == null) {
+				found = p.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, false);
+			}
+		}
+		return found;
+		
 	}
+	
+	/*
+	protected PathElement getSingleSource() {
+		return previous;
+	}*/
 	
 	
 	protected int annotateTA() {

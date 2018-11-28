@@ -95,7 +95,7 @@ public abstract class NetlistBlock extends PathElement{
 		xCoordinate= newXCoordinate;
 		yCoordinate= newYCoordinate;
 		
-		StructureManager.getInstance().insertIntoBlockIndexingStructure(xCoordinate, yCoordinate, this);
+		StructureManager.getInstance().insertIntoBlockIndexingStructure(xCoordinate, yCoordinate, (subblk_1 ? 1 : 0), this);
 		
 	}
 	
@@ -135,11 +135,6 @@ public abstract class NetlistBlock extends PathElement{
 		return false;
 	}
 	
-	@Override
-	protected PathElement getSingleSource() {
-		return null;
-	}
-	
 	public int getBlockNumber() {
 		return blockNumber;
 	}
@@ -157,7 +152,7 @@ public abstract class NetlistBlock extends PathElement{
 			
 		}
 		else if(neighbour instanceof ChannelY) {
-			
+
 			return ( ( yCoordinate == neighbour.getY() ) && ( ( xCoordinate == neighbour.getX() ) || ( xCoordinate - 1 == neighbour.getX() ) ) );
 			
 		}

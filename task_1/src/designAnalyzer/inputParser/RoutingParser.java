@@ -4,10 +4,14 @@ import java.io.FileNotFoundException;
 
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
+import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
+import designAnalyzer.structures.pathElements.channels.AbstractChannel;
+import designAnalyzer.structures.pathElements.channels.ChannelX;
+import designAnalyzer.structures.pathElements.channels.ChannelY;
 
 public class RoutingParser extends AbstractInputParser {
 
@@ -29,6 +33,9 @@ public class RoutingParser extends AbstractInputParser {
 	public RoutingParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
 		// TODO Auto-generated constructor stub
+		structureManager= StructureManager.getInstance();
+		
+		currentLine= readLineAndTokenize();
 	}
 
 	@Override
@@ -38,7 +45,7 @@ public class RoutingParser extends AbstractInputParser {
 			ErrorReporter.reportSyntaxError("Array", currentLine[0], this);
 		}
 		if(!"size:".equals(currentLine[1])){
-			ErrorReporter.reportSyntaxError("Array", currentLine[1], this);
+			ErrorReporter.reportSyntaxError("size:", currentLine[1], this);
 		}
 		if(!(Integer.valueOf(currentLine[2]) == parameterManager.X_GRID_SIZE)){
 			ErrorReporter.reportInconsistentArgumentError(parameterManager.X_GRID_SIZE, currentLine[2], "xGridSize", this);
@@ -49,6 +56,14 @@ public class RoutingParser extends AbstractInputParser {
 		if(!(Integer.valueOf(currentLine[4]) == parameterManager.Y_GRID_SIZE)){
 			ErrorReporter.reportInconsistentArgumentError(parameterManager.Y_GRID_SIZE, currentLine[2], "xGridSize", this);
 		}
+		
+		currentLine= readLineAndTokenize();
+		
+		if(!"Routing:".equals(currentLine[0])){
+			ErrorReporter.reportSyntaxError("Routing:", currentLine[0], this);
+		}
+		
+		currentLine= readLineAndTokenize();
 		
 		
 		
@@ -97,6 +112,10 @@ public class RoutingParser extends AbstractInputParser {
 	 */
 	private void connectPath(Net currentNet) {
 
+		//String lineStartToken;
+		//if(OPIN_TOKEN.equals(currentLine[0])) {
+		//	currentLine= readLineAndTokenize;
+		//}
 		if(!currentNet.recoverCurrentPathElement(parseXCoordinate(), parseYCoordinate(), Integer.valueOf(currentLine[3]), CHANX_TOKEN.equals(currentLine[0]))) {
 			ErrorReporter.reportInvalidConnectionPointRoutingError(currentNet, parseXCoordinate(), parseYCoordinate(), currentLine[3], CHANX_TOKEN.equals(currentLine[0]), this);
 		}
@@ -130,6 +149,8 @@ public class RoutingParser extends AbstractInputParser {
 	 */
 	private void parseSinglePathElement(Net currentNet) {
 		
+		
+		
 		if(CHANX_TOKEN.equals(currentLine[0])) {
 			parseChanX(currentNet);
 		} 
@@ -144,22 +165,42 @@ public class RoutingParser extends AbstractInputParser {
 
 	private void parseChanY(Net currentNet) {
 
+		AbstractChannel currentChannel= new ChannelY();
+		
 		int xCoordinate= parseXCoordinate();
 		int yCoordinate= parseYCoordinate();
+		
 		if(!TRACK_TOKEN.equals(currentLine[2])) {
 			ErrorReporter.reportSyntaxError(TRACK_TOKEN, currentLine[2], this);
 		}
 		int trackNum= Integer.valueOf(currentLine[3]);
 		structureManager.useChan(xCoordinate , yCoordinate , trackNum , false, this);
+
+		currentChannel.setCoordinates(xCoordinate, yCoordinate);
+		currentChannel.setWire(trackNum);
+		
+		System.out.println(currentNet.getActivePathElement());
+		linkAndSetActive(currentNet, currentChannel);
 		
 	}
 
 	private void parseChanX(Net currentNet) {
 
+		AbstractChannel currentChannel= new ChannelX();
+		
 		int xCoordinate= parseXCoordinate();
 		int yCoordinate= parseYCoordinate();
+		
+		if(!TRACK_TOKEN.equals(currentLine[2])) {
+			ErrorReporter.reportSyntaxError(TRACK_TOKEN, currentLine[2], this);
+		}
 		int trackNum= Integer.valueOf(currentLine[3]);
 		structureManager.useChan(xCoordinate , yCoordinate , trackNum , true, this);
+		
+		currentChannel.setCoordinates(xCoordinate, yCoordinate);
+		currentChannel.setWire(trackNum);
+		
+		linkAndSetActive(currentNet, currentChannel);
 		
 	}
 
@@ -171,7 +212,7 @@ public class RoutingParser extends AbstractInputParser {
 		
 		int xCoordinate= parseXCoordinate();
 		int yCoordinate= parseYCoordinate();
-		String pad= currentLine[3];
+		int pad= Integer.valueOf(currentLine[3]);
 		
 		
 		
@@ -191,7 +232,9 @@ public class RoutingParser extends AbstractInputParser {
 		}
 		
 		checkSameCoordinates(currentBlock, xCoordinate, yCoordinate);
-		checkSamePadOrPin(currentBlock, pad);
+		//TODO check IPIN uses valid input pin
+		
+		checkValidPin(currentBlock, pad, false);
 		
 		//checkValidCoordinates(currentNet.getActivePathElement(), currentBlock);
 		
@@ -247,7 +290,9 @@ public class RoutingParser extends AbstractInputParser {
 			ErrorReporter.reportSyntaxError(OPIN_TOKEN, currentLine[0], this);
 		}
 		checkSameCoordinates(currentBlock, parseXCoordinate(), parseYCoordinate());
-		checkSamePadOrPin(currentBlock, currentLine[3]);
+		//TODO check OPIN uses valid output pin
+		
+		checkValidPin(currentBlock, Integer.valueOf(currentLine[3]), true);
 		
 		if(currentBlock instanceof IOBlock){
 			
@@ -267,6 +312,20 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 	
+	private void checkValidPin(NetlistBlock currentBlock, Integer padOrPin, boolean isInput) {
+
+		if(currentBlock instanceof LogicBlock) {
+			if(isInput && !(padOrPin == 4)) {
+				
+			}
+			else if(!isInput && !(padOrPin == 0 || padOrPin == 1 || padOrPin == 2 || padOrPin == 3)) {
+				
+			}
+		}
+		
+	}
+
+	/*
 	private void checkSamePadOrPin(NetlistBlock currentBlock, String padOrPinNumber) {
 		
 		if(currentBlock instanceof IOBlock){
@@ -284,7 +343,7 @@ public class RoutingParser extends AbstractInputParser {
 			
 		}
 		
-	}
+	}*/
 
 	private void parseClassOrPad(NetlistBlock currentBlock){
 		
@@ -295,10 +354,16 @@ public class RoutingParser extends AbstractInputParser {
 			}
 			
 			if(ONE_TOKEN.equals(currentLine[3])){
-				currentBlock.setSubblk_1(true);
+				if(! currentBlock.getSubblk_1() == true) {
+					
+					ErrorReporter.reportInconsistentArgumentError(1, currentLine[3], "SubBlock value of IO block" + currentBlock.getName(), this);
+				}
 			}
 			else if(ZERO_TOKEN.equals(currentLine[3])){
-				currentBlock.setSubblk_1(false);
+				if(! currentBlock.getSubblk_1() == false) {
+					
+					ErrorReporter.reportInconsistentArgumentError(0, currentLine[3], "SubBlock value of IO block" + currentBlock.getName(), this);
+				}
 			}
 			else{
 				ErrorReporter.reportSyntaxMultipleChoiceError(new String[] {ONE_TOKEN, ZERO_TOKEN}, currentLine[3], this);
@@ -310,8 +375,9 @@ public class RoutingParser extends AbstractInputParser {
 			if(!CLASS_TOKEN.equals(currentLine[2])){
 				ErrorReporter.reportSyntaxError(CLASS_TOKEN, currentLine[2], this);
 			}
-			
-			((LogicBlock) currentBlock).setClass(Integer.valueOf(currentLine[3]));
+			if(!(((LogicBlock) currentBlock).getBlockClass() == Integer.valueOf(currentLine[3]))) {
+				ErrorReporter.reportInconsistentArgumentError(((LogicBlock) currentBlock).getBlockClass(), currentLine[3], "Class value of logic block" + currentBlock.getName(), this);
+			}
 			
 		}
 	
@@ -325,10 +391,10 @@ public class RoutingParser extends AbstractInputParser {
 		
 		final int netNumber= Integer.valueOf(currentLine[1]);
 		
-		Net currentNet= structureManager.retrieveNetNoInsert(currentLine[2].substring(1, currentLine[2].length() - 2));
+		Net currentNet= structureManager.retrieveNetNoInsert(currentLine[2].substring(1, currentLine[2].length() - 1));
 		
 		if(currentNet == null){
-			ErrorReporter.reportMissingNetError(currentLine[2].substring(1, currentLine[2].length() - 2), this);
+			ErrorReporter.reportMissingNetError(currentLine[2].substring(1, currentLine[2].length() - 1), this);
 			return null;
 		}
 		
@@ -347,7 +413,7 @@ public class RoutingParser extends AbstractInputParser {
 		final int xCoordinate= parseXCoordinate();
 		final int yCoordinate= parseYCoordinate();
 		
-		NetlistBlock currentBlock= structureManager.retrieveBlockByCoordinates(xCoordinate, yCoordinate);
+		NetlistBlock currentBlock= structureManager.retrieveBlockByCoordinates(xCoordinate, yCoordinate, Integer.valueOf(currentLine[3]));
 		if(currentBlock == null){
 			ErrorReporter.reportMissingBlockError(xCoordinate, yCoordinate, this);
 		}
@@ -362,7 +428,7 @@ public class RoutingParser extends AbstractInputParser {
 	 * @return x coordinate
 	 */
 	private int parseXCoordinate() {
-		return Integer.valueOf(currentLine[1].substring(1, currentLine[1].indexOf(",") - 1));
+		return Integer.valueOf(currentLine[1].substring(1, currentLine[1].indexOf(",")));
 	}
 
 	/**
@@ -370,7 +436,7 @@ public class RoutingParser extends AbstractInputParser {
 	 * @return y coordinate
 	 */
 	private int parseYCoordinate() {
-		return Integer.valueOf(currentLine[1].substring(currentLine[1].indexOf(",") - 1, currentLine[1].length() - 2));
+		return Integer.valueOf(currentLine[1].substring(currentLine[1].indexOf(",") + 1, currentLine[1].length() - 1));
 	}
 
 	private void checkSameCoordinates(NetlistBlock lastBlock, int xCoordinate, int yCoordinate) {

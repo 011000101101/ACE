@@ -62,7 +62,6 @@ public abstract class AbstractInputParser {
 		inputFile= new File(filePath);
 		inputFileReader= new BufferedReader(new FileReader(inputFile));
 		currentLineNumber= 0;
-		structureManager= StructureManager.getInstance();
 		parameterManager= ParameterManager.getInstance();
 		
 	}
@@ -84,10 +83,15 @@ public abstract class AbstractInputParser {
 		
 		}
 			
-		while(currentLine.charAt(0) == '#' || currentLine.length() == 0) {	//ignore comment lines starting with '#' and empty lines
+		while(currentLine.length() == 0 || currentLine.charAt(0) == '#') {	//ignore comment lines starting with '#' and empty lines
 			currentLine= readLine();
+			if(currentLine == null) {	//end of file
+				return null;
+			}
 		}
 
+		currentLine= currentLine.trim();
+		
 		return currentLine.split("\\s+");	//return tokenized line
 		
 	}
@@ -124,8 +128,7 @@ public abstract class AbstractInputParser {
 		
 		while(currentLine != null) {	//check for end of file
 			
-			parseOneBlock();	
-			currentLine= readLineAndTokenize();
+			parseOneBlock();
 			
 		}
 		

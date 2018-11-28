@@ -38,7 +38,7 @@ public class ChannelX extends AbstractChannel {
 	}
 
 	protected boolean matchesIsChanX(boolean isChanX) {
-		return true;
+		return isChanX;
 	}
 
 
@@ -54,6 +54,11 @@ public class ChannelX extends AbstractChannel {
 		output.append(").");
 		output.append(wire);
 		
+	}
+
+	@Override
+	public String getName() {
+		return "ChanX(" + xCoordinate + "," + yCoordinate + ")";
 	}
 	
 }
