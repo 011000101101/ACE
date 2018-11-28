@@ -229,7 +229,6 @@ public class LogicBlock extends NetlistBlock {
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA) {
 		
-		System.out.println((pinAssignments[5] != null));
 		if(pinAssignments[5] != null) { //is sequential logic block
 			
 			if(lastTA == 0) {
@@ -243,7 +242,6 @@ public class LogicBlock extends NetlistBlock {
 		}
 		else { // is combinatorial logic block
 			
-			System.out.println("test");
 			printThisNode(output, lastTA);
 			next.printCriticalPath(output, tA);
 			
