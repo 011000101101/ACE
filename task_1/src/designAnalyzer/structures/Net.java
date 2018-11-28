@@ -278,4 +278,11 @@ public class Net {
 	public Map<NetlistBlock, Boolean> getSinkMap(){
 		return sinks;
 	}
+
+
+	public void setIsClockNet(boolean b) {
+
+		isClockNet= b;
+		
+	}
 }

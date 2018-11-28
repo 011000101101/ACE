@@ -72,10 +72,12 @@ public class TimingAnalyzer {
 		int criticalPathLength= -1;
 		
 		for(Net n : nets){
-			int temp= estimateSingleNet(n);
-			if(temp > criticalPathLength){
-				criticalPathLength= temp;
-				criticalNet= n;
+			if(!n.getIsClocknNet()) { // ignore clock nets
+				int temp= estimateSingleNet(n);
+				if(temp > criticalPathLength){
+					criticalPathLength= temp;
+					criticalNet= n;
+				}
 			}
 		}
 		
@@ -434,16 +436,20 @@ public class TimingAnalyzer {
 		int criticalPathLength= -1;
 		
 		for(Net n : nets) {
-			int temp= n.annotateTA();
-			if(temp > criticalPathLength){
-				criticalPathLength= temp;
-				criticalNet= n;
+			if(!n.getIsClocknNet()) { // ignore clock nets
+				int temp= n.annotateTA();
+				if(temp > criticalPathLength){
+					criticalPathLength= temp;
+					criticalNet= n;
+				}
 			}
 		}
 		
-		//does not effect the output, but only annotates the data structures with tR and slack values, therefore can be disabled to improve performance
+		//
 		for(Net n : nets) {
-			n.annotateTRAndSlack(criticalPathLength);
+			if(!n.getIsClocknNet()) { // ignore clock nets
+				n.annotateTRAndSlack(criticalPathLength);
+			}
 		}
 		
 		printCriticalPath(criticalNet); //output the critical path

@@ -92,11 +92,7 @@ public class StructureManager {
 	 */
 	public Net retrieveNet(String name, boolean isClockNet) {
 		if(netMap.containsKey(name)) {
-			Net temp= netMap.get(name);
-			if(isClockNet != temp.getIsClocknNet()) {
-				ErrorReporter.reportClockNetConnectionError(temp, isClockNet);
-			}
-			return temp;
+			return netMap.get(name);
 		}
 		else {
 			numberOfNets++;
