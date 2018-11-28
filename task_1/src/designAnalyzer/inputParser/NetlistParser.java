@@ -252,11 +252,12 @@ public class NetlistParser extends AbstractInputParser {
 	}
 	
 	/**
-	 * insert clock net into net collection if it does not already exist, else do nothing
+	 * deprecated: insert clock net into net collection if it does not already exist, else 
+	 * do nothing
 	 */
 	private void parseGlobal() {
 		
-		structureManager.retrieveNet(currentLine[1], true);
+		//structureManager.retrieveNet(currentLine[1], true);
 		
 	}
 
