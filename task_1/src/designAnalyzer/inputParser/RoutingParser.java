@@ -268,7 +268,7 @@ public class RoutingParser extends AbstractInputParser {
 		checkSameCoordinates(currentBlock, xCoordinate, yCoordinate);
 		//TODO check IPIN uses valid input pin
 		
-		checkValidPin(currentBlock, pad, false);
+		checkValidPin(currentBlock, pad, true);
 		
 		//checkValidCoordinates(currentNet.getActivePathElement(), currentBlock);
 		
@@ -333,7 +333,7 @@ public class RoutingParser extends AbstractInputParser {
 		checkSameCoordinates(currentBlock, xCoordinate , yCoordinate );
 		//TODO check OPIN uses valid output pin
 		
-		checkValidPin(currentBlock, pinNum, true);
+		checkValidPin(currentBlock, pinNum, false);
 		
 		if(currentBlock instanceof IOBlock){
 			
@@ -368,10 +368,10 @@ public class RoutingParser extends AbstractInputParser {
 	private void checkValidPin(NetlistBlock currentBlock, Integer padOrPin, boolean isInput) {
 
 		if(currentBlock instanceof LogicBlock) {
-			if(isInput && !(padOrPin == 4)) {
+			if(!isInput && !(padOrPin == 4)) {
 				ErrorReporter.reportInvalidPinError(currentBlock, padOrPin, isInput);
 			}
-			else if(!isInput && !(padOrPin == 0 || padOrPin == 1 || padOrPin == 2 || padOrPin == 3)) {
+			else if(isInput && !(padOrPin == 0 || padOrPin == 1 || padOrPin == 2 || padOrPin == 3)) {
 				ErrorReporter.reportInvalidPinError(currentBlock, padOrPin, isInput);
 			}
 		}
