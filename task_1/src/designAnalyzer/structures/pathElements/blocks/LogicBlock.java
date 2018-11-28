@@ -238,7 +238,7 @@ public class LogicBlock extends NetlistBlock {
 				next.printCriticalPath(output, tA);
 			}
 			else {
-				//printThisNodeFinal(output, lastTA);
+				printThisNode(output, lastTA);
 			}
 			
 		}
