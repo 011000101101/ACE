@@ -51,7 +51,7 @@ public class ChannelX extends AbstractChannel {
 
 	@Override
 	public void getInfo(StringBuilder output) {
-		output.append("CHANX");
+		output.append("CHAN_X");
 		output.append("\t");
 		output.append("|");
 		output.append("\t");

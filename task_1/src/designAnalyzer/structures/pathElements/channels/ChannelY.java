@@ -24,7 +24,7 @@ public class ChannelY extends AbstractChannel {
 
 	@Override
 	public void getInfo(StringBuilder output) {
-		output.append("CHANX");
+		output.append("CHAN_Y");
 		output.append("\t");
 		output.append("|");
 		output.append("\t");
