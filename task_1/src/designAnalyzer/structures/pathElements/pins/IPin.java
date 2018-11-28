@@ -66,35 +66,32 @@ public class IPin extends PathElement{
 			return ( ( xCoordinate == neighbour.getX() ) &&  ( yCoordinate == neighbour.getY() )  );
 			
 		}
-			
-		else if(neighbour instanceof ChannelX) {
+		int i = this.getBoundary();
+		if(neighbour instanceof ChannelX) {
 
-			int i = this.getBoundary();
-			else switch (i)) {
+			switch (i) {
 			case 0:
 				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() + 1  );
-				break;
-			case 1:
-				return ( ( xCoordinate== neighbour.getX() + 1 ) && yCoordinate == neighbour.getY() );
-				break;
 			case 2:
 				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
-				break;
-			case 3:
-				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
-				break;
 			case -1: //this pin is attached to a logic block
 				return ( ( xCoordinate == neighbour.getX())  && (yCoordinate == neighbour.getY() || yCoordinate == neighbour.getY() + 1 ) );
-				break;
+			default:
+				return false;
 			}
-				
-			//if(pinNumber == 0) {
-				
-			//}
 		}
 		else if(neighbour instanceof ChannelY) {
-			
-			return ( ( yCoordinate == neighbour.getY() ) && ( ( xCoordinate == neighbour.getX() ) || ( xCoordinate - 1 == neighbour.getX() ) ) );
+
+			switch (i) {
+			case 1:
+				return ( ( xCoordinate == neighbour.getX() + 1) && yCoordinate == neighbour.getY() );
+			case 3:
+				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
+			case -1: //this pin is attached to a logic block
+				return ( ( xCoordinate == neighbour.getX() || xCoordinate == neighbour.getX() + 1 )  && yCoordinate == neighbour.getY()  );
+			default:
+				return false;
+			}
 		}
 		else {
 			return false;
