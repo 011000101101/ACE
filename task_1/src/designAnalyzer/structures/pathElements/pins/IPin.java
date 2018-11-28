@@ -70,10 +70,22 @@ public class IPin extends PathElement{
 		else if(neighbour instanceof ChannelX) {
 
 			int i = this.getBoundary();
-			
-			switch (i) {
+			else switch (i)) {
 			case 0:
-				return ( ( xCoordinate == neighbour.getX()) && ( yCoordinate == neighbour.getY() || yCoordinate - 1 == neighbour.getY() ) );
+				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() + 1  );
+				break;
+			case 1:
+				return ( ( xCoordinate== neighbour.getX() + 1 ) && yCoordinate == neighbour.getY() );
+				break;
+			case 2:
+				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
+				break;
+			case 3:
+				return ( ( xCoordinate == neighbour.getX()) && yCoordinate == neighbour.getY() );
+				break;
+			case -1: //this pin is attached to a logic block
+				return ( ( xCoordinate == neighbour.getX())  && (yCoordinate == neighbour.getY() || yCoordinate == neighbour.getY() + 1 ) );
+				break;
 			}
 				
 			//if(pinNumber == 0) {
