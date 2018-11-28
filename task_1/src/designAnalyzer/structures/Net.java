@@ -46,7 +46,8 @@ public class Net {
 	/**
 	 * list of sink Blocks with additional flag if it has already been routed
 	 */
-	private Map<NetlistBlock, Boolean> sinks;
+	private Map<NetlistBlock, PathElement> sinks;
+	
 	
 	/**
 	 * sink reached by following the critical path
@@ -75,7 +76,7 @@ public class Net {
 		isClockNet= newIsClockNet;
 		
 		source= null;
-		sinks= new HashMap<NetlistBlock, Boolean>();
+		sinks= new HashMap<NetlistBlock, PathElement>();
 	}
 
 
@@ -106,7 +107,7 @@ public class Net {
 
 	public void addSink(NetlistBlock currentBlock) {
 		//TODO revisit and check if sufficient
-		sinks.put(currentBlock, false);
+		sinks.put(currentBlock, null);
 		
 	}
 
@@ -162,10 +163,10 @@ public class Net {
 	}
 
 
-	public boolean containsSink(NetlistBlock checkSink) {
+	public boolean containsSink(NetlistBlock checkSink, PathElement oPin) {
 		for(NetlistBlock b : sinks.keySet()){
 			if(b.equals(checkSink)){
-				sinks.replace(b, true);
+				sinks.replace(b, oPin);
 				return true;
 			}
 		}
@@ -227,7 +228,7 @@ public class Net {
 	public int annotateTA() {
 		int criticalLength= -1;
 		for(NetlistBlock b : sinks.keySet()) {
-			int temp= b.startAnalyzeTA();
+			int temp= b.startAnalyzeTA(sinks.get(b));
 			if(temp > criticalLength) {
 				criticalLength= temp;
 				criticalSink= b;
@@ -275,7 +276,7 @@ public class Net {
 	}
 	*/
 	
-	public Map<NetlistBlock, Boolean> getSinkMap(){
+	public Map<NetlistBlock, PathElement> getSinkMap(){
 		return sinks;
 	}
 

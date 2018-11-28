@@ -8,6 +8,7 @@ import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
+import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 /**
@@ -79,10 +80,10 @@ public class ConsistencyChecker {
 	 */
 	private void checkAllSinksRouted(Net n) {
 
-		Map<NetlistBlock, Boolean> sinks= n.getSinkMap();
+		Map<NetlistBlock, PathElement> sinks= n.getSinkMap();
 		
 		for(NetlistBlock b : sinks.keySet()) {
-			if(!sinks.get(b)) {
+			if(sinks.get(b) == null) {
 				ErrorReporter.reportSinkNotRoutedError(n, b);
 			}
 		}

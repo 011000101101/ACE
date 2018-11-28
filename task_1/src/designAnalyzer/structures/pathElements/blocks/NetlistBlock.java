@@ -145,7 +145,7 @@ public abstract class NetlistBlock extends PathElement{
 	public int getBlockNumber() {
 		return blockNumber;
 	}
-	public abstract int startAnalyzeTA();
+	public abstract int startAnalyzeTA(PathElement iPin);
 	
 	public abstract void startAnalyzeTRAndSlack(int criticalPathLength);
 

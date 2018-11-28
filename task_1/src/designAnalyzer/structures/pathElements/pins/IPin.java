@@ -46,7 +46,7 @@ public class IPin extends PathElement{
 
 	@Override
 	public void getInfo(StringBuilder output) {
-		output.append("I_Block");
+		output.append("I_Pin");
 		output.append("\t");
 		output.append("|");
 		output.append(this.getName());

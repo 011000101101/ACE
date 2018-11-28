@@ -12,6 +12,7 @@ import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
+import designAnalyzer.structures.pathElements.pins.IPin;
 
 /**
  * 
@@ -27,13 +28,15 @@ public class LogicBlock extends NetlistBlock {
 	
 	private int blockClass;
 	
-	private List<PathElement> previous= new LinkedList<PathElement>();
+	private List<IPin> previous= new LinkedList<IPin>();
 	private PathElement next;
 	
 	//TODO check if needed
 	private PathElement criticalPrevious;
 
 	private int slackToNext;
+	
+	int[] tA2= new int[4];
 	
 	
 	
@@ -158,23 +161,30 @@ public class LogicBlock extends NetlistBlock {
 	}
 	
 	@Override
-	public int startAnalyzeTA() {
+	public int startAnalyzeTA(PathElement iPin) {
 
 		if(pinAssignments[5] != null) {
-			tA= -1;
-			for(PathElement p : previous) {
-				int temp= p.analyzeTA();
-				if(temp > tA) {
-					tA= temp;
+			
+			for(IPin p : previous) {
+				int i = previous.indexOf(p);
+				if(p.equals(iPin)) {
+					
+					int temp= p.analyzeTA();
+				
+					tA2[i]= temp;
 					criticalPrevious= p;
+					
+					tA2[i]+= parameterManager.T_FFIN; //always connected to a IPIN, is sequential Block
+					return tA2[i];
+					
 				}
+					
 			}
-			tA+= parameterManager.T_FFIN; //always connected to a IPIN, is sequential Block
-			return tA;
 		}
 		else {
 			return -1; //internal node of path(s) running through this combinatorial lgic block, will be ignored in critical path computation
 		}
+		return -1;
 	}
 	
 
@@ -208,7 +218,7 @@ public class LogicBlock extends NetlistBlock {
 	
 	@Override
 	public void addPrevious(PathElement newPrevious) {
-		previous.add(newPrevious);
+		previous.add((IPin) newPrevious);
 	}
 	
 	@Override
@@ -222,15 +232,18 @@ public class LogicBlock extends NetlistBlock {
 		
 		if(pinAssignments[5] != null) { //is sequential logic block
 			
-			printThisNode(output, lastTA);
-			
-			if(lastTA == 0) { //acts as source
+			if(lastTA == 0) {
+				printThisNode(output, lastTA);
 				next.printCriticalPath(output, tA);
+			}
+			else {
+				//printThisNodeFinal(output, lastTA);
 			}
 			
 		}
 		else { // is combinatorial logic block
 			
+			System.out.println("test");
 			printThisNode(output, lastTA);
 			next.printCriticalPath(output, tA);
 			

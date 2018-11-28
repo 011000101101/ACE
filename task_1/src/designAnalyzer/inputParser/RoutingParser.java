@@ -263,7 +263,7 @@ public class RoutingParser extends AbstractInputParser {
 		
 		parseClassOrPad(currentBlock);
 		
-		if(!currentNet.containsSink(currentBlock)){
+		if(!currentNet.containsSink(currentBlock, currentIPin)){
 			ErrorReporter.reportExcessSinkRoutingNetError(currentNet, currentBlock, this);
 		}
 		

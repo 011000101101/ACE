@@ -82,7 +82,7 @@ public class IOBlock extends NetlistBlock {
 	}
 	
 	@Override
-	public int startAnalyzeTA() { //is external output block
+	public int startAnalyzeTA(PathElement iPin) { //is external output block
 
 		tA= previous.analyzeTA();
 		tA+= parameterManager.T_OPAD; //always connected to a IPIN
@@ -133,7 +133,7 @@ public class IOBlock extends NetlistBlock {
 
 	@Override
 	public void getInfo(StringBuilder output) {
-		output.append((pinAssignments[1] != null) ? "I_Block" : "O_BLOCK");
+		output.append((pinAssignments[1] != null) ? "In_Block" : "Out_Block");
 		output.append("\t");
 		output.append("|");
 		output.append(name);

@@ -168,6 +168,7 @@ public abstract class AbstractChannel extends PathElement{
 	}*/
 	
 	
+	@Override
 	protected int annotateTA() {
 		
 		tA= previous.analyzeTA();
