@@ -376,8 +376,8 @@ public class RoutingParser extends AbstractInputParser {
 			}
 		}
 		else {
-			if(!(padOrPin == 1)) {
-				ErrorReporter.reportInvalidPinError(currentBlock, padOrPin, isInput);
+			if(padOrPin != (((IOBlock) currentBlock).getSubblk_1() ? 1 : 0)) {
+				ErrorReporter.reportInconsistentArgumentError((((IOBlock) currentBlock).getSubblk_1() ? 1 : 0), padOrPin.toString(), "'Pad' of pad doesn't match subblock number of IOBlock", this);
 			}
 		}
 		
