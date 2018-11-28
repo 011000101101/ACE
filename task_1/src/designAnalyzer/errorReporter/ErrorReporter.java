@@ -88,7 +88,7 @@ public class ErrorReporter {
 
 	public static void reportInconsistentArgumentError(int expected, String readToken, String message, AbstractInputParser parser) {
 		
-		System.err.println("The expected " + message + expected + " doesn't match with " + readToken + " in line " + parser.getLineNumber() );
+		System.err.println("The expected " + message +" "+ expected + " doesn't match with " + readToken + " in line " + parser.getLineNumber() );
 		
 	}
 
