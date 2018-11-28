@@ -230,6 +230,7 @@ public class LogicBlock extends NetlistBlock {
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA) {
 		
+		System.out.println((pinAssignments[5] != null));
 		if(pinAssignments[5] != null) { //is sequential logic block
 			
 			if(lastTA == 0) {
