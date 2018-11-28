@@ -170,15 +170,7 @@ public abstract class AbstractChannel extends PathElement{
 	protected int annotateTA() {
 		
 		tA= previous.analyzeTA();
-		if(previous instanceof IOBlock) {
-			tA+= parameterManager.T_IPAD + parameterManager.T_SWITCH;
-		}
-		else if(previous instanceof LogicBlock) {
-			tA+= parameterManager.T_SWITCH;
-		}
-		else if(previous instanceof AbstractChannel) {
-			tA+= parameterManager.T_SWITCH;
-		}
+		tA+= parameterManager.T_SWITCH;
 		return tA;
 	}
 	
