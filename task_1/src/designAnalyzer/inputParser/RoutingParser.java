@@ -86,7 +86,7 @@ public class RoutingParser extends AbstractInputParser {
 		
 		currentLine= readLineAndTokenize();
 		
-		while(!NET_TOKEN.equals(currentLine[0])){
+		while(!(currentLine == null) && !NET_TOKEN.equals(currentLine[0])){
 			
 			connectPathAndParseNextSink(currentNet);
 			

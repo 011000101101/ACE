@@ -106,8 +106,13 @@ public class OPin extends PathElement {
 	@Override
 	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX,
 			boolean init, boolean isPin) {
-		// TODO Auto-generated method stub
-		return null;
+		PathElement found= null;
+		for(PathElement p : next.keySet()) {
+			if(found == null) {
+				found = p.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, isPin, false);
+			}
+		}
+		return found;
 	}
 
 	@Override
