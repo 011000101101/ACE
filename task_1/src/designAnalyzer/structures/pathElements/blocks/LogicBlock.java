@@ -238,7 +238,7 @@ public class LogicBlock extends NetlistBlock {
 				next.printCriticalPath(output, tA);
 			}
 			else {
-				printThisNode(output, lastTA);
+				printThisNodeFinal(output, lastTA);
 			}
 			
 		}
@@ -251,6 +251,32 @@ public class LogicBlock extends NetlistBlock {
 		}
 		
 		
+	}
+
+
+	private void printThisNodeFinal(StringBuilder output, int lastTA) {
+		output.append("CLB(");
+		output.append((pinAssignments[5] != null) ? "seq" : "comb");
+		output.append(")");
+		output.append("\t");
+		output.append("|");
+		output.append(name);
+		output.append("\t");
+
+		output.append("|");
+		output.append("(");
+		output.append(xCoordinate);
+		output.append(",");
+		output.append(yCoordinate);
+		output.append(")");
+
+		output.append("\t");
+		output.append("|");
+		output.append(parameterManager.T_FFIN);
+		output.append("\t");
+		output.append("|");
+		output.append(lastTA + parameterManager.T_FFIN);
+		output.append(System.getProperty("line.separator"));
 	}
 
 
