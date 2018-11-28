@@ -51,7 +51,9 @@ public abstract class AbstractChannel extends PathElement{
 	 */
 	private Map<PathElement, Integer> next= new HashMap<PathElement, Integer>();
 	
-	//TODO check if needed
+	/**
+	 * the next node on the critical path
+	 */
 	private PathElement criticalNext;
 	
 	
@@ -130,8 +132,9 @@ public abstract class AbstractChannel extends PathElement{
 		
 	}
 	
-	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX) {
-		return matchesIsChanX(isChanX) && (checkXCoordinate == xCoordinate) && (checkYCoordinate == yCoordinate) && (checkTrack == wire);
+	@Override
+	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin) {
+		return !isPin && matchesIsChanX(isChanX) && (checkXCoordinate == xCoordinate) && (checkYCoordinate == yCoordinate) && (checkTrack == wire);
 	}
 
 	/**
@@ -141,12 +144,12 @@ public abstract class AbstractChannel extends PathElement{
 	 */
 	protected abstract boolean matchesIsChanX(boolean isChanX);
 	
-	
-	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init) {
+	@Override
+	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init, boolean isPin) {
 		PathElement found= null;
 		for(PathElement p : next.keySet()) {
 			if(found == null) {
-				found = p.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, false);
+				found = p.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, isPin, false);
 			}
 		}
 		return found;
@@ -161,7 +164,7 @@ public abstract class AbstractChannel extends PathElement{
 	
 	protected int annotateTA() {
 		
-		int tA= previous.analyzeTA();
+		tA= previous.analyzeTA();
 		if(previous instanceof IOBlock) {
 			tA+= parameterManager.T_IPAD + parameterManager.T_SWITCH;
 		}
@@ -176,7 +179,7 @@ public abstract class AbstractChannel extends PathElement{
 	
 	protected int annotateTRAndSlack(int criticalPathLength) {
 
-		int tR= Integer.MAX_VALUE;
+		tR= Integer.MAX_VALUE;
 		for(PathElement p : next.keySet()) {
 			int temp= p.analyzeTRAndSlack(criticalPathLength); //p.tR
 			int w= p.analyzeTA() - tA; //p.tA already computed -> retrieve, path length is difference to local

@@ -79,8 +79,8 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA() { //is external output block
 
-		int tA= previous.analyzeTA();
-		tA+= parameterManager.T_SWITCH + parameterManager.T_OPAD; //always connected to a channel
+		tA= previous.analyzeTA();
+		tA+= parameterManager.T_OPAD; //always connected to a IPIN
 		return tA;
 		
 	}

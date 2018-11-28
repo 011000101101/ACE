@@ -135,7 +135,7 @@ public class LogicBlock extends NetlistBlock {
 	protected int annotateTA() {
 
 		if(pinAssignments[5] == null) { //is combinatorial block
-			int tA= -1;
+			tA= -1;
 			for(PathElement p : previous) { // find critical previous node and its tA
 				int temp= p.analyzeTA();
 				if(temp > tA) {
@@ -143,10 +143,10 @@ public class LogicBlock extends NetlistBlock {
 					criticalPrevious= p;
 				}
 			}
-			tA+= parameterManager.T_SWITCH + parameterManager.T_COMB; //always connected to a channel, is combinatorial Block
+			tA+= parameterManager.T_COMB; //always connected to a IPIN, is combinatorial Block
 		}
 		else {
-			tA= parameterManager.T_FFOUT; //is sequential block, starting point for annotation algorithm
+			tA= 0; //is sequential block, starting point for annotation algorithm
 		}
 		return tA;
 		
@@ -156,7 +156,7 @@ public class LogicBlock extends NetlistBlock {
 	public int startAnalyzeTA() {
 
 		if(pinAssignments[5] != null) {
-			int tA= -1;
+			tA= -1;
 			for(PathElement p : previous) {
 				int temp= p.analyzeTA();
 				if(temp > tA) {
@@ -164,7 +164,7 @@ public class LogicBlock extends NetlistBlock {
 					criticalPrevious= p;
 				}
 			}
-			tA+= parameterManager.T_SWITCH + parameterManager.T_FFIN; //always connected to a channel, is sequential Block
+			tA+= parameterManager.T_FFIN; //always connected to a IPIN, is sequential Block
 			return tA;
 		}
 		else {
@@ -177,7 +177,7 @@ public class LogicBlock extends NetlistBlock {
 	protected int annotateTRAndSlack(int criticalPathLength) {
 
 		if(pinAssignments[5] == null) { //is combinatorial block
-			int tR= next.analyzeTRAndSlack(criticalPathLength); //next.tR
+			tR= next.analyzeTRAndSlack(criticalPathLength); //next.tR
 			int w= next.analyzeTA() - tA; //next.tA already computed -> retrieve, path length is difference to local
 			int slack= tR - tA - w; //slack of connection from this to p
 			slackToNext= slack; //store slack
@@ -268,6 +268,11 @@ public class LogicBlock extends NetlistBlock {
 		else {
 			return null;
 		}
+	}
+
+
+	public boolean isSequential() {
+		return (pinAssignments[5] != null);
 	}
 	
 	

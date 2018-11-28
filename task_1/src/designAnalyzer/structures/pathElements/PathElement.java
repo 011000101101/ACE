@@ -97,18 +97,18 @@ public abstract class PathElement {
 	 * @param isChanX boolean to indicate if the wanted channel is instanceof ChannelX or ChannelY
 	 * @return the wanted Channel or null, if not found
 	 */
-	public PathElement getBranchingElement(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init) {
+	public PathElement getBranchingElement(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin, boolean init) {
 		
-		if(checkIfBranchingPoint(checkXCoordinate, checkYCoordinate, checkTrack, isChanX)) {
+		if(checkIfBranchingPoint(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, isPin)) {
 			return this;
 		}
 		else {
-			return searchAllNext(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, init);
+			return searchAllNext(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, isPin, init);
 		}
 		
 	}
 
-	protected abstract PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init);
+	protected abstract PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin, boolean init);
 
 
 
@@ -120,7 +120,7 @@ public abstract class PathElement {
 	 * @param isChanX 
 	 * @return true if this instanceof Channel and params match with own ones, false else
 	 */
-	protected abstract boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX);
+	protected abstract boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin);
 
 	/**
 	 * returns the single signal source of this PathElement, if present, else returns null
