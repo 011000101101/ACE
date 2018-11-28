@@ -40,7 +40,7 @@ public class IPin extends PathElement{
 
 	@Override
 	public void getInfo(StringBuilder output) {
-		output.append(("I_Block");
+		output.append("I_Block");
 		output.append("\t");
 		output.append(this.getName());
 		output.append("\t");
