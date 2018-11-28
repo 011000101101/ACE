@@ -9,6 +9,11 @@ import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class TimingAnalyzer {
 	
 	private StructureManager structureManager;
@@ -449,7 +454,7 @@ public class TimingAnalyzer {
 
 	private void addTimingHeader(StringBuilder output) {
 
-
+		output.append("(time in ns) \n \n");
 		output.append("Node:");
 		output.append("\t");
 		output.append("\t");

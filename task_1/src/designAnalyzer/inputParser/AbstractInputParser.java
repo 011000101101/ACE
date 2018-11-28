@@ -9,6 +9,11 @@ import java.io.IOException;
 import designAnalyzer.ParameterManager;
 import designAnalyzer.structures.*;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public abstract class AbstractInputParser {
 
 	

@@ -11,6 +11,11 @@ import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
 import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class IPin extends PathElement{
 
 	/**

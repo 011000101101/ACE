@@ -7,6 +7,11 @@ import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public abstract class AbstractChannel extends PathElement{
 
 	

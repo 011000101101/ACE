@@ -10,6 +10,11 @@ import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class ErrorReporter {
 
 	

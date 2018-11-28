@@ -13,6 +13,11 @@ import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class LogicBlock extends NetlistBlock {
 
 	/**

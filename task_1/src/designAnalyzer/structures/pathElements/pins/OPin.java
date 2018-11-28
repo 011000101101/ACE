@@ -12,6 +12,11 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class OPin extends PathElement {
 
 	/**

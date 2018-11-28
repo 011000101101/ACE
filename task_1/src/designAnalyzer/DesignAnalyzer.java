@@ -10,6 +10,11 @@ import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.inputParser.RoutingParser;
 import designAnalyzer.timingAnalyzer.TimingAnalyzer;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class DesignAnalyzer {
 	
 	private static boolean routingFileProvided= false;
