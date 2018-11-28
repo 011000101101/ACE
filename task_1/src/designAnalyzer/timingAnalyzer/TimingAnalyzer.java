@@ -136,7 +136,7 @@ public class TimingAnalyzer {
 	private int estimateSingleNet(Net currentNet) {
 		
 		NetlistBlock source= currentNet.getSource();
-		List<NetlistBlock> sinks= currentNet.getSinks();
+		Collection<NetlistBlock> sinks= currentNet.getSinks();
 		int criticalPathLength= -1;
 		
 		for(NetlistBlock b : sinks){
