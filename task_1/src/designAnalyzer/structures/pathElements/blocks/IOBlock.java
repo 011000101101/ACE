@@ -130,8 +130,10 @@ public class IOBlock extends NetlistBlock {
 	public void getInfo(StringBuilder output) {
 		output.append((pinAssignments[1] != null) ? "I_Block" : "O_BLOCK");
 		output.append("\t");
+		output.append("|");
 		output.append(name);
 		output.append("\t");
+		output.append("|");
 		output.append("(");
 		output.append(xCoordinate);
 		output.append(",");

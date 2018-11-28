@@ -40,6 +40,9 @@ public class RoutingParser extends AbstractInputParser {
 		currentLine= readLineAndTokenize();
 	}
 
+	/**
+	 * parses until first "Net" in routing files
+	 */
 	@Override
 	protected void parseHeader() {
 		
@@ -71,6 +74,9 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
+	/**
+	 * parses a whole block starting with "Net" 
+	 */
 	@Override
 	protected void parseOneBlock() {
 		
@@ -161,6 +167,10 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
+	/**
+	 * parses a single line in the routing file starting with CHANY
+	 * @param currentNet
+	 */
 	private void parseChanY(Net currentNet) {
 
 		AbstractChannel currentChannel= new ChannelY();
@@ -182,6 +192,10 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
+	/**
+	 * parses a single line in the routing file starting with CHANX
+	 * @param currentNet
+	 */
 	private void parseChanX(Net currentNet) {
 
 		AbstractChannel currentChannel= new ChannelX();
@@ -267,6 +281,10 @@ public class RoutingParser extends AbstractInputParser {
 		
 	}
 
+	/**
+	 * parses two lines in the routing file each starting with SOURCE and OPIN 
+	 * @param currentNet
+	 */
 	private void parseSource(Net currentNet) {
 		
 		if(!SOURCE_TOKEN.equals(currentLine[0])){
@@ -323,6 +341,7 @@ public class RoutingParser extends AbstractInputParser {
 		
 		
 	}
+	
 	
 	private void checkValidPin(NetlistBlock currentBlock, Integer padOrPin, boolean isInput) {
 
@@ -406,6 +425,11 @@ public class RoutingParser extends AbstractInputParser {
 	
 	}
 
+	/**
+	 * parses a single line in the routing file starting with Net followed by net number and net name <br>
+	 * this is the header of each block in the routing file
+	 * @param currentNet
+	 */
 	private Net parseBlockHeader() {
 
 		if(!NET_TOKEN.equals(currentLine[0])){
@@ -462,6 +486,13 @@ public class RoutingParser extends AbstractInputParser {
 		return Integer.valueOf(currentLine[1].substring(currentLine[1].indexOf(",") + 1, currentLine[1].length() - 1));
 	}
 
+	/**
+	 * for parseSink and parseSource <br>
+	 * the coordinates of two lines each starting with source and opin or ipin and sink must have the same coordinates
+	 * @param lastBlock
+	 * @param xCoordinate
+	 * @param yCoordinate
+	 */
 	private void checkSameCoordinates(NetlistBlock lastBlock, int xCoordinate, int yCoordinate) {
 		if(!(lastBlock.getX() == xCoordinate && lastBlock.getY() == yCoordinate)){
 			ErrorReporter.reportPinPlacementRoutingError(lastBlock, xCoordinate, yCoordinate, this);

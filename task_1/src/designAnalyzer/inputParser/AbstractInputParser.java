@@ -133,7 +133,9 @@ public abstract class AbstractInputParser {
 		}
 		
 	}
-	
+	/**
+	 * parses header of the file
+	 */
 	protected abstract void parseHeader();
 	
 	
@@ -156,6 +158,10 @@ public abstract class AbstractInputParser {
 		return currentLineNumber;
 	}
 	
+	/**
+	 * standard getter
+	 * @return name of the current loaded file
+	 */
 	public String getFileName() {
 		String fileName = this.inputFile.getName();
 		return fileName;

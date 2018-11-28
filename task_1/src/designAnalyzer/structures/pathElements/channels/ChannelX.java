@@ -48,7 +48,9 @@ public class ChannelX extends AbstractChannel {
 	public void getInfo(StringBuilder output) {
 		output.append("CHANX");
 		output.append("\t");
+		output.append("|");
 		output.append("\t");
+		output.append("|");
 		output.append("(");
 		output.append(xCoordinate);
 		output.append(",");

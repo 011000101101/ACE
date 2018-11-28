@@ -41,8 +41,10 @@ public class OPin extends PathElement {
 	public void getInfo(StringBuilder output) {
 		output.append("O_Block");
 		output.append("\t");
+		output.append("|");
 		output.append(this.getName());
 		output.append("\t");
+		output.append("|");
 		output.append("(");
 		output.append(xCoordinate);
 		output.append(",");
