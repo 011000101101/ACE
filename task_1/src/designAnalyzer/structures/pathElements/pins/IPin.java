@@ -1,7 +1,5 @@
 package designAnalyzer.structures.pathElements.pins;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils.IO;
-
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
