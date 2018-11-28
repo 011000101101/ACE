@@ -208,6 +208,7 @@ public class NetlistParser extends AbstractInputParser {
 				currentBlock.connect(currentNet, 5);	//connect specified net to the clock pin of logic block
 				currentNet.setSource(currentBlock); //link block to net as only source
 				*/
+				structureManager.removeClockNet(currentLine[6]);
 			}
 			
 		}

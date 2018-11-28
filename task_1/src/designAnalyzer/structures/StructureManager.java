@@ -318,6 +318,17 @@ public class StructureManager {
 		}
 		
 	}
+
+
+	/**
+	 * removes accidentally added clock nets from the net map
+	 * @param netName name of the clock net
+	 */
+	public void removeClockNet(String netName) {
+		if(netMap.containsKey(netName)) {
+			netMap.remove(netName);
+		}
+	}
 	
 	
 }
