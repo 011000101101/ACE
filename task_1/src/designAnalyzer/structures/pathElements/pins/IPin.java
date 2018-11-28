@@ -13,6 +13,9 @@ import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 
 public class IPin extends PathElement{
 
+	/**
+	 * pin number of the current IPin with the coordinates saved in PathElement
+	 */
 	int pinNumber = -1;
 
 	/**
@@ -42,8 +45,10 @@ public class IPin extends PathElement{
 	public void getInfo(StringBuilder output) {
 		output.append("I_Block");
 		output.append("\t");
+		output.append("|");
 		output.append(this.getName());
 		output.append("\t");
+		output.append("|");
 		output.append("(");
 		output.append(xCoordinate);
 		output.append(",");

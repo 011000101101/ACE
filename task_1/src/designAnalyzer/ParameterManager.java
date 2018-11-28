@@ -99,7 +99,13 @@ public class ParameterManager {
 		T_FFOUT = parameter[8];
 	}
 	
-
+	/**
+	 * construct a ParameterManager with given file paths
+	 * @param netlistFilePath
+	 * @param architectureFilePath
+	 * @param placementFilePath
+	 * @param array with all parameters (grid size, channel width and delays)
+	 */
 	public static void initialize(String netlistFilePath, String architectureFilePath, String placementFilePath, int[] parameter) {
 		if(instance == null) {
 			instance= new ParameterManager(netlistFilePath, architectureFilePath, placementFilePath, parameter);
@@ -107,7 +113,10 @@ public class ParameterManager {
 		
 	}
 	
-	
+	/**
+	 * standard getter 
+	 * @return a parameterManager
+	 */
 	public static ParameterManager getInstance() {
 		
 		return instance;

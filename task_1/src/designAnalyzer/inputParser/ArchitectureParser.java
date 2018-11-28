@@ -40,11 +40,14 @@ public class ArchitectureParser extends AbstractInputParser {
 	
 
 	@Override
-	protected void parseOneBlock() {
-		// TODO Auto-generated method stub
+	protected void parseOneBlock() { // not needed, because everything is parsed in parseHeader
 	}
 
 
+	/**
+	 * standard getter
+	 * @return array with parameters like grid size, channel width and delays
+	 */
 	public int[] getAllParameters() {
 		return allParameters;
 	}

@@ -241,8 +241,11 @@ public class LogicBlock extends NetlistBlock {
 		output.append((pinAssignments[5] != null) ? "seq" : "comb");
 		output.append(")");
 		output.append("\t");
+		output.append("|");
 		output.append(name);
 		output.append("\t");
+
+		output.append("|");
 		output.append("(");
 		output.append(xCoordinate);
 		output.append(",");

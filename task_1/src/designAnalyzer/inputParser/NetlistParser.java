@@ -27,6 +27,9 @@ public class NetlistParser extends AbstractInputParser {
 		
 	}
 	
+	/**
+	 * parses two lines of net file
+	 */
 	protected void parseOneBlock() {
 		
 		/**
