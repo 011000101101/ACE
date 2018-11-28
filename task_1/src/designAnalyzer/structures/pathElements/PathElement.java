@@ -49,8 +49,10 @@ public abstract class PathElement {
 	protected void printThisNode(StringBuilder output, int lastTA) {
 		getInfo(output);
 		output.append("\t");
+		output.append("|");
 		output.append(tA - lastTA);
 		output.append("\t");
+		output.append("|");
 		output.append(tA);
 		output.append(System.getProperty("line.separator"));
 	}

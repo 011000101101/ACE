@@ -1,32 +1,24 @@
 package designAnalyzer.consistencyChecker;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
+import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
+import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class ConsistencyChecker {
 	
-	/**
-	 * contains a flag for each possible block position on the FPGA if a block has already been placed there <br>
-	 * also contains possible IOBlock positions
-	 */
-	boolean[][] usedCells;
-	
-	int xSize;
-	
-	int ySize;
-	
 	StructureManager structureManager;
+	ParameterManager parameterManager;
 	
 	public ConsistencyChecker(int newXSize, int newYSize) {
-
-		xSize= newXSize;
-		ySize= newYSize;
-		usedCells= new boolean[xSize+2][ySize+2];
 		
 		structureManager= StructureManager.getInstance();
+		parameterManager= ParameterManager.getInstance();
 		
 	}
 
@@ -34,42 +26,67 @@ public class ConsistencyChecker {
 		
 		checkPlacement();
 		
-		if(routingFileProvided) {
-			checkRouting();
-		}
+		checkNets(routingFileProvided);
 		
 	}
 	
-	private void checkPlacement() {
+	private void checkNets(boolean routingFileProvided) {
+
+		Collection<Net> nets= structureManager.getNetCollection();
 		
-		HashMap<String, NetlistBlock> blockMap= structureManager.getBlockMap();
-		
-		blockMap.values().forEach((NetlistBlock block) -> checkIfPlacedCorrectly(block)); 
+		for(Net n : nets) {
+			checkAtLeastOneSource(n);
+			checkAtLeastOneSink(n);
+			if(routingFileProvided) {
+				checkAllSinksRouted(n);
+			}
+		}
 		
 	}
 
-	private void checkIfPlacedCorrectly(NetlistBlock block) {
-		
-		int xCoordinate= block.getX();
-		int yCoordinate= block.getY();
+	private void checkAllSinksRouted(Net n) {
 
-		if(xCoordinate == -1 || yCoordinate == -1) {
-			ErrorReporter.reportBlockNotFoundError(block);
+		Map<NetlistBlock, Boolean> sinks= n.getSinkMap();
+		
+		for(NetlistBlock b : sinks.keySet()) {
+			if(!sinks.get(b)) {
+				ErrorReporter.reportSinkNotRoutedError(n, b);
+			}
 		}
 		
-		/*//TODO remove in final version
-			//redundant to checks performed when placing a block (in class StructureManager)
+	}
+
+	private void checkAtLeastOneSink(Net n) {
+
+		if(n.getSinks().isEmpty()) {
+			ErrorReporter.reportNoSinkError(n);
+		}
 		
-		else if(xCoordinate < 0 || xCoordinate > (xSize + 1) || yCoordinate < 0 || yCoordinate > (ySize + 1) ) {
-			ErrorReporter.reportBlockPlacedOutOfBoundsError(block);
+	}
+
+	private void checkAtLeastOneSource(Net n) {
+
+		if(n.getSource() == null) {
+			ErrorReporter.reportNoSourceError(n);
 		}
-		else if(usedCells[xCoordinate][yCoordinate]) {
-			ErrorReporter.reportDuplicateBlockPlacementError(block);
+		
+	}
+
+	private void checkPlacement() {
+		
+		Collection<NetlistBlock> blocks=  structureManager.getBlockMap().values();
+		
+		for( NetlistBlock b : blocks) {
+			checkIfPlaced(b);
 		}
-		else {
-			usedCells[xCoordinate][yCoordinate]= true;
+		
+	}
+
+	private void checkIfPlaced(NetlistBlock b) {
+
+		if(b.getX() == -1 || b.getY() == -1) {
+			ErrorReporter.reportBlockNotPlacedError(b);
 		}
-		*/
 		
 	}
 

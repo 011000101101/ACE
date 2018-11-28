@@ -171,4 +171,24 @@ public class ErrorReporter {
 		System.err.println("In Line " + parser.getLineNumber() + " File " + parser.getFileName() + ": The coordinates of the current Line ( " + lastBlock.getX() + ", " + lastBlock.getY() + ")" + " do not match with the coordinates of the previous line ( " + xCoordinate + "," + yCoordinate + "). ");
 				
 	}
+
+	public static void reportBlockNotPlacedError(NetlistBlock b) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportNoSinkError(Net n) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportNoSourceError(Net n) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void reportSinkNotRoutedError(Net n, NetlistBlock b) {
+		// TODO Auto-generated method stub
+		
+	}
 }

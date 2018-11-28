@@ -1,7 +1,10 @@
 package designAnalyzer.structures;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.pathElements.PathElement;
@@ -36,9 +39,9 @@ public class Net {
 	private PathElement activePathElement;
 	
 	/**
-	 * list of sink Blocks
+	 * list of sink Blocks with additional flag if it has already been routed
 	 */
-	private List<NetlistBlock> sinks;
+	private Map<NetlistBlock, Boolean> sinks;
 	
 	/**
 	 * sink reached by following the critical path
@@ -67,7 +70,7 @@ public class Net {
 		isClockNet= newIsClockNet;
 		
 		source= null;
-		sinks= new LinkedList<NetlistBlock>();
+		sinks= new HashMap<NetlistBlock, Boolean>();
 	}
 
 
@@ -98,7 +101,7 @@ public class Net {
 
 	public void addSink(NetlistBlock currentBlock) {
 		//TODO revisit and check if sufficient
-		sinks.add(currentBlock);
+		sinks.put(currentBlock, false);
 		
 	}
 
@@ -155,8 +158,9 @@ public class Net {
 
 
 	public boolean containsSink(NetlistBlock checkSink) {
-		for(NetlistBlock b : sinks){
+		for(NetlistBlock b : sinks.keySet()){
 			if(b.equals(checkSink)){
+				sinks.replace(b, true);
 				return true;
 			}
 		}
@@ -194,8 +198,8 @@ public class Net {
 	 * standard getter
 	 * @return the requested value
 	 */
-	public List<NetlistBlock> getSinks() {
-		return sinks;
+	public Collection<NetlistBlock> getSinks() {
+		return sinks.keySet();
 	}
 
 
@@ -217,7 +221,7 @@ public class Net {
 	 */
 	public int annotateTA() {
 		int criticalLength= -1;
-		for(NetlistBlock b : sinks) {
+		for(NetlistBlock b : sinks.keySet()) {
 			int temp= b.startAnalyzeTA();
 			if(temp > criticalLength) {
 				criticalLength= temp;
@@ -265,4 +269,8 @@ public class Net {
 		
 	}
 	*/
+	
+	public Map<NetlistBlock, Boolean> getSinkMap(){
+		return sinks;
+	}
 }
