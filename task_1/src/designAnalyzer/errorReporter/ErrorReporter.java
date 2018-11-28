@@ -43,7 +43,11 @@ public class ErrorReporter {
 
 	public static void reportSyntaxMultipleChoiceError(String[] expectedTokens, String readToken, AbstractInputParser parser) {
 
-		System.err.println("ERROR: Syntax error in Netlist file at line " + parser.getLineNumber() + ": expected one of " + expectedTokens.toString() + ", read '" + readToken + "'.");
+		System.err.print("ERROR: Syntax error in Netlist file at line " + parser.getLineNumber() + ": expected one of ");
+		for(int i = 0; i < expectedTokens.length; i++) {
+			System.err.print(expectedTokens[i] + ", ");
+		}
+		System.err.println("read '" + readToken + "'.");
 
 	}
 
@@ -111,7 +115,7 @@ public class ErrorReporter {
 
 	public static void reportBlockNotFoundError(AbstractInputParser parser) {
 		
-		System.err.println("ERROR: The block couldn't be found: Line " + parser.getLineNumber() + " File " + parser.getFileName());
+		System.err.println("ERROR: a block you tried to place couldn't be found: Line " + parser.getLineNumber() + " File " + parser.getFileName());
 		
 	}
 

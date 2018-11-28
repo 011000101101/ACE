@@ -101,7 +101,9 @@ public class DesignAnalyzer {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			ErrorReporter.reportFileNotFoundError(e.toString());
-		} 
+		} catch (Exception e) {
+			System.err.println("Execution aborted as a result of previously detected errors.");
+		}
 	}
 	
 	/**

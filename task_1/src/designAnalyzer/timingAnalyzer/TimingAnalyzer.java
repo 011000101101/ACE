@@ -1,5 +1,6 @@
 package designAnalyzer.timingAnalyzer;
 
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
 
@@ -142,10 +143,11 @@ public class TimingAnalyzer {
 		output.append("\n"); //new line
 		
 		
-		//TODO file output?
+		printToFile(output);
 		System.out.println(output.toString());
 		
 	}
+
 
 	/**
 	 * determines the estimated length of the estimated critical path of a net<br>
@@ -470,7 +472,7 @@ public class TimingAnalyzer {
 		
 		criticalNet.printCriticalPath(output);
 		
-		//TODO file output?
+		printToFile(output);
 		System.out.println(output.toString());
 		
 	}
@@ -514,6 +516,21 @@ public class TimingAnalyzer {
 		
 		output.append("\n");
 		
+	}
+
+	/**
+	 * saves output to file
+	 * @param output
+	 */
+	private void printToFile(StringBuilder output) {
+		try {
+			PrintWriter writer = new PrintWriter("critical_path.txt", "UTF-8");
+			writer.append(output);
+			writer.close();
+		}
+		catch (Exception e){
+			System.err.println("could not print critical path to file.");
+		}
 	}
 
 }
