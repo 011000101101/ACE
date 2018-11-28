@@ -84,6 +84,7 @@ public class RoutingParser extends AbstractInputParser {
 	 */
 	@Override
 	protected void parseOneBlock() {
+
 		
 		Net currentNet= parseBlockHeader();
 		
@@ -109,7 +110,8 @@ public class RoutingParser extends AbstractInputParser {
 			
 		}
 		else { //is clock net, don't parse
-			
+
+			currentLine= readLineAndTokenize();
 			while(!(currentLine == null) && !NET_TOKEN.equals(currentLine[0])){
 				
 				currentLine= readLineAndTokenize();

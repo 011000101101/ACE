@@ -69,7 +69,6 @@ public class DesignAnalyzer {
 		String routingFilePath = null;
 		
 		if(args.length >= 4 && args[3].endsWith(".r")) {
-			System.out.println("checkpoint");
 			routingFileProvided= true;
 			routingFilePath= args[3];
 		}
