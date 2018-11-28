@@ -124,10 +124,13 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA) {
 		
-		printThisNode(output, lastTA);
 		if(pinAssignments[1] != null) { //is input block
-			next.printCriticalPath(output, tA);
+			previous.printCriticalPath(output, tA);
 		}
+		printThisNode(output, lastTA);
+		/*if(pinAssignments[1] != null) { //is input block
+			next.printCriticalPath(output, tA);
+		}*/
 		
 	}
 

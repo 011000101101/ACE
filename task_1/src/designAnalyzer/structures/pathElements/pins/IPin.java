@@ -39,8 +39,9 @@ public class IPin extends PathElement{
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA) {
 
+		previous.printCriticalPath(output, tA);
 		printThisNode(output, lastTA);
-		next.printCriticalPath(output, tA);
+		//next.printCriticalPath(output, tA);
 		
 	}
 
