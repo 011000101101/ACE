@@ -166,7 +166,7 @@ public abstract class NetlistBlock extends PathElement{
 		}
 	}
 	
-	public abstract PathElement getOriginInit();
+	public abstract PathElement getOriginInit(IPin pin);
 
 	
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
+import designAnalyzer.structures.pathElements.pins.IPin;
 
 /**
  * 
@@ -46,7 +47,7 @@ public class Net {
 	/**
 	 * list of sink Blocks with additional flag if it has already been routed
 	 */
-	private Map<NetlistBlock, PathElement> sinks;
+	private Map<NetlistBlock, IPin> sinks;
 	
 	
 	/**
@@ -76,7 +77,7 @@ public class Net {
 		isClockNet= newIsClockNet;
 		
 		source= null;
-		sinks= new HashMap<NetlistBlock, PathElement>();
+		sinks= new HashMap<NetlistBlock, IPin>();
 	}
 
 
@@ -140,7 +141,7 @@ public class Net {
 	 * prints the critical path of this net
 	 */
 	public void printCriticalPath(StringBuilder output){
-		criticalSink.getOriginInit().printCriticalPath(output, 0);
+		criticalSink.getOriginInit(sinks.get(criticalSink)).printCriticalPath(output, 0);
 	}
 
 
@@ -163,10 +164,10 @@ public class Net {
 	}
 
 
-	public boolean containsSink(NetlistBlock checkSink, PathElement oPin) {
+	public boolean containsSink(NetlistBlock checkSink, IPin iPin) {
 		for(NetlistBlock b : sinks.keySet()){
 			if(b.equals(checkSink)){
-				sinks.replace(b, oPin);
+				sinks.replace(b, iPin);
 				return true;
 			}
 		}
@@ -276,7 +277,7 @@ public class Net {
 	}
 	*/
 	
-	public Map<NetlistBlock, PathElement> getSinkMap(){
+	public Map<NetlistBlock, IPin> getSinkMap(){
 		return sinks;
 	}
 

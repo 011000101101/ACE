@@ -10,6 +10,7 @@ import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
+import designAnalyzer.structures.pathElements.pins.IPin;
 
 /**
  * 
@@ -80,7 +81,7 @@ public class ConsistencyChecker {
 	 */
 	private void checkAllSinksRouted(Net n) {
 
-		Map<NetlistBlock, PathElement> sinks= n.getSinkMap();
+		Map<NetlistBlock, IPin> sinks= n.getSinkMap();
 		
 		for(NetlistBlock b : sinks.keySet()) {
 			if(sinks.get(b) == null) {

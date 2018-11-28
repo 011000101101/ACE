@@ -172,7 +172,6 @@ public class LogicBlock extends NetlistBlock {
 					int temp= p.analyzeTA();
 				
 					tA2[i]= temp;
-					criticalPrevious= p;
 					
 					tA2[i]+= parameterManager.T_FFIN; //always connected to a IPIN, is sequential Block
 					return tA2[i];
@@ -337,11 +336,16 @@ public class LogicBlock extends NetlistBlock {
 
 
 	@Override
-	public PathElement getOriginInit() {
-
-		return criticalPrevious.getOrigin();
+	public PathElement getOriginInit(IPin pin) {
+		
+		for(IPin p : previous) {
+			int i = previous.indexOf(p);
+			return previous.get(i).getOrigin();
+		}
+		return null;
 		
 	}
+	
 	
 	
 	

@@ -4,6 +4,7 @@ package designAnalyzer.structures.pathElements.blocks;
 
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
+import designAnalyzer.structures.pathElements.pins.IPin;
 
 /**
  * 
@@ -209,7 +210,7 @@ public class IOBlock extends NetlistBlock {
 
 
 	@Override
-	public PathElement getOriginInit() {
+	public PathElement getOriginInit(IPin pin) {
 
 		return previous.getOrigin();
 		
