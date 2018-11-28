@@ -79,8 +79,8 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA() { //is external output block
 
-		tA= previous.analyzeTA();
-		tA+= parameterManager.T_OPAD; //always connected to a IPIN
+		int tA= previous.analyzeTA();
+		tA+= parameterManager.T_SWITCH + parameterManager.T_OPAD; //always connected to a channel
 		return tA;
 		
 	}
@@ -167,28 +167,6 @@ public class IOBlock extends NetlistBlock {
 		}
 	}
 	
-	/**
-	 * tells us where the IOBlock is placed
-	 * @return 0 for upper boundary, 1 for right, 2 for lower and 3 for left 
-	 */
-	public int getBoundary() {
-		 
-		if(parameterManager.Y_GRID_SIZE + 1 == this.getY()) { //top
-			return 0;
-		} 
-		else if(this.getX() == parameterManager.X_GRID_SIZE +1) {
-			return 1;
-		}
-		else if (this.getY() == 0) {
-			return 2;
-		}
-		else if (this.getX() == 0) {
-			return 3;
-		}
-		else {
-			return -1;
-		}
-		
-	}
+	
 	
 }
