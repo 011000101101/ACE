@@ -87,7 +87,7 @@ public class RoutingParser extends AbstractInputParser {
 		
 		Net currentNet= parseBlockHeader();
 		
-		if(!currentNet.getIsClocknNet()) {
+		if(currentNet != null && !currentNet.getIsClocknNet()) {
 		
 			currentLine= readLineAndTokenize();
 		
@@ -447,12 +447,15 @@ public class RoutingParser extends AbstractInputParser {
 		
 		Net currentNet= structureManager.retrieveNetNoInsert(currentLine[2].substring(1, currentLine[2].length() - 1));
 		
+		/*
 		if(currentNet == null){
 			ErrorReporter.reportMissingNetError(currentLine[2].substring(1, currentLine[2].length() - 1), this);
 			return null;
-		}
+		}*/
 		
-		currentNet.setNetNumber(netNumber);
+		if(currentNet != null) {
+			currentNet.setNetNumber(netNumber);
+		}
 		
 		return currentNet;
 		
