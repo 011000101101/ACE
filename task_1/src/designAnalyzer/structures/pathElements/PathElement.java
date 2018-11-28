@@ -140,8 +140,8 @@ public abstract class PathElement {
 	}
 	
 	public int analyzeTRAndSlack(int criticalPathLength) {
-		if(tA != -1) {
-			return tA;
+		if(tR != -1) {
+			return tR;
 		}
 		else {
 			return annotateTRAndSlack(criticalPathLength);
@@ -173,4 +173,6 @@ public abstract class PathElement {
 	public abstract void addNext(PathElement newNext);
 
 	public abstract String getName();
+
+	public abstract PathElement getOrigin();
 }

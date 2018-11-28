@@ -161,6 +161,8 @@ public abstract class NetlistBlock extends PathElement{
 			return false;
 		}
 	}
+	
+	public abstract PathElement getOriginInit();
 
 	
 }

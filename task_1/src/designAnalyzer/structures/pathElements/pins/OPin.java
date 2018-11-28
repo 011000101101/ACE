@@ -149,6 +149,7 @@ public class OPin extends PathElement {
 		for(PathElement p : next.keySet()) {
 			
 			int temp= p.analyzeTRAndSlack(criticalPathLength); //p.tR
+
 			int w= p.analyzeTA() - tA; //p.tA already computed -> retrieve, path length is difference to local
 			int slack= temp - tA - w; //slack of connection from this to p
 			next.replace(p, -1, slack); //store slack
@@ -210,5 +211,10 @@ public class OPin extends PathElement {
 			return -1;
 		}
 		
+	}
+	
+	@Override
+	public PathElement getOrigin() {
+		return previous.getOrigin();
 	}
 }

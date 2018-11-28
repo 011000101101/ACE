@@ -131,7 +131,7 @@ public class Net {
 	 * prints the critical path of this net
 	 */
 	public void printCriticalPath(StringBuilder output){
-		source.printCriticalPath(output, 0);
+		criticalSink.getOriginInit().printCriticalPath(output, 0);
 	}
 
 

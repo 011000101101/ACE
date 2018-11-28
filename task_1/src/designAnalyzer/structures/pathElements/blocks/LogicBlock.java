@@ -275,7 +275,25 @@ public class LogicBlock extends NetlistBlock {
 		return (pinAssignments[5] != null);
 	}
 	
+
 	
+	@Override
+	public PathElement getOrigin() {
+		if(pinAssignments[5] == null) { //is combinatorial
+			return criticalPrevious.getOrigin();
+		}
+		else {
+			return this; //origin node of critical path
+		}
+	}
+
+
+	@Override
+	public PathElement getOriginInit() {
+
+		return criticalPrevious.getOrigin();
+		
+	}
 	
 	
 	

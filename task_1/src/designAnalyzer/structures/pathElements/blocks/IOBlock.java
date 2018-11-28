@@ -191,4 +191,21 @@ public class IOBlock extends NetlistBlock {
 		
 	}
 	
+
+	
+	@Override
+	public PathElement getOrigin() {
+
+		return this; //origin node of critical path
+		
+	}
+
+
+	@Override
+	public PathElement getOriginInit() {
+
+		return previous.getOrigin();
+		
+	}
+	
 }

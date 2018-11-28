@@ -177,7 +177,6 @@ public class RoutingParser extends AbstractInputParser {
 		currentChannel.setCoordinates(xCoordinate, yCoordinate);
 		currentChannel.setWire(trackNum);
 		
-		System.out.println(currentNet.getActivePathElement());
 		linkAndSetActive(currentNet, currentChannel);
 		
 	}

@@ -217,4 +217,9 @@ public class IPin extends PathElement{
 		pinNumber= newPinNum;
 		
 	}
+	
+	@Override
+	public PathElement getOrigin() {
+		return previous.getOrigin();
+	}
 }

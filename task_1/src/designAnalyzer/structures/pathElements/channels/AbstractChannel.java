@@ -203,5 +203,10 @@ public abstract class AbstractChannel extends PathElement{
 		next.put(newNext, -1);
 	}
 	
+	@Override
+	public PathElement getOrigin() {
+		return previous.getOrigin();
+	}
+	
 	
 }
