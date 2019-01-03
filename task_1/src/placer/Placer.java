@@ -1,6 +1,7 @@
 package placer;
 
 import java.io.FileNotFoundException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -57,9 +58,9 @@ public class Placer {
 
 	private static int placingAreaSize;
 	
-	private static List<IOBlock> iOBlocks;
+	private static IOBlock[] iOBlocks;
 	
-	private static List<LogicBlock> logicBlocks;
+	private static LogicBlock[] logicBlocks;
 	
 	
 	/**
@@ -187,14 +188,18 @@ public class Placer {
 	private static void parse() {
 		
 		netlistParser.parseAll();
+		List<IOBlock> iOBlocksTemp= new LinkedList<IOBlock>();
+		List<LogicBlock> logicBlocksTemp= new LinkedList<LogicBlock>();
 		for(NetlistBlock b : structureManager.getBlockMap().values()) {
 			if(b instanceof IOBlock) {
-				iOBlocks.add((IOBlock) b);
+				iOBlocksTemp.add((IOBlock) b);
 			}
 			else {
-				logicBlocks.add((LogicBlock) b);
+				logicBlocksTemp.add((LogicBlock) b);
 			}
 		}
+		iOBlocks= iOBlocksTemp.toArray(iOBlocks);
+		logicBlocks= logicBlocksTemp.toArray(logicBlocks);
 		
 	}
 	
