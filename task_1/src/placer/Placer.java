@@ -289,7 +289,13 @@ public class Placer {
 		return 0;
 	}
 
-	private static void swapLogicBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] logicBlockSwap) {
+	/**
+	 * computes the coordinates of a random logic block and it's random swapping partner (empty slot or other logic block)
+	 * @param sBlocks current placement of blocks
+	 * @param rLimit distance limit for swap
+	 * @param blockSwap array for storing the computed values: {block1_x, block1_y, block1_subblk (0 for logic blocks), block2_x, block2_y, block2_subblk (0 for logic blocks)}
+	 */
+	private static void swapLogicBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] blockSwap) {
 		/*
 		    1
 		   234
@@ -305,19 +311,156 @@ public class Placer {
 		int x= rand.nextInt(2 * (int) Math.floor(rLimit)) + 1;
 		int y= rand.nextInt((int) Math.floor(rLimit) + 2);
 		*/
-		int index= rand.nextInt(iOBlocks.length); //get a random IO block for swap (swapping two empty places wouldn't gain anything)
+		int index= rand.nextInt(iOBlocks.length); //get a random logic block for swap (swapping two empty places wouldn't gain anything)
 		LogicBlock block1= logicBlocks[index];
-		int x= rand.nextInt(2 * (int) Math.floor(rLimit)) + 1;
-		int y= rand.nextInt((int) Math.floor(rLimit) + 2);
+		
+		int top= (int) Math.floor(rLimit); //compute boundaries to swappable area (limited by boundaries of placable area and by rLimit, checking rLimit with infinity norm for good performance while retaining equally distributed probability)
+		if(block1.getY() - top < biasY) top = block1.getY() - biasY;
+		int bottom= (int) Math.floor(rLimit);
+		if(block1.getY() + bottom > biasY + (placingAreaSize - 1)) bottom = biasY + (placingAreaSize - 1) - block1.getY();
+		int left= (int) Math.floor(rLimit);
+		if(block1.getX() - left < biasX) left = block1.getX() - biasX;
+		int right= (int) Math.floor(rLimit);
+		if(block1.getX() + right > biasX + (placingAreaSize - 1)) right = biasX + (placingAreaSize - 1) - block1.getX();
+		
+		int x= rand.nextInt(left + right + 1); //coordinates of block2 relative to block1
+		x -= left;
+		int y= rand.nextInt(top + bottom + 1);
+		y-= top; 
+		
+		while(x == 0 && y == 0) { //avoid swapping a block with itself
+			x= rand.nextInt(left + right + 1);
+			x -= left;
+			y= rand.nextInt(top + bottom + 1);
+			y-= top; 
+		}
+		
+		blockSwap[0] = block1.getX();
+		blockSwap[1] = block1.getY();
+		blockSwap[2] = 0;
+		blockSwap[3] = block1.getX() + x;
+		blockSwap[4] = block1.getY() + y;
+		blockSwap[5] = 0;
 	}
 
-	private static void swapIOBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] iOBlockSwap) {
+	/**
+	 * computes the coordinates of a random io block and it's random swapping partner (empty slot or other io block)
+	 * @param sBlocks current placement of blocks
+	 * @param rLimit distance limit for swap
+	 * @param blockSwap array for storing the computed values: {block1_x, block1_y, block1_subblk, block2_x, block2_y, block2_subblk}
+	 */
+	private static void swapIOBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] blockSwap) {
 		int index= rand.nextInt(iOBlocks.length); //get a random IO block for swap (swapping two empty places wouldn't gain anything)
 		IOBlock block1= iOBlocks[index];
 		int swapDistance= rand.nextInt((int) Math.floor(rLimit)) + 1; //get distance of swap (not 0, as swapping pad 0 with pad 1 at same coordinates wouldn't change cost)
 		boolean ccw= rand.nextBoolean(); //get swap direction (clockwise or counterclockwise)
 		boolean subblk_1= rand.nextBoolean(); //get pad number of swap partner
-		int 
+		int xCoord= block1.getX(); //get starting point position
+		int yCoord= block1.getY();
+		while(swapDistance > 0) { //walk around the rim until the target position is reached
+			if(yCoord == parameterManager.Y_GRID_SIZE + 1) { //top IO
+				if(ccw) {
+					if(swapDistance > xCoord - 1) { //go to left IO
+						swapDistance-= xCoord;
+						xCoord= 0;
+						yCoord= parameterManager.Y_GRID_SIZE;
+					}
+					else { //stay in top IO, end
+						xCoord-= swapDistance;
+						swapDistance= 0;
+					}
+				}
+				else {
+					if(swapDistance + xCoord > parameterManager.X_GRID_SIZE) { //go to right IO
+						swapDistance-= (parameterManager.X_GRID_SIZE - xCoord) + 1;
+						xCoord= parameterManager.X_GRID_SIZE + 1;
+						yCoord= parameterManager.Y_GRID_SIZE;
+					}
+					else { //stay in top IO, end
+						xCoord+= swapDistance;
+						swapDistance= 0;
+					}
+				}
+			}
+			if(yCoord == parameterManager.Y_GRID_SIZE + 1) { //bottom IO
+				if(!ccw) {
+					if(swapDistance > xCoord - 1) { //go to left IO
+						swapDistance-= xCoord;
+						xCoord= 0;
+						yCoord= 1;
+					}
+					else { //stay in bottom IO, end
+						xCoord-= swapDistance;
+						swapDistance= 0;
+					}
+				}
+				else {
+					if(swapDistance + xCoord > parameterManager.X_GRID_SIZE) { //go to right IO
+						swapDistance-= (parameterManager.X_GRID_SIZE - xCoord) + 1;
+						xCoord= parameterManager.X_GRID_SIZE + 1;
+						yCoord= 1;
+					}
+					else { //stay in bottom IO, end
+						xCoord+= swapDistance;
+						swapDistance= 0;
+					}
+				}
+			}
+			if(xCoord == parameterManager.X_GRID_SIZE + 1) { //right IO
+				if(!ccw) {
+					if(swapDistance > yCoord - 1) { //go to bottom IO
+						swapDistance-= yCoord;
+						yCoord= 0;
+						xCoord= parameterManager.X_GRID_SIZE;
+					}
+					else { //stay in right IO, end
+						yCoord-= swapDistance;
+						swapDistance= 0;
+					}
+				}
+				else {
+					if(swapDistance + yCoord > parameterManager.Y_GRID_SIZE) { //go to top IO
+						swapDistance-= (parameterManager.Y_GRID_SIZE - xCoord) + 1;
+						yCoord= parameterManager.Y_GRID_SIZE + 1;
+						xCoord= parameterManager.X_GRID_SIZE;
+					}
+					else { //stay in right IO, end
+						yCoord+= swapDistance;
+						swapDistance= 0;
+					}
+				}
+			}
+			if(xCoord == parameterManager.X_GRID_SIZE + 1) { //left IO
+				if(ccw) {
+					if(swapDistance > yCoord - 1) { //go to bottom IO
+						swapDistance-= yCoord;
+						yCoord= 0;
+						xCoord= 1;
+					}
+					else { //stay in right IO, end
+						yCoord-= swapDistance;
+						swapDistance= 0;
+					}
+				}
+				else {
+					if(swapDistance + yCoord > parameterManager.Y_GRID_SIZE) { //go to top IO
+						swapDistance-= (parameterManager.Y_GRID_SIZE - xCoord) + 1;
+						yCoord= parameterManager.Y_GRID_SIZE + 1;
+						xCoord= 1;
+					}
+					else { //stay in right IO, end
+						yCoord+= swapDistance;
+						swapDistance= 0;
+					}
+				}
+			}
+		}
+		blockSwap[0] = block1.getX();
+		blockSwap[1] = block1.getY();
+		blockSwap[2] = block1.getSubblk_1() ? 1 : 0;
+		blockSwap[3] = xCoord;
+		blockSwap[4] = yCoord;
+		blockSwap[5] = subblk_1 ? 1 : 0;
 	}
 
 	/**
