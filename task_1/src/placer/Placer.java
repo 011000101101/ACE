@@ -77,7 +77,7 @@ public class Placer {
 	 * HashMap stores Ui and Vi values for each net
 	 * value contains five values: Ui x, Ui y, Vi x, Vi y, wiring cost for this net
 	 */
-	private HashMap<String, double[]> netWithValues;
+	private static HashMap<String, double[]> netWithValues;
 	
 	/**
 	 * for wiring cost
@@ -259,7 +259,10 @@ public class Placer {
 			for(Net currentNet: allNets) {
 				if(!currentNet.getIsClocknNet()) {
 					currentBlocks = currentNet.getBlocks(); //TODO check if getBlocks is implemented
-					int uix, uiy, vix, viy;
+					int uix = 0; //TODO verify initialization with 0
+					int  uiy = 0;
+					int  vix = 0;
+					int  viy = 0;
 					for(NetlistBlock currentSingleBlock: currentBlocks) {
 						uix += Math.pow(currentSingleBlock.getX(),2);
 						uiy += Math.pow(currentSingleBlock.getY(),2);
@@ -275,7 +278,7 @@ public class Placer {
 			}
 			
 			
-			double oldWiringCost = null ;//TODO wurzelfunktion mit gamma und phi implementieren
+			double oldWiringCost = -1 ;//TODO wurzelfunktion mit gamma und phi implementieren
 			double oldTimingCost = TimingCost(sBlocks) ; 
 			for(int j = 0; j < stepCount; j++) { 
 				
