@@ -1,3 +1,22 @@
+﻿Rumei Ma 2690683
+Dennis Grotz 2360065
+Vincenz Mechler 2817217
+
+Rollen der Gruppenmitglied:
+	Vincenz:
+		-erstellen der Grundstruktur 
+		-Implementierung der structures-package
+		-Implementierung der Netlist- und Routing-Parser
+		-Implementierung consistencychecker und timinganalyzer
+		-gelegentlich dokumentation
+	Rumei und Dennis:
+		-Placementparser
+		-Architectureparser
+		-DesignAnalyzer
+		-ErrorReporter
+		-Dokumentation vervollständigt
+
+
 Compilen des Programms:
 	1. Den Ordner src als Arbeitsverzeichnis in Command shell festlegen
 	2. javac src\designAnalyzer\DesignAnalyzer.java
@@ -8,13 +27,168 @@ Parameter beim Aufruf des Programms:
 	Reihenfolge angegeben werden: *.net *.arch *.p (und optional) *.r 
 	Darauf folgend dürfen Parameterpaare gemäß der Bezeichnung in der Aufgabenstellung wie zum Beispiel "-W 3" genutzt werden. Die Reihenfolge untereinander ist irrelevant.
 	
-	
+Fehlerausgabesemantik:
+	nach dem ersten ErrorReport sind alle anderen Ausgaben des Programms unverbindlich, die Ausführung wird jedoch so weit wie möglich fortgesetzt. 
 	
 	
 
 	
 Commithistory aus git:
 
+
+
+
+commit a67a6e8b6ec9ca2a6f053c86dd885b2996fa6e79
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Nov 28 23:27:12 2018 +0100
+
+    removed debug output
+
+commit 85c04a4b5391593af1a259d2c11538f7f6ee0b4b
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 23:23:31 2018 +0100
+
+    fixed channel printing...!
+
+commit e8b655caea8ba48c67147e77db9b3be36e5f970e
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 23:13:18 2018 +0100
+
+    fixed channel printing...
+
+commit c6fd9f3d60d9280b1a241963bb9fdc3ed74011d0
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 23:10:56 2018 +0100
+
+    fixed channel printing..
+
+commit b6b9314e3cb94906f4cd75a64095610c19cfd928
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 23:07:41 2018 +0100
+
+    fixed channel printing.
+
+commit 18bbd7892c5b271b9cc0784a4962d044a6d93ffa
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 23:04:22 2018 +0100
+
+    fixed channel printing
+
+commit 70fd4ff5fc8d32e3a2d6437de2787d6b9a06972d
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 23:01:20 2018 +0100
+
+    sunk in despair while trying to fix critical path output...
+
+commit 5863d471a28f07257855294e376fbddb52a3c41e
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Nov 28 22:04:50 2018 +0100
+
+    fixing minor bugs
+
+commit 88d8247c39265235b29893e34c7dec7188daa05d
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 22:03:18 2018 +0100
+
+    fixing timing analysis
+
+commit 1f10427b4d31310d12f526f429a08213525f6a0e
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 21:56:46 2018 +0100
+
+    fixing timing analysis
+
+commit 57f1b2d85d2b14ec68cc3ce1a4c05b9797104bad
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 21:51:38 2018 +0100
+
+    fixing timing analysis
+
+commit 3e249cf3e5b1e12574ecd6e0057639955165f3df
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 21:40:17 2018 +0100
+
+    fixing timing analysis
+
+commit c9f658d5b609258f99729055493b29d558ea56c4
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Nov 28 21:08:57 2018 +0100
+
+    fixed minor bugs
+
+commit d5e3f08a761da1f6d31ad5164230f220de1d4ff8
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 21:04:11 2018 +0100
+
+    fixing clock net error
+
+commit 4265a6890c88543f9770eee71e7c02be1be50d64
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:59:08 2018 +0100
+
+    fixing clock net error
+
+commit 270b18cedfd07c5ebd657f824f5e9e7e5256bf5a
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:50:23 2018 +0100
+
+    fixing clock net error
+
+commit 8073c4c5010556c68e48f2805f9b9bf8cbdde42f
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:48:42 2018 +0100
+
+    fixing clock net error
+
+commit b2e17e56e242a6b9f776f14a982a5bb5a89d3638
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:42:54 2018 +0100
+
+    fixing clock net error
+
+commit 0c985b484bbb05657a02863a32abd7c725a4e24f
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:30:06 2018 +0100
+
+    fixing an false invalid pin error
+
+commit e7184ffc145dda814749ab3044caaac2d5cf37ab
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:19:38 2018 +0100
+
+    fixing an false invalid pin error
+
+commit 33be29a1af3059b338a7922b6a5582d9df9ce6ef
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:11:26 2018 +0100
+
+    still fixing the clocknet parsing error
+
+commit 8ce6ffde756d052c34dc207142acd3daa8ed0d74
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:07:33 2018 +0100
+
+    still fixing the clocknet parsing error
+
+commit d7c69cee24ac6e1ffae3b75f327e236c6464683a
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 20:04:05 2018 +0100
+
+    added documentation
+    
+    fixed routing parser trying to route clock nets
+
+commit ff5ab6c1fcb4de6134be8f3de20b9f28b14b521f
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Nov 28 19:21:09 2018 +0100
+
+    activated consistency checker
+
+commit ab31029a88dbce2f5dfb2725f39599d904759dc3
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Nov 28 19:16:09 2018 +0100
+
+    finished readme
 
 commit 750144310f0ead764dda99f04ebd34a9bb802c2f
 Merge: 1f828c8 b5c23c1
@@ -483,4 +657,3 @@ Author: Vincenz Mechler <vincenz.mechler@gmx.de>
 Date:   Tue Nov 20 15:27:03 2018 +0100
 
     initial commit --project creation
- 

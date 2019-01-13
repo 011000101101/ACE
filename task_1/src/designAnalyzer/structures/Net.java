@@ -287,4 +287,10 @@ public class Net {
 		isClockNet= b;
 		
 	}
+
+
+	public NetlistBlock[] getBlocks() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
