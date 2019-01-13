@@ -65,6 +65,10 @@ public class Placer {
 	private static int iOBlockCount;
 
 	private static int blockCount;
+
+	private static int biasX;
+
+	private static int biasY;
 	
 	
 	/**
@@ -215,10 +219,8 @@ public class Placer {
 		double avgCostPerNet= getAvgCostPerNet();
 		double lambda= getLambda();
 		
-		LogicBlock[][] sLogicBlock = randomLogicBlockPlacement() ; 
+		NetlistBlock[][][] sBlocks = randomBlockPlacement() ; 
 		int[] logicBlockSwap = null;
-		IOBlock[] sIOBlock = randomIOBlockPlacement() ; 
-		int[] iOBlockSwap = null;
 		double temp = computeInitialTemperature() ; 
 		double rLimit = computeInitialrLimit() ; 
 		double CritExp = computeNewExponent(rLimit); 
@@ -226,44 +228,44 @@ public class Placer {
 			/* compute Ta, Tr and slack() */ 
 			analyzeTiming() ; 
 			/* für Normalisierung der Kostenterme */ 
-			double oldWiringCost = WiringCost(sLogicBlock, sIOBlock) ; //TODO investigate
-			double oldTimingCost = TimingCost(sLogicBlock, sIOBlock) ; 
+			double oldWiringCost = WiringCost(sBlocks) ; //TODO investigate
+			double oldTimingCost = TimingCost(sBlocks) ; 
 			for(int j = 0; j < stepCount; j++) { 
 				
 				double swapAnywaysFactor= -1; //TODO create random(0,1) and assign
 				/*Snew = GenerateSwap(S, Rlimit) ; */
 				if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
-					swapIOBlocks(sIOBlock, rLimit, iOBlockSwap);
-					double newTimingCost= newTimingCostIOSwap(sLogicBlock, sIOBlock, iOBlockSwap); //only recompute changed values
-					double newWiringCost= newWiringCostIOSwap(sLogicBlock, sIOBlock, iOBlockSwap);
+					swapIOBlocks(sBlocks, rLimit, logicBlockSwap);
+					double newTimingCost= newTimingCostSwap(sBlocks, logicBlockSwap); //only recompute changed values
+					double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
 					double deltaTimingCost = oldTimingCost - newTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					double deltaWiringCost = oldWiringCost - newWiringCost ; 
 					double deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
 					if (deltaCost <= 0) { 
-						applySwapIO(sIOBlock, iOBlockSwap);
+						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { //TODO translate to java 
-						applySwapIO(sIOBlock, iOBlockSwap);
+						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 					}
 				}
 				else { //swap logic blocks
-					swapLogicBlocks(sLogicBlock, rLimit, logicBlockSwap);
-					double newTimingCost= newTimingCostLogicSwap(sLogicBlock, sIOBlock, logicBlockSwap); //only recompute changed values
-					double newWiringCost= newWiringCostLogicSwap(sLogicBlock, sIOBlock, logicBlockSwap);
+					swapLogicBlocks(sBlocks, rLimit, logicBlockSwap);
+					double newTimingCost= newTimingCostSwap(sBlocks, logicBlockSwap); //only recompute changed values
+					double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
 					double deltaTimingCost = oldTimingCost - newTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					double deltaWiringCost = oldWiringCost - newWiringCost ; 
 					double deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
 					if (deltaCost <= 0) { 
-						applySwapLogic(sLogicBlock, logicBlockSwap);
+						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { //TODO translate to java 
-						applySwapLogic(sLogicBlock, logicBlockSwap);
+						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 					}
@@ -277,56 +279,63 @@ public class Placer {
 		
 	}
 
-	private static double newWiringCostLogicSwap(LogicBlock[][] sLogicBlock, IOBlock[] sIOBlock, int[] logicBlockSwap) {
+	private static double newWiringCostSwap(NetlistBlock[][][] sBlocks, int[] logicBlockSwap) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	private static double newWiringCostIOSwap(LogicBlock[][] sLogicBlock, IOBlock[] sIOBlock, int[] iOBlockSwap) {
+	private static double newTimingCostSwap(NetlistBlock[][][] sBlocks, int[] logicBlockSwap) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	private static double newTimingCostLogicSwap(LogicBlock[][] sLogicBlock, IOBlock[] sIOBlock, int[] logicBlockSwap) {
-		// TODO Auto-generated method stub
-		return 0;
+	private static void swapLogicBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] logicBlockSwap) {
+		/*
+		    1
+		   234
+		  56 78
+		   9ab
+		    c
+		    
+		  13ac ->mittlere spalte, ohne nullpunkt
+		  b249
+		  5678
+		 */
+		/*
+		int x= rand.nextInt(2 * (int) Math.floor(rLimit)) + 1;
+		int y= rand.nextInt((int) Math.floor(rLimit) + 2);
+		*/
+		int index= rand.nextInt(iOBlocks.length); //get a random IO block for swap (swapping two empty places wouldn't gain anything)
+		LogicBlock block1= logicBlocks[index];
+		int x= rand.nextInt(2 * (int) Math.floor(rLimit)) + 1;
+		int y= rand.nextInt((int) Math.floor(rLimit) + 2);
 	}
 
-	private static double newTimingCostIOSwap(LogicBlock[][] sLogicBlock, IOBlock[] sIOBlock, int[] iOBlockSwap) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	private static void swapLogicBlocks(LogicBlock[][] sLogicBlock, double rLimit, int[] logicBlockSwap) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private static void swapIOBlocks(IOBlock[] sIOBlock, double rLimit, int[] iOBlockSwap) {
-		// TODO Auto-generated method stub
-		
+	private static void swapIOBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] iOBlockSwap) {
+		int index= rand.nextInt(iOBlocks.length); //get a random IO block for swap (swapping two empty places wouldn't gain anything)
+		IOBlock block1= iOBlocks[index];
+		int swapDistance= rand.nextInt((int) Math.floor(rLimit)) + 1; //get distance of swap (not 0, as swapping pad 0 with pad 1 at same coordinates wouldn't change cost)
+		boolean ccw= rand.nextBoolean(); //get swap direction (clockwise or counterclockwise)
+		boolean subblk_1= rand.nextBoolean(); //get pad number of swap partner
+		int 
 	}
 
 	/**
-	 * applies an IO block swap by swapping the entries at the given coordinates
-	 * @param sIOBlock IO block placement
-	 * @param iOBlockSwap coordinates of the slots to be swapped: {index_block1, index_block2}
+	 * applies a block swap by swapping the entries at the given coordinates
+	 * @param sBlocks block placement
+	 * @param logicBlockSwap coordinates of the slots to be swapped: {block1_x, block1_y, block1_subblk (0 for logic blocks), block2_x, block2_y, block2_subblk (0 for logic blocks)}
 	 */
-	private static void applySwapIO(IOBlock[] sIOBlock, int[] iOBlockSwap) {
-		IOBlock buffer= sIOBlock[iOBlockSwap[0]];
-		sIOBlock[iOBlockSwap[0]]= sIOBlock[iOBlockSwap[1]];
-		sIOBlock[iOBlockSwap[1]]= buffer;
-	}
-
-	/**
-	 * applies a logic block swap by swapping the entries at the given coordinates
-	 * @param sLogicBlock logic block placement
-	 * @param logicBlockSwap coordinates of the slots to be swapped: {block1_x, block1_y, block2_x, block2_y}
-	 */
-	private static void applySwapLogic(LogicBlock[][] sLogicBlock, int[] logicBlockSwap) {
-		LogicBlock buffer= sLogicBlock[logicBlockSwap[0]][logicBlockSwap[1]];
-		sLogicBlock[logicBlockSwap[0]][logicBlockSwap[1]]= sLogicBlock[logicBlockSwap[2]][logicBlockSwap[3]];
-		sLogicBlock[logicBlockSwap[2]][logicBlockSwap[3]]= buffer;
+	private static void applySwap(NetlistBlock[][][] sBlocks, int[] logicBlockSwap) {
+		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
+		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
+		sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]= block2;
+		sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]= block1;
+		block2.setCoordinates(logicBlockSwap[0], logicBlockSwap[1]); //set new coordinates
+		block1.setCoordinates(logicBlockSwap[3], logicBlockSwap[4]);
+		if(block1 instanceof IOBlock) { //set subblk number
+			block1.setSubblk_1(logicBlockSwap[5] == 1);
+			block1.setSubblk_1(logicBlockSwap[2] == 1);
+		}
 	}
 
 	private static double getLambda() {
@@ -349,12 +358,12 @@ public class Placer {
 		return 0;
 	}
 
-	private static double TimingCost(NetlistBlock[][] sLogicBlock, IOBlock[] sIOBlock) {
+	private static double TimingCost(NetlistBlock[][][] sLogicBlock) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	private static double WiringCost(NetlistBlock[][] sLogicBlock, IOBlock[] sIOBlock) {
+	private static double WiringCost(NetlistBlock[][][] sLogicBlock) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
@@ -444,22 +453,60 @@ public class Placer {
 	 * creates a random initial placement for all LogicBlocks
 	 * @return the new random placement as a matrix of all possible block coordinates, containing the blocks in the centered square area of minimum size as required by the task description
 	 */
-	private static LogicBlock[][] randomLogicBlockPlacement() {
+	private static NetlistBlock[][][] randomBlockPlacement() {
 		
 		int numberOfSlotsLeft= placingAreaSize * placingAreaSize;
-		int biasX= (parameterManager.X_GRID_SIZE - placingAreaSize) / 2;
-		int biasY= (parameterManager.Y_GRID_SIZE - placingAreaSize) / 2;
-		LogicBlock[][] output= new LogicBlock[parameterManager.X_GRID_SIZE][parameterManager.Y_GRID_SIZE];
+		biasX= (parameterManager.X_GRID_SIZE - placingAreaSize) / 2 + 1;
+		biasY= (parameterManager.Y_GRID_SIZE - placingAreaSize) / 2 + 1;
+		NetlistBlock[][][] output= new NetlistBlock[parameterManager.X_GRID_SIZE + 2][parameterManager.Y_GRID_SIZE + 2][2];
 		for(LogicBlock b : logicBlocks) {
 			int index= rand.nextInt(numberOfSlotsLeft); //get random free slot
 			for(int i= 0; i < index; i++) {
-				if(output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)] != null) {
+				if(output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0] != null) {
 					index++; //skip slots already in use
 				}
 			}
-			output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)]= b; //TODO verify
+			output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0]= b; //TODO verify
 			b.setCoordinates(biasX + (index / placingAreaSize), biasY + (index % placingAreaSize));
 		}
+		
+		
+		numberOfSlotsLeft= parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2;
+		for(IOBlock b : iOBlocks) {
+			int index= rand.nextInt(numberOfSlotsLeft * 2); //get random free slot and pad number
+			boolean subBlk1= false;
+			if(index >= numberOfSlotsLeft) { //extract subblock number information from generated random number
+				index = index - numberOfSlotsLeft;
+				subBlk1= true;
+			}
+			int xCoord= 0;
+			int yCoord= 0;
+			if(index < parameterManager.X_GRID_SIZE) {
+				xCoord= index + 1;
+				yCoord= 0;
+			}
+			else if(index < parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE) {
+				xCoord= 0;
+				yCoord= (index - parameterManager.X_GRID_SIZE) + 1;
+			}
+			else if(index < parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE) {
+				xCoord= (index - (parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE)) + 1;
+				yCoord= parameterManager.Y_GRID_SIZE + 1;
+			}
+			else{
+				xCoord= parameterManager.X_GRID_SIZE + 1;
+				yCoord= (index - (parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE)) + 1;
+			}
+			for(int i= 0; i < index; i++) {
+				if(output[xCoord][yCoord][subBlk1 ? 1 : 0] != null) {
+					index++; //skip slots already in use
+				}
+			}
+			output[xCoord][yCoord][subBlk1 ? 1 : 0]= b;
+			b.setCoordinates(xCoord, yCoord);
+			b.setSubblk_1(subBlk1);
+		}
+		
 		return output;
 		
 	}
