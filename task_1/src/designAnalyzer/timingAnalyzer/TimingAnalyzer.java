@@ -37,8 +37,10 @@ public class TimingAnalyzer {
 	private int xMax;
 	private int yMax;
 	
+	private static TimingAnalyzer singleton;
 	
-	public TimingAnalyzer(){
+	
+	private TimingAnalyzer(){
 		
 		structureManager= StructureManager.getInstance();
 		parameterManager= ParameterManager.getInstance();
@@ -46,6 +48,13 @@ public class TimingAnalyzer {
 		xMax= parameterManager.X_GRID_SIZE + 1;
 		yMax= parameterManager.Y_GRID_SIZE + 1;
 		
+	}
+	
+	public static TimingAnalyzer getInstance() {
+		if(singleton == null) {
+			singleton= new TimingAnalyzer();
+		}
+		return singleton;
 	}
 	
 	/**
@@ -185,26 +194,35 @@ public class TimingAnalyzer {
 	 */
 	private int estimateSinglePath(NetlistBlock source, NetlistBlock sink) {
 		
-		int horizontalChannelsUsed=-1;
-		int verticalChannelsUsed=-1;
+		
 		
 		/**
 		 * delay from channel into sink
 		 */
-		int tIn= parameterManager.T_FFIN + parameterManager.T_SWITCH;
+		int tIn= parameterManager.T_FFIN ;
 		
 		/**
 		 * delay from source to channel
 		 */
-		int tOut= parameterManager.T_FFOUT + parameterManager.T_SWITCH;
+		int tOut= parameterManager.T_FFOUT ;
 		
 		if(source instanceof IOBlock){
-			tOut= parameterManager.T_IPAD + parameterManager.T_SWITCH;
+			tOut= parameterManager.T_IPAD ;
 		}
 
 		if(sink instanceof IOBlock){
-			tIn= parameterManager.T_OPAD + parameterManager.T_SWITCH;
+			tIn= parameterManager.T_OPAD ;
 		}
+		
+		
+		
+		return tIn + tOut + estimateSinglePathNoEndpoints(source, sink);
+	}
+	
+	public int estimateSinglePathNoEndpoints(NetlistBlock source, NetlistBlock sink) {
+		
+		int horizontalChannelsUsed=-1;
+		int verticalChannelsUsed=-1;
 		
 		int direction= computeDirection(source.getX(), source.getY(), sink.getX(), sink.getY());
 		
@@ -385,7 +403,8 @@ public class TimingAnalyzer {
 				
 		}
 		
-		return tIn + tOut + ( (horizontalChannelsUsed + verticalChannelsUsed - 1) * parameterManager.T_SWITCH );
+		return 2 * parameterManager.T_SWITCH +  ( (horizontalChannelsUsed + verticalChannelsUsed - 1) * parameterManager.T_SWITCH );
+		
 	}
 	
 	/**

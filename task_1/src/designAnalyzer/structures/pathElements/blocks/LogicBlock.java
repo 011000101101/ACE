@@ -56,8 +56,11 @@ public class LogicBlock extends NetlistBlock {
 		
 	}
 
-
-	private boolean isClocked(){
+	/**
+	 * gives info if this block is combinatorial or sequential
+	 * @return true if sequential, false if combinatorial
+	 */
+	public boolean isClocked(){
 		if(pinAssignments[5] == null){
 			return false;
 		}

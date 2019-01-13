@@ -15,6 +15,7 @@ import designAnalyzer.inputParser.NetlistParser;
 import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.inputParser.RoutingParser;
 import designAnalyzer.structures.Net;
+import designAnalyzer.structures.SimplePath;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
@@ -89,6 +90,8 @@ public class Placer {
 	 */
 	public final static int PHI = 1;
 	
+	private static List<SimplePath> paths= new LinkedList<SimplePath>();
+	
 	/**
 	 * main method
 	 * @param args
@@ -129,7 +132,7 @@ public class Placer {
 			
 			parse();
 
-			timingAnalyzer= new TimingAnalyzer();
+			timingAnalyzer= TimingAnalyzer.getInstance();
 			
 			place();
 			
@@ -244,6 +247,10 @@ public class Placer {
 		double temp = computeInitialTemperature() ; 
 		double rLimit = computeInitialrLimit() ; 
 		double CritExp = computeNewExponent(rLimit); 
+		for(Net n : structureManager.getNetCollection()) { //generate all paths
+			paths.addAll(n.generateSimplePaths());
+		}
+		
 		while(temp > (0.005 * avgCostPerNet)) { 
 			/* compute Ta, Tr and slack() */ 
 			analyzeTiming() ; 
@@ -536,9 +543,20 @@ public class Placer {
 		return 0;
 	}
 
+	/**
+	 * compute delay (tA) and slack for all paths and annotate it
+	 */
 	private static void analyzeTiming() {
-		// TODO Auto-generated method stub
-		
+		int dMax= -1;
+		for(SimplePath p : paths) { 
+			int delay= p.computeDelay();
+			if(delay > dMax) {
+				dMax= delay;
+			}
+		}
+		for(SimplePath p : paths) { 
+			p.computeSlack(dMax);
+		}
 	}
 
 	private static double UpdateRlimit() {

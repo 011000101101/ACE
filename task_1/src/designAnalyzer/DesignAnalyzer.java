@@ -94,7 +94,7 @@ public class DesignAnalyzer {
 			consistencyChecker= new ConsistencyChecker();
 			consistencyChecker.checkConsistency(routingFileProvided);
 
-			timingAnalyzer= new TimingAnalyzer();
+			timingAnalyzer= TimingAnalyzer.getInstance();
 			
 			analyze();
 			
