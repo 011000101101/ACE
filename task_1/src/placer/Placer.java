@@ -1,6 +1,8 @@
 package placer;
 
 import java.io.FileNotFoundException;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -12,6 +14,7 @@ import designAnalyzer.inputParser.ArchitectureParser;
 import designAnalyzer.inputParser.NetlistParser;
 import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.inputParser.RoutingParser;
+import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
@@ -69,7 +72,22 @@ public class Placer {
 	private static int biasX;
 
 	private static int biasY;
+
+	/**
+	 * HashMap stores Ui and Vi values for each net
+	 * value contains five values: Ui x, Ui y, Vi x, Vi y, wiring cost for this net
+	 */
+	private HashMap<String, double[]> netWithValues;
 	
+	/**
+	 * for wiring cost
+	 */
+	public final static double GAMMA = 1.59;
+	
+	/**
+	 * for wiring cost
+	 */
+	public final static int PHI = 1;
 	
 	/**
 	 * main method
@@ -94,6 +112,7 @@ public class Placer {
 			seed= new Random().nextLong(); //create random seed and store for debugging
 			rand= new Random(seed);
 		}
+		
 		
 		
 		
@@ -215,6 +234,7 @@ public class Placer {
 	
 	private static void place() {
 		
+		netWithValues = new HashMap<String, double[]>();
 		int stepCount= getStepCount();
 		double avgCostPerNet= getAvgCostPerNet();
 		double lambda= getLambda();
@@ -227,8 +247,35 @@ public class Placer {
 		while(temp > (0.005 * avgCostPerNet)) { 
 			/* compute Ta, Tr and slack() */ 
 			analyzeTiming() ; 
+			
 			/* für Normalisierung der Kostenterme */ 
-			double oldWiringCost = WiringCost(sBlocks) ; //TODO investigate
+			//stores Ui value to use Star+ O(1)-Update
+			double[] oldUi = WiringCostUi(sBlocks);
+			//stores Vi value to use Star+ O(1)-Update
+			double[] oldVi = WiringCostVi(sBlocks);
+			Collection<Net> allNets = structureManager.getNetCollection();
+			//saves blocks of currentNet
+			NetlistBlock[] currentBlocks;
+			for(Net currentNet: allNets) {
+				if(!currentNet.getIsClocknNet()) {
+					currentBlocks = currentNet.getBlocks(); //TODO check if getBlocks is implemented
+					int uix, uiy, vix, viy;
+					for(NetlistBlock currentSingleBlock: currentBlocks) {
+						uix += Math.pow(currentSingleBlock.getX(),2);
+						uiy += Math.pow(currentSingleBlock.getY(),2);
+						vix += currentSingleBlock.getX();
+						viy += currentSingleBlock.getY();
+					}
+					double wiringCostX = GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/currentBlocks.length + PHI);
+					double wiringCostY = GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/currentBlocks.length + PHI);
+					double wiringCost = wiringCostX + wiringCostY;
+					double[] valueArray = {uix, uiy, vix, viy, wiringCost};
+					netWithValues.put(currentNet.getName(), valueArray);
+				}
+			}
+			
+			
+			double oldWiringCost = null ;//TODO wurzelfunktion mit gamma und phi implementieren
 			double oldTimingCost = TimingCost(sBlocks) ; 
 			for(int j = 0; j < stepCount; j++) { 
 				
@@ -398,6 +445,15 @@ public class Placer {
 		return 0;
 	}
 
+	private static double[] WiringCostVi(NetlistBlock[][][] sBlocks) {
+		double[] output = new double[2];
+		return null;
+	}
+
+	private static double[] WiringCostUi(NetlistBlock[][][] sBlocks) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	/**
 	 * creates a random initial placement for all IOBlocks
 	 * @return the new random placement as an array of possible placements, containing the IOBlocks at positions corresponding to their placement
