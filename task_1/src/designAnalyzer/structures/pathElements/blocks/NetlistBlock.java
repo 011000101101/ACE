@@ -196,5 +196,10 @@ public abstract class NetlistBlock extends PathElement{
 		connectedPaths.add(p);
 	}
 
+	public Net[] getNet() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 }

@@ -2,6 +2,7 @@ package placer;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -275,9 +276,9 @@ public class Placer {
 				/*Snew = GenerateSwap(S, Rlimit) ; */
 				if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
 					swapIOBlocks(sBlocks, rLimit, logicBlockSwap);
-					trackChanges(logicBlockSwap); //änderungen in einem array speichern, wo namen und delta wiring
 					double newTimingCost= newTimingCostSwap(critExp, logicBlockSwap); //only recompute changed values
 					double deltaWiringCost = calcDeltaWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
+					//TODO pls double check, newTimingCost - oldTimingCost?
 					double deltaTimingCost = oldTimingCost - newTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					double newWiringCost = oldWiringCost + deltaWiringCost; 
 					double deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
@@ -318,22 +319,45 @@ public class Placer {
 		}
 		
 	}
-
+	
+	/**
+	 * side effect: updates netWithValues accordingly
+	 * @param logicBlockSwap
+	 * @param sBlocks
+	 * @return delta wiring cost before swap and after swap: oldCost minus newCost: for good swaps, the result is positiv
+	 */
 	private static double calcDeltaWiringCost(int[] logicBlockSwap, NetlistBlock[][][] sBlocks) {
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
+		Net[] affectedNets = block1.getNet();
+		Net[] affectedNets2 = block2.getNet();
+		double returnVal = 0;
+		for(Net netToAppend: affectedNets2) {
+			if(	!Arrays.asList(affectedNets).contains(netToAppend)) {//TODO @Vincenz pls check if contains works for net entities
+				Arrays.asList(affectedNets).add(netToAppend);
+			}
+		}
+		for(Net net: affectedNets) { //vielleicht ganz am anfang netWithValues.get aufrufen, abespeichern: bessere Performanz?
+			double deltaUix = Math.pow(block2.getX(), 2) - Math.pow(block1.getX(), 2);
+			double deltaUiy = Math.pow(block2.getY(), 2) - Math.pow(block1.getY(), 2);
+			double deltaVix = block2.getX() - block1.getX();
+			double deltaViy = block2.getY() - block1.getY();
+			double uix = netWithValues.get(net.getName())[0] + deltaUix;
+			double uiy = netWithValues.get(net.getName())[1] + deltaUiy;
+			double vix = netWithValues.get(net.getName())[2] + deltaVix;
+			double viy = netWithValues.get(net.getName())[3] + deltaViy;
+			double wiringCostX = GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/netWithValues.get(net.getName())[4] + PHI);
+			double wiringCostY = GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/netWithValues.get(net.getName())[4] + PHI);
+			double wiringCost = wiringCostX + wiringCostY;
+			double[] newArray = {uix, uiy, vix, viy, wiringCost, netWithValues.get(net.getName())[4]};
+			returnVal += wiringCost - netWithValues.get(net.getName())[4];
+			netWithValues.put(net.getName(), newArray);
+			
+		}
 		
+		return returnVal;
 	}
 
-	private static void trackChanges(int[] logicBlockSwap) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private static void calculateTotalWiringCost() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	private static double newWiringCostSwap(NetlistBlock[][][] sBlocks, int[] logicBlockSwap) {
 		// TODO Auto-generated method stub
@@ -621,11 +645,13 @@ public class Placer {
 
 	/**
 	 * generates records in Hashmap netWithValues where values as Uix, Uiy, Vix, Viy and estimated Cost are listed
+	 * @return wiringCosts of each net added together
 	 */
-	private static int wiringCost() {
+	private static double wiringCost() {
 		Collection<Net> allNets = structureManager.getNetCollection();
 		//saves blocks of currentNet
 		NetlistBlock[] currentBlocks;
+		double returnVal = 0 ;
 		for(Net currentNet: allNets) {
 			if(!currentNet.getIsClocknNet()) {
 				currentBlocks = currentNet.getBlocks(); //TODO check if getBlocks is implemented
@@ -642,11 +668,12 @@ public class Placer {
 				double wiringCostX = GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/currentBlocks.length + PHI);
 				double wiringCostY = GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/currentBlocks.length + PHI);
 				double wiringCost = wiringCostX + wiringCostY;
-				double[] valueArray = {uix, uiy, vix, viy, wiringCost};
+				double[] valueArray = {uix, uiy, vix, viy, wiringCost, currentBlocks.length};
+				returnVal += wiringCost;
 				netWithValues.put(currentNet.getName(), valueArray);
 			}
 		}
-		return 0;
+		return returnVal;
 	}
 
 	/**
