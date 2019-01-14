@@ -161,9 +161,8 @@ public class Placer {
 	 * @return
 	 */
 	private static int[] parseCommandlineArguments(String[] args) {
-		/*
 		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1};
-		for(int i = (routingFileProvided ? 4 : 3); i< args.length; i++) {
+		for(int i = 3; i< args.length; i++) {
 			switch(args[i]) {
 			case "-X":
 				i++;
@@ -212,8 +211,7 @@ public class Placer {
 			
 			}
 		}
-		return parameterInitialized;*/
-		return null; //TODO check / adapt
+		return parameterInitialized;
 	}
 	
 
