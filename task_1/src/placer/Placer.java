@@ -1,6 +1,7 @@
 package placer;
 
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,6 +22,7 @@ import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.timingAnalyzer.TimingAnalyzer;
+import placer.outputWriter.PlacementWriter;
 
 public class Placer {
 	
@@ -91,6 +93,8 @@ public class Placer {
 	public final static int PHI = 1;
 	
 	private static List<SimplePath> paths= new LinkedList<SimplePath>();
+
+	private static PlacementWriter placementWriter;
 	
 	/**
 	 * main method
@@ -136,8 +140,11 @@ public class Placer {
 			
 			place();
 			
-			//TODO reactivate once implemented
-			//placementWriter.write(/*filepath*/);
+			
+			String[] netlistFilePathSplit= netlistFilePath.split("/");
+			String[] architectureFilePathSplit= architectureFilePath.split("/");
+			placementWriter= new PlacementWriter(netlistFilePathSplit[netlistFilePathSplit.length - 1], architectureFilePathSplit[architectureFilePathSplit.length + 1]);
+			placementWriter.write(/*filepath*/ null); //TODO insert output file path
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
