@@ -36,6 +36,19 @@ public class TimingAnalyzer {
 
 	private int xMax;
 	private int yMax;
+
+	/**
+	 * look up table for delay values indexed by block type, deltaX and deltaY
+	 */
+	private int[][][] delayLUT;
+
+	private int[][] delayLUT_LL;
+
+	private int[][] delayLUT_LIO;
+
+	private int[][] delayLUT_IOL;
+
+	private int[][] delayLUT_IOIO;
 	
 	private static TimingAnalyzer singleton;
 	
@@ -216,31 +229,31 @@ public class TimingAnalyzer {
 		
 		
 		
-		return tIn + tOut + estimateSinglePathNoEndpoints(source, sink);
+		return tIn + tOut + estimateSinglePathNoEndpoints(source.getX(), source.getY(), sink.getX(), sink.getY());
 	}
 	
-	public int estimateSinglePathNoEndpoints(NetlistBlock source, NetlistBlock sink) {
+	public int estimateSinglePathNoEndpoints(int xSource, int ySource, int xSink, int ySink) {
 		
 		int horizontalChannelsUsed=-1;
 		int verticalChannelsUsed=-1;
 		
-		int direction= computeDirection(source.getX(), source.getY(), sink.getX(), sink.getY());
+		int direction= computeDirection(xSource, ySource, xSink, ySink);
 		
 		switch (direction){
 		
 			case 0: // sink directly above source
 				
 				horizontalChannelsUsed= 0; //use right output and input pin of source and sink
-				verticalChannelsUsed= sink.getY()-source.getY() + 1; //from right side to right side (or from left to left if both are on right border)
+				verticalChannelsUsed= ySink-ySource + 1; //from right side to right side (or from left to left if both are on right border)
 				
-				if(source.getY() == 0){ //[...] is iopad at bottom, use top out pin and channel instead of right, rout it to vertical channel at top right
+				if(ySource == 0){ //[...] is iopad at bottom, use top out pin and channel instead of right, rout it to vertical channel at top right
 					horizontalChannelsUsed++;
 					verticalChannelsUsed--;
-					if(sink.getY() == 1) { //sink directly above source
+					if(ySink == 1) { //sink directly above source
 						verticalChannelsUsed= 0;
 					}
 				}
-				if(sink.getY() == yMax){ //[...] is iopad at top, use bottom out pin and channel instead of right, rout it to vertical channel at bottom right
+				if(ySink == yMax){ //[...] is iopad at top, use bottom out pin and channel instead of right, rout it to vertical channel at bottom right
 					horizontalChannelsUsed++;
 					verticalChannelsUsed--;
 				}
@@ -251,18 +264,18 @@ public class TimingAnalyzer {
 				
 				
 				horizontalChannelsUsed= 2; //use bottom output and top input pin of source and sink
-				verticalChannelsUsed= source.getY() - sink.getY() -1; 
+				verticalChannelsUsed= ySource - ySink -1; 
 
-				if(source.getX() == 0){ //[...] is iopad at left border
+				if(xSource == 0){ //[...] is iopad at left border
 					horizontalChannelsUsed= 0;
 					verticalChannelsUsed+= 2;
 				}
-				else if(source.getX() == xMax){ //[...] is iopad at right border
+				else if(xSource == xMax){ //[...] is iopad at right border
 					horizontalChannelsUsed= 0;
 					verticalChannelsUsed+= 2;
 				}
 				// not left or right IOBlocks
-				else if(sink.getY() + 1 == source.getY()){
+				else if(ySink + 1 == ySource){
 					horizontalChannelsUsed= 1;
 					verticalChannelsUsed=0;
 				}
@@ -271,19 +284,19 @@ public class TimingAnalyzer {
 			
 			case 2: // sink directly right of source
 				
-				horizontalChannelsUsed= sink.getX() - source.getX() - 1;
+				horizontalChannelsUsed= xSink - xSource - 1;
 				verticalChannelsUsed= 2; 
 
-				if(source.getY() == 0){ //[...] is iopad at bottom border
+				if(ySource == 0){ //[...] is iopad at bottom border
 					verticalChannelsUsed = 0;
 					horizontalChannelsUsed+= 2;
 				}
-				else if(source.getY() == yMax){ //[...] is iopad at top border
+				else if(ySource == yMax){ //[...] is iopad at top border
 					verticalChannelsUsed= 0;
 					horizontalChannelsUsed += 2;
 				}
 				// not top or bottom IOBlocks
-				else if(sink.getX() - 1 == source.getX()){ //if directly next to each other
+				else if(xSink - 1 == xSource){ //if directly next to each other
 					horizontalChannelsUsed= 0;
 					verticalChannelsUsed=1;
 				}
@@ -292,20 +305,20 @@ public class TimingAnalyzer {
 			
 			case 6: // sink directly left of source
 				
-				 horizontalChannelsUsed= source.getX() - sink.getX(); //bottom out
+				 horizontalChannelsUsed= xSource - xSink; //bottom out
 				 verticalChannelsUsed= 1; //right in
 
-				if(source.getY() == 0){ //[...] is iopad at bottom
+				if(ySource == 0){ //[...] is iopad at bottom
 					verticalChannelsUsed = 0;
 					horizontalChannelsUsed+= 1;
 				}
-				else if(source.getY() == yMax){ //[...] is iopad at top
+				else if(ySource == yMax){ //[...] is iopad at top
 					verticalChannelsUsed = 0;
 					horizontalChannelsUsed+= 1;
 				}
-				else if(source.getX() == xMax){
+				else if(xSource == xMax){
 					horizontalChannelsUsed--; //left out instead of bottom
-					if(!(source.getX() - 1 == sink.getX())){
+					if(!(xSource - 1 == xSink)){
 						verticalChannelsUsed++; //first and last channel are not the same
 					}
 				}
@@ -319,14 +332,14 @@ public class TimingAnalyzer {
 				// | L------J |   | L---I--J |
 				//  ----------    X-----|---- 
 				
-				horizontalChannelsUsed= sink.getX() - source.getX(); //right out
-				verticalChannelsUsed= sink.getY() - source.getY(); //bottom in
+				horizontalChannelsUsed= xSink - xSource; //right out
+				verticalChannelsUsed= ySink - ySource; //bottom in
 
-				if(source.getY() == 0){ //[...] is iopad at bottom
+				if(ySource == 0){ //[...] is iopad at bottom
 					horizontalChannelsUsed++; //top out
 					verticalChannelsUsed--;
 				}
-				if(sink.getX() == xMax){ //[...] is iopad at right border
+				if(xSink == xMax){ //[...] is iopad at right border
 					horizontalChannelsUsed--; //right in
 					verticalChannelsUsed++;
 				}
@@ -340,15 +353,15 @@ public class TimingAnalyzer {
 				// | L------J |   | L------J |
 				//  ----------X    ---------- 
 				
-				horizontalChannelsUsed = sink.getX() - source.getX(); //right out
-				verticalChannelsUsed = source.getY() - sink.getY(); //top in
+				horizontalChannelsUsed = xSink - xSource; //right out
+				verticalChannelsUsed = ySource - ySink; //top in
 				
-				if(source.getY() == yMax) { // source is iopad at top
+				if(ySource == yMax) { // source is iopad at top
 					horizontalChannelsUsed++; // bottom out
 					verticalChannelsUsed--;
 				}
 				
-				if(sink.getX() == xMax) { // sink is iopad at right border
+				if(xSink == xMax) { // sink is iopad at right border
 					horizontalChannelsUsed--; //left in
 					verticalChannelsUsed++;
 				}
@@ -362,15 +375,15 @@ public class TimingAnalyzer {
 				// | L--O---J |   | L------J |
 				// X----|-----     ---------- 
 				
-				horizontalChannelsUsed = source.getX() - sink.getX(); //bottom out
-				verticalChannelsUsed = source.getY() - sink.getY(); //right in
+				horizontalChannelsUsed = xSource - xSink; //bottom out
+				verticalChannelsUsed = ySource - ySink; //right in
 				
-				if(source.getX() == xMax) { // source is iopad at right border
+				if(xSource == xMax) { // source is iopad at right border
 					verticalChannelsUsed ++; //left out
 					horizontalChannelsUsed --;
 				}
 				
-				if(sink.getY() == 0) { // sink is iopad at bottom
+				if(ySink == 0) { // sink is iopad at bottom
 					verticalChannelsUsed --; // top in
 					horizontalChannelsUsed ++;
 				}
@@ -384,17 +397,17 @@ public class TimingAnalyzer {
 				// | L--O---J |   | L------J |
 				// L----|-----     ----------X
 				
-				horizontalChannelsUsed = source.getX() - sink.getX(); // bottom out
-				verticalChannelsUsed = sink.getY() - source.getY() + 1; // right in
+				horizontalChannelsUsed = xSource - xSink; // bottom out
+				verticalChannelsUsed = ySink - ySource + 1; // right in
 				
-				if(source.getY() == 0) { //source is at bottom
+				if(ySource == 0) { //source is at bottom
 					verticalChannelsUsed --; //top out
 				}
-				if(source.getX() == xMax) { //source is at right
+				if(xSource == xMax) { //source is at right
 					horizontalChannelsUsed--; //left out instead of right out
 				}
 				
-				if(sink.getY() == yMax) { // sink is at top
+				if(ySink == yMax) { // sink is at top
 					horizontalChannelsUsed ++; // bottom in instead of right
 					verticalChannelsUsed --;
 				}
@@ -549,6 +562,124 @@ public class TimingAnalyzer {
 		}
 		catch (Exception e){
 			System.err.println("could not print critical path to file.");
+		}
+	}
+
+	/**
+	 * looks up the delay of a path in the delay LUTs based on the distance between source and sink, computes and stores it if it has not previously been computed
+	 * @param source source block of the path
+	 * @param sink sink block of the path
+	 * @return the delay of the path, without the input and output delays
+	 */
+	public int lookUpSinglePathNoEndpoints(NetlistBlock source, NetlistBlock sink, int xSource, int ySource, int xSink, int ySink) {
+		int x_max= parameterManager.X_GRID_SIZE;
+		int y_max= parameterManager.Y_GRID_SIZE;
+		int deltaX= xSink - xSource;
+		int deltaY= ySink - ySource;
+		int delay;
+		if(source instanceof IOBlock) {
+			if(sink instanceof IOBlock) {
+				delay= delayLUT_IOIO[deltaX + xMax][deltaY + yMax];
+				if(delay < 0) {
+					delay= estimateSinglePathNoEndpoints(xSource, ySource, xSink, ySink);
+					delayLUT_IOIO[deltaX + xMax][deltaY + yMax]= delay;
+				}
+				return delay;
+			}
+			else {
+				delay= delayLUT_IOL[deltaX + x_max][deltaY + y_max];
+				if(delay < 0) {
+					delay= estimateSinglePathNoEndpoints(xSource, ySource, xSink, ySink);
+					delayLUT_IOL[deltaX + x_max][deltaY + y_max]= delay;
+				}
+				return delay;
+			}
+		}
+		else {
+			if(sink instanceof IOBlock) {
+				delay= delayLUT_LIO[deltaX + x_max][deltaY + y_max];
+				if(delay < 0) {
+					delay= estimateSinglePathNoEndpoints(xSource, ySource, xSink, ySink);
+					delayLUT_LIO[deltaX + x_max][deltaY + y_max]= delay;
+				}
+				return delay;
+			}
+			else {
+				delay= delayLUT_LL[deltaX + x_max - 1][deltaY + y_max - 1];
+				if(delay < 0) {
+					delay= estimateSinglePathNoEndpoints(xSource, ySource, xSink, ySink);
+					delayLUT_LL[deltaX + x_max - 1][deltaY + y_max - 1]= delay;
+				}
+				return delay;
+			}
+		}
+	}
+	
+	/**
+	 * initializes the four delay LUTs with -1 as every entry
+	 */
+	public void initializeDelayLUT() {
+		int x_max= parameterManager.X_GRID_SIZE;
+		int y_max= parameterManager.Y_GRID_SIZE;
+		delayLUT_LL= new int[2*(x_max - 1) + 1][2*(y_max - 1) + 1];
+		for(int i= -x_max + 1; i < x_max; i++) {
+			for(int j= -y_max + 1; j < y_max; j++) {
+				delayLUT_LL[i + x_max - 1][j + y_max - 1]= -1;
+				/*
+				if(i<0) {
+					if(j<0) {
+						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(x_max, y_max, x_max + i, y_max + j);
+					}
+					else {
+						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(x_max, 1, x_max + i, 1 + j);
+					}
+				}
+				else {
+					if(j<0) {
+						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(1, y_max, 1 + i, y_max + j);
+					}
+					else {
+						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(1, 1, 1 + i, 1 + j);
+					}
+				}
+				*/
+			}
+		}
+		delayLUT_LIO= new int[2*(x_max) + 1][2*(y_max) + 1];
+		for(int i= -x_max; i <= x_max; i++) {
+			for(int j= -y_max; j <= y_max; j++) {
+				delayLUT_LIO[i + x_max][j + y_max]= -1;
+				/*
+				if(i<0) {
+					if(j<0) {
+						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(-i, -j, 0, 0);
+					}
+					else {
+						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(-i, yMax - j, 0, yMax);
+					}
+				}
+				else {
+					if(j<0) {
+						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(xMax - i, -j, xMax, 0);
+					}
+					else {
+						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(xMax - i, yMax - j, xMax, yMax);
+					}
+				}
+				*/
+			}
+		}
+		delayLUT_IOL= new int[2*(x_max) + 1][2*(y_max) + 1];
+		for(int i= -x_max; i <= x_max; i++) {
+			for(int j= -y_max; j <= y_max; j++) {
+				delayLUT_IOL[i + x_max][j + y_max]= -1;
+			}
+		}
+		delayLUT_IOIO= new int[2*(xMax) + 1][2*(yMax) + 1];
+		for(int i= -xMax; i <= xMax; i++) {
+			for(int j= -yMax; j <= yMax; j++) {
+				delayLUT_IOIO[i + xMax][j + yMax]= -1;
+			}
 		}
 	}
 

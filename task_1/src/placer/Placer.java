@@ -246,10 +246,14 @@ public class Placer {
 		int[] logicBlockSwap = null;
 		double temp = computeInitialTemperature() ; 
 		double rLimit = computeInitialrLimit() ; 
-		double CritExp = computeNewExponent(rLimit); 
+		double critExp = computeNewExponent(rLimit); 
 		for(Net n : structureManager.getNetCollection()) { //generate all paths
 			paths.addAll(n.generateSimplePaths());
 		}
+		for(SimplePath p : paths) { 
+			p.registerAtBlocks();
+		}
+		timingAnalyzer.initializeDelayLUT();
 		
 		while(temp > (0.005 * avgCostPerNet)) { 
 			/* compute Ta, Tr and slack() */ 
@@ -286,14 +290,14 @@ public class Placer {
 			
 			
 			double oldWiringCost = -1 ;//TODO wurzelfunktion mit gamma und phi implementieren
-			double oldTimingCost = TimingCost(sBlocks) ; 
+			double oldTimingCost = TimingCost(critExp) ; 
 			for(int j = 0; j < stepCount; j++) { 
 				
 				double swapAnywaysFactor= -1; //TODO create random(0,1) and assign
 				/*Snew = GenerateSwap(S, Rlimit) ; */
 				if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
 					swapIOBlocks(sBlocks, rLimit, logicBlockSwap);
-					double newTimingCost= newTimingCostSwap(sBlocks, logicBlockSwap); //only recompute changed values
+					double newTimingCost= newTimingCostSwap(critExp, logicBlockSwap); //only recompute changed values
 					double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
 					double deltaTimingCost = oldTimingCost - newTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					double deltaWiringCost = oldWiringCost - newWiringCost ; 
@@ -311,7 +315,7 @@ public class Placer {
 				}
 				else { //swap logic blocks
 					swapLogicBlocks(sBlocks, rLimit, logicBlockSwap);
-					double newTimingCost= newTimingCostSwap(sBlocks, logicBlockSwap); //only recompute changed values
+					double newTimingCost= newTimingCostSwap(critExp, logicBlockSwap); //only recompute changed values
 					double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
 					double deltaTimingCost = oldTimingCost - newTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					double deltaWiringCost = oldWiringCost - newWiringCost ; 
@@ -331,7 +335,7 @@ public class Placer {
 			}
 			temp = UpdateTemp() ; 
 			rLimit = UpdateRlimit() ; 
-			CritExp = computeNewExponent(rLimit) ; 
+			critExp = computeNewExponent(rLimit) ; 
 		}
 		
 	}
@@ -341,9 +345,12 @@ public class Placer {
 		return 0;
 	}
 
-	private static double newTimingCostSwap(NetlistBlock[][][] sBlocks, int[] logicBlockSwap) {
-		// TODO Auto-generated method stub
-		return 0;
+	private static double newTimingCostSwap(double ce, int[] logicBlockSwap) {
+		double sum= 0;
+		for(SimplePath p : paths) {
+			sum += p.timingCostSwap(ce, logicBlockSwap);
+		}
+		return sum;
 	}
 
 	/**
@@ -398,6 +405,11 @@ public class Placer {
 		blockSwap[3] = block1.getX() + x;
 		blockSwap[4] = block1.getY() + y;
 		blockSwap[5] = 0;
+		
+		block1.setChanged();
+		if(sBlocks[blockSwap[3]][blockSwap[4]][0] != null) {
+			sBlocks[blockSwap[3]][blockSwap[4]][0].setChanged();
+		}
 	}
 
 	/**
@@ -518,6 +530,11 @@ public class Placer {
 		blockSwap[3] = xCoord;
 		blockSwap[4] = yCoord;
 		blockSwap[5] = subblk_1 ? 1 : 0;
+		
+		block1.setChanged();
+		if(sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]] != null) {
+			sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]].setChanged();
+		}
 	}
 
 	/**
@@ -569,9 +586,12 @@ public class Placer {
 		return 0;
 	}
 
-	private static double TimingCost(NetlistBlock[][][] sLogicBlock) {
-		// TODO Auto-generated method stub
-		return 0;
+	private static double TimingCost(double ce) {
+		double sum= 0;
+		for(SimplePath p : paths) {
+			sum += p.timingCost(ce);
+		}
+		return sum;
 	}
 
 	private static double WiringCost(NetlistBlock[][][] sLogicBlock) {

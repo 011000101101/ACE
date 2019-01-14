@@ -361,8 +361,10 @@ public class Net {
 		else {
 			for(Net n : StructureManager.getInstance().getNetCollection()) {
 				if(n.getSinks().contains(source)) {
-					intermediate.add(source);
-					n.extendPath(intermediate, remoteSink, sinkingNet, pathsTemp);
+					List<NetlistBlock> intermediateNew= new LinkedList<NetlistBlock>();
+					intermediateNew.addAll(intermediate);
+					intermediateNew.add(0, source);
+					n.extendPath(intermediateNew, remoteSink, sinkingNet, pathsTemp);
 				}
 			}
 		}

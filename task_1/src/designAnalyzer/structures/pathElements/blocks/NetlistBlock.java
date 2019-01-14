@@ -1,7 +1,11 @@
 package designAnalyzer.structures.pathElements.blocks;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
+import designAnalyzer.structures.SimplePath;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
@@ -51,7 +55,12 @@ public abstract class NetlistBlock extends PathElement{
 	/**
 	 * subblock-number: false = 0, true = 1
 	 */
-	protected boolean subblk_1; 
+	protected boolean subblk_1;
+
+	/**
+	 * list holding all connected paths
+	 */
+	private List<SimplePath> connectedPaths= new LinkedList<SimplePath>(); 
 	
 	
 	
@@ -167,6 +176,25 @@ public abstract class NetlistBlock extends PathElement{
 	}
 	
 	public abstract PathElement getOriginInit(IPin pin);
+
+	/**
+	 * marks all connected paths as changed
+	 */
+	public void setChanged() {
+		
+		for(SimplePath p : connectedPaths) {
+			p.setChanged();
+		}
+		
+	}
+	
+	/**
+	 * adds a path to the list of connected paths
+	 * @param p the path to add
+	 */
+	public void addPath(SimplePath p) {
+		connectedPaths.add(p);
+	}
 
 	
 }
