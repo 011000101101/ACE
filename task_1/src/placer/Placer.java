@@ -179,9 +179,8 @@ public class Placer {
 	 * @return
 	 */
 	private static int[] parseCommandlineArguments(String[] args) {
-		/*
 		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1};
-		for(int i = (routingFileProvided ? 4 : 3); i< args.length; i++) {
+		for(int i = 3; i< args.length; i++) {
 			switch(args[i]) {
 			case "-X":
 				i++;
@@ -230,8 +229,7 @@ public class Placer {
 			
 			}
 		}
-		return parameterInitialized;*/
-		return null; //TODO check / adapt
+		return parameterInitialized;
 	}
 	
 
@@ -739,7 +737,7 @@ public class Placer {
 		double returnVal = 0 ;
 		for(Net currentNet: allNets) {
 			if(!currentNet.getIsClocknNet()) {
-				currentBlocks = currentNet.getBlocks(); //TODO check if getBlocks is implemented
+				currentBlocks = currentNet.getBlocks(); 
 				int uix = 0; //TODO verify initialization with 0
 				int uiy = 0;
 				int vix = 0;
