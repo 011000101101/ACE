@@ -1,5 +1,6 @@
 package designAnalyzer.structures;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -295,10 +296,17 @@ public class Net {
 		
 	}
 
-
+	/**
+	 * returns all blocks this net uses
+	 * @return array of blocks
+	 */
 	public NetlistBlock[] getBlocks() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<NetlistBlock> returnArray = new ArrayList<NetlistBlock>();
+		returnArray.add(source);
+		for(NetlistBlock block: sinks.keySet()) {
+			returnArray.add(block);
+		}
+		return returnArray.toArray(new NetlistBlock[0]);
 	}
 	
 	/**

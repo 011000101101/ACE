@@ -654,7 +654,7 @@ public class Placer {
 		double returnVal = 0 ;
 		for(Net currentNet: allNets) {
 			if(!currentNet.getIsClocknNet()) {
-				currentBlocks = currentNet.getBlocks(); //TODO check if getBlocks is implemented
+				currentBlocks = currentNet.getBlocks(); 
 				int uix = 0; //TODO verify initialization with 0
 				int uiy = 0;
 				int vix = 0;

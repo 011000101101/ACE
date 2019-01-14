@@ -1,5 +1,7 @@
 package designAnalyzer.structures.pathElements.blocks;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -196,9 +198,18 @@ public abstract class NetlistBlock extends PathElement{
 		connectedPaths.add(p);
 	}
 
+	/**
+	 * returns an array of connected nets without clock net
+	 * @return array of connected nets
+	 */
 	public Net[] getNet() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Net> returnArray = new ArrayList<Net>();
+		for(int i = 0; i <= pinAssignments.length - 2; i++) {
+			if(pinAssignments[i] != null && !pinAssignments[i].getIsClocknNet()) {
+				returnArray.add(pinAssignments[i]);
+			}
+		}
+		return returnArray.toArray(new Net[0]);
 	}
 
 	
