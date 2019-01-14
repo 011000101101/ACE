@@ -60,16 +60,34 @@ public class Placer {
 	 */
 	private static ParameterManager parameterManager;
 	
+	/**
+	 * seeded random number generator
+	 */
 	private static Random rand;
 
+	/**
+	 * length and height of the quadratic placement area size in the middle of the chip
+	 */
 	private static int placingAreaSize;
 	
+	/**
+	 * array holding all io blocks to be placed
+	 */
 	private static IOBlock[] iOBlocks;
 	
+	/**
+	 * array holding all logic blocks to be placed
+	 */
 	private static LogicBlock[] logicBlocks;
 
+	/**
+	 * number of io blocks to be placed
+	 */
 	private static int iOBlockCount;
 
+	/**
+	 * number of all blocks to be placed
+	 */
 	private static int blockCount;
 
 	private static int biasX;
@@ -101,6 +119,8 @@ public class Placer {
 	 */
 	public static void main(String[] args) {
 
+		double lambda= 0.5; //TODO add optional command line passing of custom value 
+		int stepCountFactor= 10; //TODO add optional command line passing of custom value 
 		
 		String netlistFilePath= args[0];
 		String architectureFilePath= args[1];
@@ -137,7 +157,7 @@ public class Placer {
 
 			timingAnalyzer= TimingAnalyzer.getInstance();
 			
-			place();
+			place(stepCountFactor, lambda);
 			
 			
 			String[] netlistFilePathSplit= netlistFilePath.split("/");
@@ -241,18 +261,22 @@ public class Placer {
 		
 	}
 	
-	private static void place() {
+	private static void place(int stepCountFactor, double newLambda) {
 		
 		netWithValues = new HashMap<String, double[]>();
-		int stepCount= getStepCount();
+		int stepCount= (int) Math.floor( stepCountFactor * Math.pow(blockCount, ( (double) 4 / (double) 3 ) ) );
 		double avgCostPerNet= getAvgCostPerNet();
-		double lambda= getLambda();
+		double lambda= newLambda;
 		
 		NetlistBlock[][][] sBlocks = randomBlockPlacement() ; 
 		int[] logicBlockSwap = null;
-		double temp = computeInitialTemperature() ; 
+		double rA= 1;
+		int acceptedTurns= 0;
+		int rejectedTurns= 0;
 		double rLimit = computeInitialrLimit() ; 
-		double critExp = computeNewExponent(rLimit); 
+		double rLimitInitial= rLimit;
+		double critExp = computeNewExponent(rLimit, rLimitInitial); 
+		double temp = computeInitialTemperature(sBlocks, rLimit, critExp, lambda) ; 
 		for(Net n : structureManager.getNetCollection()) { //generate all paths
 			if(! n.getIsClocknNet()) paths.addAll(n.generateSimplePaths());
 		}
@@ -284,12 +308,15 @@ public class Placer {
 						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
+						acceptedTurns++;
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { //TODO translate to java 
 						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
+						acceptedTurns++;
 					}
+					else rejectedTurns++;
 				}
 				else { //swap logic blocks
 					swapLogicBlocks(sBlocks, rLimit, logicBlockSwap);
@@ -302,18 +329,24 @@ public class Placer {
 						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
+						acceptedTurns++;
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { //TODO translate to java 
 						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
+						acceptedTurns++;
 					}
+					else rejectedTurns++;
 				}
 
 			}
-			temp = UpdateTemp() ; 
-			rLimit = UpdateRlimit() ; 
-			critExp = computeNewExponent(rLimit) ; 
+			rA= acceptedTurns / (acceptedTurns + rejectedTurns); //compute new rA
+			acceptedTurns= 0; //reset counters for rA computation
+			rejectedTurns= 0;
+			temp = UpdateTemp(temp, rA) ; 
+			rLimit = UpdateRlimit(rLimit, rA) ; //TODO verify that "new" rA is used
+			critExp = computeNewExponent(rLimit, rLimitInitial) ; 
 		}
 		
 	}
@@ -572,11 +605,6 @@ public class Placer {
 		}
 	}
 
-	private static double getLambda() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 	/**
 	 * compute delay (tA) and slack for all paths and annotate it
 	 */
@@ -593,9 +621,14 @@ public class Placer {
 		}
 	}
 
-	private static double UpdateRlimit() {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * update rLimit
+	 * @param rLimitOld old rLimit
+	 * @param rAOld old rA
+	 * @return new rLimit
+	 */
+	private static double UpdateRlimit(double rLimitOld, double rAOld) {
+		return rLimitOld * ( ( 1 + rAOld) - 0.44 );
 	}
 
 	/**
@@ -628,29 +661,71 @@ public class Placer {
 		return 0;
 	}
 
-	private static int getStepCount() {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * compute new criticalityExponent
+	 * @param rLimit current rLimit
+	 * @param rLimitInitial initial rLimit
+	 * @return the new critExp
+	 */
+	private static double computeNewExponent(double rLimit, double rLimitInitial) {
+		return ( ( 1 - ( ( rLimit - 1 ) / ( rLimitInitial - 1 ) ) ) * 7 ) + 1;
 	}
 
-	private static double estimateTiming() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	private static double computeNewExponent(double rLimit) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
+	/**
+	 * computes the initial maximum range for swaps
+	 * @return the initial rLimit
+	 */
 	private static double computeInitialrLimit() {
-		// TODO Auto-generated method stub
-		return 0;
+		return parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE;
 	}
 
-	private static double computeInitialTemperature() {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * computes the initial temperature according to the formula on the slides
+	 * @param sBlocks initial random placement (will be changed, but still be random, therefore no need to save old placement)
+	 * @param rLimit maximum range for swaps
+	 * @param critExp criticality exponent
+	 * @param lambda lambda for weighting wiring and timing cost
+	 * @return initial temperature value
+	 */
+	private static double computeInitialTemperature(NetlistBlock[][][] sBlocks, double rLimit, double critExp, double lambda) {
+		
+		double n= blockCount;
+		double cQuer= 0;
+		int sumCSquare= 0;
+		for(int i= 1; i <= n; i++) {
+			double cI= applySwapAndGetC(sBlocks, rLimit, critExp, lambda);
+			sumCSquare+= cI * cI;
+			cQuer+= cI / n;
+		}
+		return 20 * Math.sqrt( ( (double) 1 / ( n - (double) 1) ) * ( sumCSquare - ( n * ( cQuer * cQuer ) ) ) ); 
+	
+	}
+
+	/**
+	 * computes and applies a random swap, then computes the new value of the cost function and returns it
+	 * @param sBlocks current placement
+	 * @param rLimit maximum range for swaps
+	 * @param critExp criticality exponent
+	 * @param lambda lambda for weighting wiring and timing cost
+	 * @return cost after the swap
+	 */
+	private static double applySwapAndGetC(NetlistBlock[][][] sBlocks, double rLimit, double critExp, double lambda) {
+
+		int[] blockSwap= new int[6];
+		if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
+			swapIOBlocks(sBlocks, rLimit, blockSwap);
+		}
+		else {
+			swapLogicBlocks(sBlocks, rLimit, blockSwap);
+		}
+		
+		applySwap(sBlocks, blockSwap);
+		
+		double newTimingCost= newTimingCostSwap(critExp, blockSwap); //only recompute changed values
+		double newWiringCost= newWiringCostSwap(sBlocks, blockSwap);
+		
+		return lambda * newTimingCost + (1 - lambda) * newWiringCost;  //TODO verify cost function
+		
 	}
 
 	/**
