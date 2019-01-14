@@ -37,11 +37,10 @@ public class Placer {
 	 */
 	private static ArchitectureParser architectureParser;
 	
-	//TODO implement placement writer
 	/**
 	 * reference to instance of placement writer
 	 */
-	//private static PlacementWriter placementWriter;
+	private static PlacementWriter placementWriter;
 	
 	
 	/**
@@ -95,7 +94,6 @@ public class Placer {
 	
 	private static List<SimplePath> paths= new LinkedList<SimplePath>();
 
-	private static PlacementWriter placementWriter;
 	
 	/**
 	 * main method
@@ -256,7 +254,7 @@ public class Placer {
 		double rLimit = computeInitialrLimit() ; 
 		double critExp = computeNewExponent(rLimit); 
 		for(Net n : structureManager.getNetCollection()) { //generate all paths
-			paths.addAll(n.generateSimplePaths());
+			if(! n.getIsClocknNet()) paths.addAll(n.generateSimplePaths());
 		}
 		for(SimplePath p : paths) { 
 			p.registerAtBlocks();
@@ -600,9 +598,21 @@ public class Placer {
 		return 0;
 	}
 
-	private static double UpdateTemp() {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * update the temperature according to the cooling schedule
+	 * @param tOld old temperature
+	 * @param rA acceptance rate
+	 * @return new temperature
+	 */
+	private static double UpdateTemp(double tOld, double rA) {
+		if(rA > 0.8) {
+			if(rA > 0.96) return 0.5 * tOld;
+			else return 0.9 * tOld;
+		}
+		else {
+			if(rA > 0.15) return 0.95 * tOld;
+			else return 0.8 * tOld;
+		}
 	}
 
 	private static double TimingCost(double ce) {
