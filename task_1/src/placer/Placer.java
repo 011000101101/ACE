@@ -36,11 +36,10 @@ public class Placer {
 	 */
 	private static ArchitectureParser architectureParser;
 	
-	//TODO implement placement writer
 	/**
 	 * reference to instance of placement writer
 	 */
-	//private static PlacementWriter placementWriter;
+	private static PlacementWriter placementWriter;
 	
 	
 	/**
@@ -94,7 +93,6 @@ public class Placer {
 	
 	private static List<SimplePath> paths= new LinkedList<SimplePath>();
 
-	private static PlacementWriter placementWriter;
 	
 	/**
 	 * main method
@@ -131,8 +129,10 @@ public class Placer {
 			ParameterManager.initialize(netlistFilePath, architectureFilePath, placementFilePath, architectureParser.getAllParameters());
 
 			netlistParser= new NetlistParser(netlistFilePath);
-			//TODO reactivate once implemented
-			//placementWriter= new PlacementWriter();
+			
+			String[] netlistFilePathSplit= netlistFilePath.split("/");
+			String[] architectureFilePathSplit= architectureFilePath.split("/");
+			placementWriter= new PlacementWriter(netlistFilePathSplit[netlistFilePathSplit.length - 1], architectureFilePathSplit[architectureFilePathSplit.length + 1]);
 			
 			parse();
 
@@ -141,9 +141,6 @@ public class Placer {
 			place();
 			
 			
-			String[] netlistFilePathSplit= netlistFilePath.split("/");
-			String[] architectureFilePathSplit= architectureFilePath.split("/");
-			placementWriter= new PlacementWriter(netlistFilePathSplit[netlistFilePathSplit.length - 1], architectureFilePathSplit[architectureFilePathSplit.length + 1]);
 			placementWriter.write(/*filepath*/ null); //TODO insert output file path
 			
 		} catch (FileNotFoundException e) {
@@ -332,7 +329,7 @@ public class Placer {
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 					}
-					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { //TODO translate to java 
+					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { //TODO verify
 						applySwap(sBlocks, logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
@@ -612,11 +609,6 @@ public class Placer {
 	}
 
 	private static int getStepCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	private static double estimateTiming() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
