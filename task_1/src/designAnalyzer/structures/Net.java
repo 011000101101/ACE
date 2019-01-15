@@ -80,7 +80,7 @@ public class Net {
 	
 	private double viy;
 	
-	private double wiringCost;
+	private double wiringCost= 0;
 
 	/**
 	 * flag to avoid duplicate wiring cost update
@@ -448,7 +448,7 @@ public class Net {
 				wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
 				oldWiringCost = wiringCost;
 				wiringCost = wiringCostX + wiringCostY;
-				deltaWiringCost+= oldWiringCost - wiringCost;
+				deltaWiringCost+= (oldWiringCost - wiringCost);
 			}
 			
 			if(block2 instanceof NetlistBlock && (source.equals(block2) || sinks.containsKey(block2))) {

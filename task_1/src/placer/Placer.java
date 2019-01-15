@@ -115,7 +115,7 @@ public class Placer {
 	/**
 	 * cache for wiring cost
 	 */
-	private static double oldWiringCost;
+	private static double oldWiringCost= 0.0;
 
 	
 	/**
@@ -325,14 +325,14 @@ public class Placer {
 		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
 		double avgPathsPerNet= paths.size() / (double) numberOfNets;
 		
-		System.out.println("initial Temp: " + temp);
-		System.out.println("Temp limit: " + (0.005 * avgPathsPerNet * avgTimingCostPerPath));
-		System.out.println(avgPathsPerNet);
-		System.out.println(avgTimingCostPerPath);
+//		System.out.println("initial Temp: " + temp);
+//		System.out.println("Temp limit: " + (0.005 * avgPathsPerNet * avgTimingCostPerPath));
+//		System.out.println(avgPathsPerNet);
+//		System.out.println(avgTimingCostPerPath);
 		
 		while(temp > (0.005 * avgPathsPerNet * avgTimingCostPerPath)) { 
-			System.out.println("Temp: " + temp);
-			System.out.println("test");
+//			System.out.println("Temp: " + temp);
+//			System.out.println("test");
 			/* compute Ta, Tr and slack() */ 
 			analyzeTiming() ; 
 			
@@ -346,7 +346,7 @@ public class Placer {
 				}
 			}
 			oldWiringCost = returnVal;
-			
+			System.out.println("old wiring cost: " + oldWiringCost);
 			double oldTimingCost = TimingCost(critExp) ; 
 			for(int j = 0; j < stepCount; j++) { 
 				
@@ -452,11 +452,13 @@ public class Placer {
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
 		//System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
+		//System.out.println(logicBlockSwap[2] + " ; " + logicBlockSwap[3]);
 		Net[] affectedNets = block1.getNet();
 		double returnVal = 0;
 		for(Net net: affectedNets) { 
 			if(net != null) {
 				returnVal += net.update(block1, block2, logicBlockSwap);
+				//System.out.println("returnVal "+ returnVal);
 			}
 		}
 		Net[] affectedNets2= new Net[0];
@@ -485,7 +487,7 @@ public class Placer {
 				net.resetUpdatedFlag();
 			}
 		}
-
+		//System.out.println("wtf" + returnVal);
 		return returnVal;
 	}
 
@@ -885,9 +887,10 @@ public class Placer {
 		
 		//System.out.println("compute new cost...");
 		double newTimingCost= newTimingCostSwap(critExp, blockSwap); //only recompute changed values
-		System.out.println("new timing cost: " + newTimingCost);
+		//System.out.println("new timing cost: " + newTimingCost);
+		//System.out.println("delta wiring cost: " + calcDeltaTotalWiringCost(blockSwap, sBlocks));
 		double newWiringCost= oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO verify adaption to new wiring cost structure
-		System.out.println("new wiring cost: " + newWiringCost);
+		//System.out.println("new wiring cost: " + newWiringCost);
 		//System.out.println("new cost computed.");
 		
 		
