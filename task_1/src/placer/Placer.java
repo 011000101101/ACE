@@ -304,7 +304,6 @@ public class Placer {
 		double rLimitInitial= rLimit;
 		double rLimitLogicBlocks = computeInitialrLimitLogicBlocks() ;  //infinity norm (for efficient random slot selection)
 		double critExp = computeNewExponent(rLimit, rLimitInitial); 
-		double temp = computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
 		int numberOfNets= 0;
 		
@@ -318,6 +317,9 @@ public class Placer {
 			p.registerAtBlocks();
 		}
 		timingAnalyzer.initializeDelayLUT();
+
+		analyzeTiming() ; 
+		double temp = computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
 		//double avgCostPerNet= getAvgCostPerNet();
 		//TODO check if works
@@ -493,6 +495,7 @@ public class Placer {
 
 	private static double newTimingCostSwap(double ce, int[] logicBlockSwap) {
 		double sum= 0;
+		System.out.println("size of paths list in placer: " + paths.size());
 		for(SimplePath p : paths) {
 			sum += p.timingCostSwap(ce, logicBlockSwap);
 		}
@@ -851,7 +854,7 @@ public class Placer {
 		double n= blockCount;
 		double cQuer= 0;
 		int sumCSquare= 0;
-		for(int i= 0; i < n; i++) {
+		for(int i= 0; i < (int) n; i++) {
 			double cI= applySwapAndGetC(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda);
 			//System.out.println("cost after swap:" + cI);
 			sumCSquare+= cI * cI;
