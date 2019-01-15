@@ -327,7 +327,16 @@ public class Placer {
 			analyzeTiming() ; 
 			
 			/* für Normalisierung der Kostenterme */ 
-			double oldWiringCost = wiringCost();
+			Collection<Net> allNets = structureManager.getNetCollection();
+			double returnVal = 0 ;
+			for(Net currentNet: allNets) {
+				if(!currentNet.getIsClocknNet()) {
+					currentNet.initializeWiringCost();
+					returnVal += currentNet.getWiringCost();
+				}
+			}
+			double oldWiringCost = returnVal;
+			
 			double oldTimingCost = TimingCost(critExp) ; 
 			for(int j = 0; j < stepCount; j++) { 
 				
@@ -336,7 +345,7 @@ public class Placer {
 				if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
 					swapIOBlocks(sBlocks, rLimit, logicBlockSwap);
 					double newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
-					double deltaWiringCost = calcDeltaWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
+					double deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
 					
 					double deltaTimingCost = newTimingCost - oldTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					double newWiringCost = oldWiringCost + deltaWiringCost; 
@@ -370,7 +379,7 @@ public class Placer {
 					swapLogicBlocks(sBlocks, rLimitLogicBlocks, logicBlockSwap);
 					double newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					//
-					double deltaWiringCost = calcDeltaWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
+					double deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
 					//double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
 					double deltaTimingCost = newTimingCost - oldTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					//
@@ -428,7 +437,7 @@ public class Placer {
 	 * @param sBlocks
 	 * @return delta wiring cost before swap and after swap: oldCost minus newCost: for good swaps, the result is positiv
 	 */
-	private static double calcDeltaWiringCost(int[] logicBlockSwap, NetlistBlock[][][] sBlocks) {
+	private static double calcDeltaTotalWiringCost(int[] logicBlockSwap, NetlistBlock[][][] sBlocks) {
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
 		Net[] affectedNets = block1.getNet();
@@ -439,24 +448,10 @@ public class Placer {
 				Arrays.asList(affectedNets).add(netToAppend);
 			}
 		}
-		for(Net net: affectedNets) { //vielleicht ganz am anfang netWithValues.get aufrufen, abespeichern: bessere Performanz?
-			double deltaUix = Math.pow(block2.getX(), 2) - Math.pow(block1.getX(), 2);
-			double deltaUiy = Math.pow(block2.getY(), 2) - Math.pow(block1.getY(), 2);
-			double deltaVix = block2.getX() - block1.getX();
-			double deltaViy = block2.getY() - block1.getY();
-			double uix = netWithValues.get(net.getName())[0] + deltaUix;
-			double uiy = netWithValues.get(net.getName())[1] + deltaUiy;
-			double vix = netWithValues.get(net.getName())[2] + deltaVix;
-			double viy = netWithValues.get(net.getName())[3] + deltaViy;
-			double wiringCostX = GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/netWithValues.get(net.getName())[4] + PHI);
-			double wiringCostY = GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/netWithValues.get(net.getName())[4] + PHI);
-			double wiringCost = wiringCostX + wiringCostY;
-			double[] newArray = {uix, uiy, vix, viy, wiringCost, netWithValues.get(net.getName())[4]};
-			returnVal += wiringCost - netWithValues.get(net.getName())[4];
-			netWithValues.put(net.getName(), newArray);
-			
+		for(Net net: affectedNets) { 
+			returnVal += net.update(block1, block2);
 		}
-		
+
 		return returnVal;
 	}
 
@@ -846,44 +841,12 @@ public class Placer {
 		
 		System.out.println("compute new cost...");
 		double newTimingCost= newTimingCostSwap(critExp, blockSwap); //only recompute changed values
-		double newWiringCost= wiringCost() + calcDeltaWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO verify adaption to new wiring cost structure
+		double newWiringCost= wiringCost() + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO verify adaption to new wiring cost structure
 		System.out.println("new cost computed.");
 		return lambda * newTimingCost + (1 - lambda) * newWiringCost;  //TODO verify cost function
 		
 	}
 
-	/**
-	 * generates records in Hashmap netWithValues where values as Uix, Uiy, Vix, Viy and estimated Cost are listed
-	 * @return wiringCosts of each net added together
-	 */
-	private static double wiringCost() {
-		Collection<Net> allNets = structureManager.getNetCollection();
-		//saves blocks of currentNet
-		NetlistBlock[] currentBlocks;
-		double returnVal = 0 ;
-		for(Net currentNet: allNets) {
-			if(!currentNet.getIsClocknNet()) {
-				currentBlocks = currentNet.getBlocks(); 
-				int uix = 0; //TODO verify initialization with 0
-				int uiy = 0;
-				int vix = 0;
-				int viy = 0;
-				for(NetlistBlock currentSingleBlock: currentBlocks) {
-					uix += Math.pow(currentSingleBlock.getX(),2);
-					uiy += Math.pow(currentSingleBlock.getY(),2);
-					vix += currentSingleBlock.getX();
-					viy += currentSingleBlock.getY();
-				}
-				double wiringCostX = GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/currentBlocks.length + PHI);
-				double wiringCostY = GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/currentBlocks.length + PHI);
-				double wiringCost = wiringCostX + wiringCostY;
-				double[] valueArray = {uix, uiy, vix, viy, wiringCost, currentBlocks.length};
-				returnVal += wiringCost;
-				netWithValues.put(currentNet.getName(), valueArray);
-			}
-		}
-		return returnVal;
-	}
 
 	
 	//TODO remove
