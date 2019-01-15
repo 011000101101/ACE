@@ -112,6 +112,11 @@ public class Placer {
 	
 	private static List<SimplePath> paths= new LinkedList<SimplePath>();
 
+	/**
+	 * cache for wiring cost
+	 */
+	private static double oldWiringCost;
+
 	
 	/**
 	 * main method
@@ -335,7 +340,7 @@ public class Placer {
 					returnVal += currentNet.getWiringCost();
 				}
 			}
-			double oldWiringCost = returnVal;
+			oldWiringCost = returnVal;
 			
 			double oldTimingCost = TimingCost(critExp) ; 
 			for(int j = 0; j < stepCount; j++) { 
@@ -841,7 +846,7 @@ public class Placer {
 		
 		System.out.println("compute new cost...");
 		double newTimingCost= newTimingCostSwap(critExp, blockSwap); //only recompute changed values
-		double newWiringCost= wiringCost() + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO verify adaption to new wiring cost structure
+		double newWiringCost= oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO verify adaption to new wiring cost structure
 		System.out.println("new cost computed.");
 		return lambda * newTimingCost + (1 - lambda) * newWiringCost;  //TODO verify cost function
 		
