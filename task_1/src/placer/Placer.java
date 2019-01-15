@@ -691,10 +691,12 @@ public class Placer {
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
 		sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]= block2;
 		sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]= block1;
-		block2.setCoordinates(logicBlockSwap[0], logicBlockSwap[1]); //set new coordinates
-		block1.setCoordinates(logicBlockSwap[3], logicBlockSwap[4]);
+		if(block2 instanceof NetlistBlock) block2.updateCoordinates(logicBlockSwap[0], logicBlockSwap[1]); //set new coordinates
+		block1.updateCoordinates(logicBlockSwap[3], logicBlockSwap[4]);
 		if(block1 instanceof IOBlock) { //set subblk number
 			block1.setSubblk_1(logicBlockSwap[5] == 1);
+		}
+		if(block2 instanceof IOBlock) { //set subblk number
 			block1.setSubblk_1(logicBlockSwap[2] == 1);
 		}
 	}
@@ -948,26 +950,125 @@ public class Placer {
 	 */
 	private static NetlistBlock[][][] randomBlockPlacement() {
 		
-		//TODO check skipping of taken places
 		int numberOfSlotsLeft= placingAreaSize * placingAreaSize;
+		System.out.println(placingAreaSize);
 		biasX= (parameterManager.X_GRID_SIZE - placingAreaSize) / 2 + 1;
 		biasY= (parameterManager.Y_GRID_SIZE - placingAreaSize) / 2 + 1;
 		NetlistBlock[][][] output= new NetlistBlock[parameterManager.X_GRID_SIZE + 2][parameterManager.Y_GRID_SIZE + 2][2];
 		for(LogicBlock b : logicBlocks) {
 			int index= rand.nextInt(numberOfSlotsLeft); //get random free slot
 			for(int i= 0; i < index; i++) {
-				if(output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0] != null) {
+				if(output[biasX + (i / placingAreaSize)][biasY + (i % placingAreaSize)][0] != null) {
 					index++; //skip slots already in use
 				}
+			}
+			while(output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0] != null) {
+				index++; //skip slots already in use
 			}
 			output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0]= b; //TODO verify
 			b.setCoordinates(biasX + (index / placingAreaSize), biasY + (index % placingAreaSize));
 			numberOfSlotsLeft--;
+			System.out.println("set initial coordinates: placed " + "LogicBlock" + " [" + b.getName() + "] at (" + (biasX + (index / placingAreaSize)) + "," + (biasY + (index % placingAreaSize)) + ")" );
 		}
 		
 		//TODO skip taken places, adjust numberOfSlotsLeft
-		numberOfSlotsLeft= parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2;
+		numberOfSlotsLeft= (parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2) * 2;
 		for(IOBlock b : iOBlocks) {
+			
+			int index= rand.nextInt(numberOfSlotsLeft); //get random free slot and pad number
+			boolean subBlk1= true;
+			int xCoord= 1; //first slot, left of top io
+			int yCoord= 0;
+			for(int i= 0; i < index; i++) {
+				
+				if(subBlk1) { //go to next io pad (same coordinates)
+					
+					subBlk1= false;
+					
+					if(!(i % 2 == 0)) { //TODO remove
+						System.err.println("error in io block placement");
+					}
+					
+					int j= i / 2; //compute new coordinates
+					if(j < parameterManager.X_GRID_SIZE) { //top io
+						xCoord= j + 1;
+						yCoord= 0;
+					}
+					else if(j < parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE) {
+						xCoord= 0;
+						yCoord= (j - parameterManager.X_GRID_SIZE) + 1;
+					}
+					else if(j < parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE) {
+						xCoord= (j - (parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE)) + 1;
+						yCoord= parameterManager.Y_GRID_SIZE + 1;
+					}
+					else{
+						xCoord= parameterManager.X_GRID_SIZE + 1;
+						yCoord= (j - (parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE)) + 1;
+					}
+					
+					if(output[xCoord][yCoord][subBlk1 ? 1 : 0] != null) {
+						index++; //skip slots already in use
+					}
+					
+				}
+				else { //go to next io pad (next coordinate) (clockwise)
+					
+					subBlk1= true;
+
+					if(output[xCoord][yCoord][subBlk1 ? 1 : 0] != null) {
+							index++; //skip slots already in use
+					}
+					
+				}
+				
+			}
+			
+			subBlk1= !subBlk1;
+
+			
+			int j= (index - (subBlk1 ? 1 : 0)) / 2; //compute new coordinates
+			if(j < parameterManager.X_GRID_SIZE) { //top io
+				xCoord= j + 1;
+				yCoord= 0;
+			}
+			else if(j < parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE) {
+				xCoord= 0;
+				yCoord= (j - parameterManager.X_GRID_SIZE) + 1;
+			}
+			else if(j < parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE) {
+				xCoord= (j - (parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE)) + 1;
+				yCoord= parameterManager.Y_GRID_SIZE + 1;
+			}
+			else{
+				xCoord= parameterManager.X_GRID_SIZE + 1;
+				yCoord= (j - (parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE)) + 1;
+			}
+
+			while(output[xCoord][yCoord][(subBlk1 ? 1 : 0)] != null) {
+				index++; //skip slots already in use
+				subBlk1= !subBlk1;
+
+				j= (index - (subBlk1 ? 1 : 0)) / 2; //compute new coordinates
+				if(j < parameterManager.X_GRID_SIZE) { //top io
+					xCoord= j + 1;
+					yCoord= 0;
+				}
+				else if(j < parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE) {
+					xCoord= 0;
+					yCoord= (j - parameterManager.X_GRID_SIZE) + 1;
+				}
+				else if(j < parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE) {
+					xCoord= (j - (parameterManager.X_GRID_SIZE + parameterManager.Y_GRID_SIZE)) + 1;
+					yCoord= parameterManager.Y_GRID_SIZE + 1;
+				}
+				else{
+					xCoord= parameterManager.X_GRID_SIZE + 1;
+					yCoord= (j - (parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE)) + 1;
+				}
+			}
+			
+			/*
 			int index= rand.nextInt(numberOfSlotsLeft * 2); //get random free slot and pad number
 			boolean subBlk1= false;
 			if(index >= numberOfSlotsLeft) { //extract subblock number information from generated random number
@@ -997,9 +1098,12 @@ public class Placer {
 					index++; //skip slots already in use
 				}
 			}
+			*/
 			output[xCoord][yCoord][subBlk1 ? 1 : 0]= b;
 			b.setCoordinates(xCoord, yCoord);
 			b.setSubblk_1(subBlk1);
+			numberOfSlotsLeft--;
+			System.out.println("set initial coordinates: placed " + ((b instanceof IOBlock) ? "IOBlock" : "LogicBlock") + " [" + b.getName() + "] at (" + xCoord + "," + yCoord + ")" );
 		}
 		
 		return output;

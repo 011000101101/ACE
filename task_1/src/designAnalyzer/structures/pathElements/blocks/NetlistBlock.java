@@ -117,6 +117,18 @@ public abstract class NetlistBlock extends PathElement{
 		
 	}
 	
+	/**
+	 * sets X and Y coordinate of this block without checking for coordinates already in use <br>
+	 * @param newXCoordinate the X coordinate of this block
+	 * @param newYCoordinate the Y coordinate of this block
+	 */
+	public void updateCoordinates(int newXCoordinate, int newYCoordinate) {
+		xCoordinate= newXCoordinate;
+		yCoordinate= newYCoordinate;
+		
+		
+	}
+	
 	public void connect(Net netToConnect, int pinNumber) {
 		if(pinAssignments[pinNumber] == null) {
 			pinAssignments[pinNumber]= netToConnect;
