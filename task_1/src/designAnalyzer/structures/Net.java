@@ -1,6 +1,7 @@
 package designAnalyzer.structures;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.pins.IPin;
+import placer.Placer;
 
 /**
  * 
@@ -69,6 +71,18 @@ public class Net {
 	 * holds all simplePaths the sinks of hich are part of this net
 	 */
 	private SimplePath[] sinkingPaths;
+	
+	private double uix;
+	
+	private double uiy;
+	
+	private double vix;
+	
+	private double viy;
+	
+	private double wiringCost;
+	
+	
 	
 	// TODO remove in final version
 	/*
@@ -300,7 +314,7 @@ public class Net {
 	 * returns all blocks this net uses
 	 * @return array of blocks
 	 */
-	public NetlistBlock[] getBlocks() {
+	private NetlistBlock[] getBlocks() {
 		ArrayList<NetlistBlock> returnArray = new ArrayList<NetlistBlock>();
 		returnArray.add(source);
 		for(NetlistBlock block: sinks.keySet()) {
@@ -377,4 +391,48 @@ public class Net {
 			}
 		}
 	}
+	
+	public void initializeWiringCost() {
+		NetlistBlock[] currentBlocks;
+		uix = 0;
+		uiy = 0;
+		vix = 0;
+		viy = 0;
+		currentBlocks = this.getBlocks(); 
+		for(NetlistBlock currentSingleBlock: currentBlocks) {
+			uix += Math.pow(currentSingleBlock.getX(),2);
+			uiy += Math.pow(currentSingleBlock.getY(),2);
+			vix += currentSingleBlock.getX();
+			viy += currentSingleBlock.getY();
+		}
+		double wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/currentBlocks.length + Placer.PHI);
+		double wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/currentBlocks.length + Placer.PHI);
+		wiringCost = wiringCostX + wiringCostY;
+	}
+
+	/**
+	 * standard getter
+	 * @return wiring cost of this net
+	 */
+	public double getWiringCost() {
+		return wiringCost;
+	}
+
+	public double update (NetlistBlock block1, NetlistBlock block2) {
+		double deltaUix = Math.pow(block2.getX(), 2) - Math.pow(block1.getX(), 2);
+		double deltaUiy = Math.pow(block2.getY(), 2) - Math.pow(block1.getY(), 2);
+		double deltaVix = block2.getX() - block1.getX();
+		double deltaViy = block2.getY() - block1.getY();
+		uix += deltaUix;
+		uiy += deltaUiy;
+		vix += deltaVix;
+		viy += deltaViy;
+		double wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI);
+		double wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
+		double oldWiringCost = wiringCost;
+		wiringCost = wiringCostX + wiringCostY;
+		return oldWiringCost - wiringCost;
+	}
+
 }
+
