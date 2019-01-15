@@ -81,6 +81,11 @@ public class Net {
 	private double viy;
 	
 	private double wiringCost;
+
+	/**
+	 * flag to avoid duplicate wiring cost update
+	 */
+	private boolean updated= false;
 	
 	
 	
@@ -418,21 +423,67 @@ public class Net {
 		return wiringCost;
 	}
 
-	public double update (NetlistBlock block1, NetlistBlock block2) {
-		double deltaUix = Math.pow(block2.getX(), 2) - Math.pow(block1.getX(), 2);
-		double deltaUiy = Math.pow(block2.getY(), 2) - Math.pow(block1.getY(), 2);
-		double deltaVix = block2.getX() - block1.getX();
-		double deltaViy = block2.getY() - block1.getY();
-		uix += deltaUix;
-		uiy += deltaUiy;
-		vix += deltaVix;
-		viy += deltaViy;
-		double wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI);
-		double wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
-		double oldWiringCost = wiringCost;
-		wiringCost = wiringCostX + wiringCostY;
-		return oldWiringCost - wiringCost;
+	public double update (NetlistBlock block1, NetlistBlock block2, int[] logicBlockSwap) {
+		if(!updated) {
+			
+			double deltaUix;
+			double deltaUiy;
+			double deltaVix;
+			double deltaViy;
+			double wiringCostX;
+			double wiringCostY;
+			double oldWiringCost;
+			double deltaWiringCost= 0;
+			
+			if(source.equals(block1) || sinks.containsKey(block1)) {
+				deltaUix = Math.pow(block1.getX(), 2) - Math.pow(logicBlockSwap[3], 2);
+				deltaUiy = Math.pow(block1.getY(), 2) - Math.pow(logicBlockSwap[4], 2);
+				deltaVix = block1.getX() - logicBlockSwap[3];
+				deltaViy = block1.getY() - logicBlockSwap[4];
+				uix += deltaUix;
+				uiy += deltaUiy;
+				vix += deltaVix;
+				viy += deltaViy;
+				wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI);
+				wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
+				oldWiringCost = wiringCost;
+				wiringCost = wiringCostX + wiringCostY;
+				deltaWiringCost+= oldWiringCost - wiringCost;
+			}
+			
+			if(block2 instanceof NetlistBlock && (source.equals(block2) || sinks.containsKey(block2))) {
+				deltaUix = Math.pow(block2.getX(), 2) - Math.pow(logicBlockSwap[0], 2);
+				deltaUiy = Math.pow(block2.getY(), 2) - Math.pow(logicBlockSwap[1], 2);
+				deltaVix = block2.getX() - logicBlockSwap[0];
+				deltaViy = block2.getY() - logicBlockSwap[1];
+				uix += deltaUix;
+				uiy += deltaUiy;
+				vix += deltaVix;
+				viy += deltaViy;
+				wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI);
+				wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
+				oldWiringCost = wiringCost;
+				wiringCost = wiringCostX + wiringCostY;
+				deltaWiringCost+= (oldWiringCost - wiringCost);
+			}
+			
+			updated= true;
+			return deltaWiringCost;
+			
+		}
+		return 0;
 	}
+
+
+	/**
+	 * reset the updated flag to false
+	 */
+	public void resetUpdatedFlag() {
+		updated= false;
+	}
+
+
+	
 
 }
 

@@ -325,8 +325,13 @@ public class Placer {
 		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
 		double avgPathsPerNet= paths.size() / (double) numberOfNets;
 		
+		System.out.println("initial Temp: " + temp);
+		System.out.println("Temp limit: " + (0.005 * avgPathsPerNet * avgTimingCostPerPath));
+		System.out.println(avgPathsPerNet);
+		System.out.println(avgTimingCostPerPath);
+		
 		while(temp > (0.005 * avgPathsPerNet * avgTimingCostPerPath)) { 
-			//System.out.println("Temp: " + temp);
+			System.out.println("Temp: " + temp);
 			System.out.println("test");
 			/* compute Ta, Tr and slack() */ 
 			analyzeTiming() ; 
@@ -443,18 +448,42 @@ public class Placer {
 	 * @return delta wiring cost before swap and after swap: oldCost minus newCost: for good swaps, the result is positiv
 	 */
 	private static double calcDeltaTotalWiringCost(int[] logicBlockSwap, NetlistBlock[][][] sBlocks) {
+		//System.out.println(logicBlockSwap[0] + " ; " + logicBlockSwap[1]);
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
+		//System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
 		Net[] affectedNets = block1.getNet();
-		Net[] affectedNets2 = block2.getNet();
 		double returnVal = 0;
-		for(Net netToAppend: affectedNets2) {
-			if(	!Arrays.asList(affectedNets).contains(netToAppend)) {//TODO @Vincenz pls check if contains works for net entities
-				Arrays.asList(affectedNets).add(netToAppend);
+		for(Net net: affectedNets) { 
+			if(net != null) {
+				returnVal += net.update(block1, block2, logicBlockSwap);
 			}
 		}
+		Net[] affectedNets2= new Net[0];
+		if(block2 instanceof NetlistBlock) {
+			affectedNets2 = block2.getNet();
+			for(Net net: affectedNets2) { 
+				if(net != null) {
+					returnVal += net.update(block1, block2, logicBlockSwap);
+				}
+			}
+			/*
+			for(Net netToAppend: affectedNets2) {
+				if(	!Arrays.asList(affectedNets).contains(netToAppend)) {//TODO @Vincenz pls check if contains works for net entities
+					Arrays.asList(affectedNets).add(netToAppend);
+				}
+			}
+			*/
+		}
 		for(Net net: affectedNets) { 
-			returnVal += net.update(block1, block2);
+			if(net != null) {
+				net.resetUpdatedFlag();
+			}
+		}
+		for(Net net: affectedNets2) { 
+			if(net != null) {
+				net.resetUpdatedFlag();
+			}
 		}
 
 		return returnVal;
@@ -570,7 +599,6 @@ public class Placer {
 		int xCoord= block1.getX(); //get starting point position
 		int yCoord= block1.getY();
 		while(swapDistance > 0) { //walk around the rim until the target position is reached
-			System.out.println(swapDistance + " , " + xCoord + " , " + yCoord);
 			if(yCoord == parameterManager.Y_GRID_SIZE + 1) { //top IO
 				if(ccw) {
 					if(swapDistance > xCoord - 1) { //go to left IO
@@ -668,6 +696,14 @@ public class Placer {
 				}
 			}
 		}
+		/*
+		System.out.println(block1.getX());
+		System.out.println(block1.getY());
+		System.out.println(block1.getSubblk_1() ? 1 : 0);
+		System.out.println(xCoord);
+		System.out.println(yCoord);
+		System.out.println(subblk_1 ? 1 : 0);
+		*/
 		blockSwap[0] = block1.getX();
 		blockSwap[1] = block1.getY();
 		blockSwap[2] = block1.getSubblk_1() ? 1 : 0;
@@ -689,8 +725,10 @@ public class Placer {
 	private static void applySwap(NetlistBlock[][][] sBlocks, int[] logicBlockSwap) {
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
+		//System.out.println("swap " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]] + " with " + sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 		sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]= block2;
 		sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]= block1;
+		//System.out.println("swapped " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]] + " with " + sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 		if(block2 instanceof NetlistBlock) block2.updateCoordinates(logicBlockSwap[0], logicBlockSwap[1]); //set new coordinates
 		block1.updateCoordinates(logicBlockSwap[3], logicBlockSwap[4]);
 		if(block1 instanceof IOBlock) { //set subblk number
@@ -812,12 +850,15 @@ public class Placer {
 		double cQuer= 0;
 		int sumCSquare= 0;
 		for(int i= 0; i < n; i++) {
-			System.out.println("blub");
 			double cI= applySwapAndGetC(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda);
+			//System.out.println("cost after swap:" + cI);
 			sumCSquare+= cI * cI;
 			cQuer+= cI / n;
 		}
 		System.out.println("initial temperature computed.");
+		System.out.println(sumCSquare);
+		System.out.println(n);
+		System.out.println(cQuer);
 		return 20 * Math.sqrt( ( (double) 1 / ( n - (double) 1) ) * ( sumCSquare - ( n * ( cQuer * cQuer ) ) ) ); 
 	
 	}
@@ -834,20 +875,24 @@ public class Placer {
 
 		int[] blockSwap= new int[6];
 		if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
-			System.out.println("swap io block...");
+			//System.out.println("swap io block...");
 			swapIOBlocks(sBlocks, rLimit, blockSwap);
 		}
 		else {
-			System.out.println("swapLogicBlock...");
+			//System.out.println("swapLogicBlock...");
 			swapLogicBlocks(sBlocks, rLimitLogicBlocks, blockSwap);
 		}
 		
+		//System.out.println("compute new cost...");
+		double newTimingCost= newTimingCostSwap(critExp, blockSwap); //only recompute changed values
+		System.out.println("new timing cost: " + newTimingCost);
+		double newWiringCost= oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO verify adaption to new wiring cost structure
+		System.out.println("new wiring cost: " + newWiringCost);
+		//System.out.println("new cost computed.");
+		
+		
 		applySwap(sBlocks, blockSwap);
 		
-		System.out.println("compute new cost...");
-		double newTimingCost= newTimingCostSwap(critExp, blockSwap); //only recompute changed values
-		double newWiringCost= oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO verify adaption to new wiring cost structure
-		System.out.println("new cost computed.");
 		return lambda * newTimingCost + (1 - lambda) * newWiringCost;  //TODO verify cost function
 		
 	}
@@ -919,7 +964,7 @@ public class Placer {
 	private static NetlistBlock[][][] randomBlockPlacement() {
 		
 		int numberOfSlotsLeft= placingAreaSize * placingAreaSize;
-		System.out.println(placingAreaSize);
+		//System.out.println(placingAreaSize);
 		biasX= (parameterManager.X_GRID_SIZE - placingAreaSize) / 2 + 1;
 		biasY= (parameterManager.Y_GRID_SIZE - placingAreaSize) / 2 + 1;
 		NetlistBlock[][][] output= new NetlistBlock[parameterManager.X_GRID_SIZE + 2][parameterManager.Y_GRID_SIZE + 2][2];
