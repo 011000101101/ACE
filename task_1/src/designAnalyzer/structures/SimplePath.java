@@ -16,6 +16,23 @@ public class SimplePath {
 	private int tR;
 	private int slack;
 	private double criticality;
+	
+	/**
+	 * current timing cost of this path (essentially a cache)<br>
+	 * -1 if invalid
+	 */
+	private double cost= -1;
+	
+	/**
+	 * last value of cost to be able to reset the buffer if swap is not performed<br>
+	 * -1 if invalid
+	 */
+	private double oldCost= -1;
+	
+	/**
+	 * flag to avoid duplicates when updating the timing cost (a simplePath might be part of both swapped blocks...)
+	 */
+	private boolean updated= false;
 
 	private NetlistBlock source;
 	private NetlistBlock sink;
@@ -117,7 +134,9 @@ public class SimplePath {
 	 * @return timing cost of this path
 	 */
 	public double timingCost(double ce) {
-		return ((double) lookUpDelay()) * Math.pow(criticality, ce);
+		cost= ((double) lookUpDelay()) * Math.pow(criticality, ce);
+		oldCost= cost;
+		return cost;
 	}
 
 	private int lookUpDelay() {
@@ -158,7 +177,9 @@ public class SimplePath {
 	}
 
 	public double timingCostSwap(double ce, int[] logicBlockSwap) {
-		return ((double) lookUpDelaySwap(logicBlockSwap)) * Math.pow(criticality, ce);
+		oldCost= cost;
+		cost= ((double) lookUpDelaySwap(logicBlockSwap)) * Math.pow(criticality, ce);
+		return cost;
 	}
 
 	private double lookUpDelaySwap(int[] logicBlockSwap) {
@@ -234,6 +255,14 @@ public class SimplePath {
 		
 	}
 	
+	public boolean getUpdated() {
+		return updated;
+	}
+	
+	public void setUpdated(boolean newUpdated) {
+		updated= newUpdated;
+	}
+	
 	/**
 	 * adds this to the list of paths in every connected block to be able to recieve the changed flag update
 	 */
@@ -245,6 +274,26 @@ public class SimplePath {
 				intermediate[i].addPath(this);
 			}
 		}
+	}
+
+	/**
+	 * retrieve cached timing cost, or compute, store and return the cost if the cache was invalid/empty
+	 * @param ce criticality exponent for possible computation of cost
+	 * @return timing cost
+	 */
+	public double getCachedCost(double ce) {
+		if(cost != -1) return cost;
+		else {
+			cost= timingCost(ce);
+			return cost;
+		}
+	}
+	
+	/**
+	 * reset cache if swap was aborted
+	 */
+	public void resetCostCache() {
+		cost= oldCost;
 	}
 	
 }

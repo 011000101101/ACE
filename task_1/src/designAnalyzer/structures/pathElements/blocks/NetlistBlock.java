@@ -197,6 +197,10 @@ public abstract class NetlistBlock extends PathElement{
 	public void addPath(SimplePath p) {
 		connectedPaths.add(p);
 	}
+	
+	public List<SimplePath> getConnectedPaths(){
+		return connectedPaths;
+	}
 
 	/**
 	 * returns an array of connected nets without clock net
