@@ -319,9 +319,9 @@ public class Placer {
 				else { //swap logic blocks
 					swapLogicBlocks(sBlocks, rLimit, logicBlockSwap);
 					double newTimingCost= newTimingCostSwap(critExp, logicBlockSwap); //only recompute changed values
-					double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
+					double deltaWiringCost = calcDeltaWiringCost(logicBlockSwap, sBlocks);
 					double deltaTimingCost = oldTimingCost - newTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
-					double deltaWiringCost = oldWiringCost - newWiringCost ; 
+					double newWiringCost = oldWiringCost + deltaWiringCost; 
 					double deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
 					if (deltaCost <= 0) { 
 						applySwap(sBlocks, logicBlockSwap);
