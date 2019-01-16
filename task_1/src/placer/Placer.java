@@ -370,12 +370,10 @@ public class Placer {
 		double rA= 1;
 		int acceptedTurns= 0;
 		int rejectedTurns= 0;
-		outputAcceptanceRate.add(rA);
 		double rLimit = computeInitialrLimit() ; //absolute norm
-		outputRLimit.add(rLimit);
 		double rLimitInitial= rLimit;
 		double rLimitLogicBlocks = computeInitialrLimitLogicBlocks();  //infinity norm (for efficient random slot selection)
-		outputRLimitLogicBlock.add(rLimitLogicBlocks);
+
 		double critExp = computeNewExponent(rLimit, rLimitInitial); 
 		
 		int numberOfNets= 0;
@@ -414,7 +412,6 @@ public class Placer {
 		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
 		double avgPathsPerNet= paths.size() / (double) numberOfNets;
 		
-		outputTotalCost.add(oldTimingCost + oldWiringCost);
 		
 		System.out.println("initial Temp: " + temp);
 		System.out.println("Temp limit: " + (0.005 * avgPathsPerNet * avgTimingCostPerPath));
@@ -569,16 +566,17 @@ public class Placer {
 					}
 				}
 
+
+				//to track totalWiringCost, AcceptanceRate, RLimit and RLimitLogicBlock right after each step#
+				if(diagnoseDataFlag) {
+					outputTotalCost.add(cost);
+					outputAcceptanceRate.add(rA);
+					outputRLimit.add(rLimit);
+					outputRLimitLogicBlock.add(rLimitLogicBlocks);
+				}
 				
 			}
 
-			//to track totalWiringCost, AcceptanceRate, RLimit and RLimitLogicBlock right after each step#
-			if(diagnoseDataFlag) {
-				outputTotalCost.add(cost);
-				outputAcceptanceRate.add(rA);
-				outputRLimit.add(rLimit);
-				outputRLimitLogicBlock.add(rLimitLogicBlocks);
-			}
 			rA= acceptedTurns / (acceptedTurns + rejectedTurns); //compute new rA
 			System.out.println("rA was: "+ rA);
 			System.out.println("acceptedTurns: "+ acceptedTurns);
