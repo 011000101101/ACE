@@ -100,7 +100,7 @@ public class NetlistParser extends AbstractInputParser {
 	 */
 	private NetlistBlock parseInputBlock() {
 		
-	//	if(!currentLine[1].equals(globalNet)) {
+		if(!currentLine[1].equals(globalNet)) {
 			NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
 			
 			currentLine= readLineAndTokenize();
@@ -124,8 +124,10 @@ public class NetlistParser extends AbstractInputParser {
 			
 			return currentBlock;
 			
-	//	}
-	//	return null;
+		}
+
+		currentLine= readLineAndTokenize();
+		return null;
 	}
 	
 	/**
@@ -135,7 +137,7 @@ public class NetlistParser extends AbstractInputParser {
 	 */
 	private NetlistBlock parseOutputBlock() {
 
-	//	if(!currentLine[1].equals(globalNet)) {
+		if(!currentLine[1].equals(globalNet)) {
 			NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
 			
 			currentLine= readLineAndTokenize();
@@ -156,9 +158,10 @@ public class NetlistParser extends AbstractInputParser {
 			}
 			
 			return currentBlock;
-	//	}
-		
-	//	return null;
+		}
+
+		currentLine= readLineAndTokenize();
+		return null;
 	}
 	
 	/**

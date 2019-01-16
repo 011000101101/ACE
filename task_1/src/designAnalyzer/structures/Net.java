@@ -72,20 +72,47 @@ public class Net {
 	 */
 	private SimplePath[] sinkingPaths;
 	
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double uix;
 	
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double uiy;
 	
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double vix;
 	
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double viy;
 	
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double wiringCost= 0;
 
 	/**
 	 * flag to avoid duplicate wiring cost update
 	 */
 	private boolean updated= false;
+
+	private double uixOld;
+
+	private double uiyOld;
+
+	private double vixOld;
+
+	private double viyOld;
+
+	private double oldWiringCost;
+
+	private boolean buffersChanged= false;
 	
 	
 	
@@ -432,36 +459,50 @@ public class Net {
 			double deltaViy;
 			double wiringCostX;
 			double wiringCostY;
-			double oldWiringCost;
 			double deltaWiringCost= 0;
 			
 			if(source.equals(block1) || sinks.containsKey(block1)) {
-				deltaUix = Math.pow(block1.getX(), 2) - Math.pow(logicBlockSwap[3], 2);
-				deltaUiy = Math.pow(block1.getY(), 2) - Math.pow(logicBlockSwap[4], 2);
-				deltaVix = block1.getX() - logicBlockSwap[3];
-				deltaViy = block1.getY() - logicBlockSwap[4];
+				deltaUix = Math.pow(logicBlockSwap[3], 2) - Math.pow(block1.getX(), 2);
+				deltaUiy = Math.pow(logicBlockSwap[4], 2) - Math.pow(block1.getY(), 2);
+				deltaVix = - block1.getX() + logicBlockSwap[3];
+				deltaViy = - block1.getY() + logicBlockSwap[4];
+				if(!buffersChanged) {
+					uixOld= uix;
+					uiyOld= uiy;
+					vixOld= vix;
+					viyOld= viy;
+					oldWiringCost = wiringCost;
+					buffersChanged= true;
+				}
 				uix += deltaUix;
 				uiy += deltaUiy;
 				vix += deltaVix;
 				viy += deltaViy;
-				System.out.println("uix " +uix);
-				System.out.println("uiy " +uiy);
-				System.out.println("vix " +vix);
-				System.out.println("uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI " +(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI));
+//				System.out.println("uix " +uix);
+//				System.out.println("uiy " +uiy);
+//				System.out.println("vix " +vix);
+//				System.out.println("uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI " +(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI));
 				wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI);
 				wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
 //				System.out.println("wiringCostX " +wiringCostX);
 //				System.out.println("wiringCostY "+wiringCostY);
-				oldWiringCost = wiringCost;
 				wiringCost = wiringCostX + wiringCostY;
 				deltaWiringCost+= (oldWiringCost - wiringCost);
 			}
 			
 			if(block2 instanceof NetlistBlock && (source.equals(block2) || sinks.containsKey(block2))) {
-				deltaUix = Math.pow(block2.getX(), 2) - Math.pow(logicBlockSwap[0], 2);
-				deltaUiy = Math.pow(block2.getY(), 2) - Math.pow(logicBlockSwap[1], 2);
-				deltaVix = block2.getX() - logicBlockSwap[0];
-				deltaViy = block2.getY() - logicBlockSwap[1];
+				deltaUix = Math.pow(logicBlockSwap[0], 2) - Math.pow(block2.getX(), 2);
+				deltaUiy = Math.pow(logicBlockSwap[1], 2) - Math.pow(block2.getY(), 2);
+				deltaVix = - block2.getX() + logicBlockSwap[0];
+				deltaViy = - block2.getY() + logicBlockSwap[1];
+				if(!buffersChanged) {
+					uixOld= uix;
+					uiyOld= uiy;
+					vixOld= vix;
+					viyOld= viy;
+					oldWiringCost = wiringCost;
+					buffersChanged= true;
+				}
 				uix += deltaUix;
 				uiy += deltaUiy;
 				vix += deltaVix;
@@ -486,6 +527,19 @@ public class Net {
 	 */
 	public void resetUpdatedFlag() {
 		updated= false;
+	}
+
+
+	/**
+	 * reset changed wiring cost values if swap was rejected
+	 */
+	public void resetWiringCost() {
+		uix= uixOld;
+		uiy= uiyOld;
+		vix= vixOld;
+		viy= viyOld;
+		wiringCost= oldWiringCost;
+		buffersChanged= false;
 	}
 
 
