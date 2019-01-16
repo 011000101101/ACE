@@ -178,12 +178,12 @@ public class SimplePath {
 
 	public double timingCostSwap(double ce, int[] logicBlockSwap) {
 		oldCost= cost;
-		System.out.println("timingCostSwap: oldCost= " + oldCost);
+//		System.out.println("timingCostSwap: oldCost= " + oldCost);
 		cost= ((double) lookUpDelaySwap(logicBlockSwap)) * Math.pow(criticality, ce);
-		System.out.println("timingCostSwap: criticality= " + criticality);
-		System.out.println("timingCostSwap: ce= " + ce);
-		System.out.println("timingCostSwap: lookUpDelaySwap(logicBlockSwap)= " + lookUpDelaySwap(logicBlockSwap));
-		System.out.println("timingCostSwap: cost= " + cost);
+//		System.out.println("timingCostSwap: criticality= " + criticality);
+//		System.out.println("timingCostSwap: ce= " + ce);
+//		System.out.println("timingCostSwap: lookUpDelaySwap(logicBlockSwap)= " + lookUpDelaySwap(logicBlockSwap));
+//		System.out.println("timingCostSwap: cost= " + cost);
 		return cost;
 	}
 

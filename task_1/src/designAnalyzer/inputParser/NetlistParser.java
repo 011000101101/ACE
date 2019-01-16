@@ -25,6 +25,8 @@ public class NetlistParser extends AbstractInputParser {
 	 */
 	private int numberOfBlocks=0;
 	
+	private String globalNet = "";
+	
 	public NetlistParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
 		// TODO Auto-generated constructor stub
@@ -52,15 +54,15 @@ public class NetlistParser extends AbstractInputParser {
 			case INPUT_TOKEN:
 				
 				currentBlock= parseInputBlock();
-				newBlock= true;
-					
+				if(currentBlock == null) newBlock= false;
+				else newBlock= true;
 				break;
 				
 			case OUTPUT_TOKEN:
 				
 				currentBlock= parseOutputBlock();
-				newBlock= true;
-				
+				if(currentBlock == null) newBlock= false;
+				else newBlock= true;
 				break;
 				
 			case CLB_TOKEN:
@@ -98,29 +100,32 @@ public class NetlistParser extends AbstractInputParser {
 	 */
 	private NetlistBlock parseInputBlock() {
 		
-		NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
-		
-		currentLine= readLineAndTokenize();
-		
-		if(currentLine.length == 2) {	//check for correct number of arguments
-		
-			if(!"pinlist:".equals(currentLine[0])) { //check for correct token at start of line
-				ErrorReporter.reportSyntaxError("pinlist", currentLine[0], this);
+	//	if(!currentLine[1].equals(globalNet)) {
+			NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
+			
+			currentLine= readLineAndTokenize();
+			
+			if(currentLine.length == 2) {	//check for correct number of arguments
+			
+				if(!"pinlist:".equals(currentLine[0])) { //check for correct token at start of line
+					ErrorReporter.reportSyntaxError("pinlist", currentLine[0], this);
+				}
+				
+				Net currentNet= structureManager.retrieveNet(currentLine[1], false);
+				currentBlock.connect(currentNet, 1); //connect specified net to output pin of input block
+				if(!currentNet.getIsClocknNet()) { // ignore clock nets
+					currentNet.setSource(currentBlock); //link block to net as only source
+				}
+				
+			}
+			else {
+				ErrorReporter.reportInvalidTokenCount(2, this);
 			}
 			
-			Net currentNet= structureManager.retrieveNet(currentLine[1], false);
-			currentBlock.connect(currentNet, 1); //connect specified net to output pin of input block
-			if(!currentNet.getIsClocknNet()) { // ignore clock nets
-				currentNet.setSource(currentBlock); //link block to net as only source
-			}
+			return currentBlock;
 			
-		}
-		else {
-			ErrorReporter.reportInvalidTokenCount(2, this);
-		}
-		
-		return currentBlock;
-		
+	//	}
+	//	return null;
 	}
 	
 	/**
@@ -129,28 +134,31 @@ public class NetlistParser extends AbstractInputParser {
 	 * @return the newly created OutputBlock
 	 */
 	private NetlistBlock parseOutputBlock() {
-		
-		NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
-		
-		currentLine= readLineAndTokenize();
-		
-		if(currentLine.length == 2) {	//check for correct number of arguments
+
+	//	if(!currentLine[1].equals(globalNet)) {
+			NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
 			
-			if(!"pinlist:".equals(currentLine[0])) { //check for correct token at start of line
-				ErrorReporter.reportSyntaxError("pinlist", currentLine[0], this);
+			currentLine= readLineAndTokenize();
+			
+			if(currentLine.length == 2) {	//check for correct number of arguments
+				
+				if(!"pinlist:".equals(currentLine[0])) { //check for correct token at start of line
+					ErrorReporter.reportSyntaxError("pinlist", currentLine[0], this);
+				}
+				
+				Net currentNet= structureManager.retrieveNet(currentLine[1], false);
+				currentBlock.connect(currentNet, 0); //connect specified net to input pin of output block
+				currentNet.addSink(currentBlock);	//link block to net as sink
+				
+			}
+			else {
+				ErrorReporter.reportInvalidTokenCount(2, this);
 			}
 			
-			Net currentNet= structureManager.retrieveNet(currentLine[1], false);
-			currentBlock.connect(currentNet, 0); //connect specified net to input pin of output block
-			currentNet.addSink(currentBlock);	//link block to net as sink
-			
-		}
-		else {
-			ErrorReporter.reportInvalidTokenCount(2, this);
-		}
+			return currentBlock;
+	//	}
 		
-		return currentBlock;
-		
+	//	return null;
 	}
 	
 	/**
@@ -260,6 +268,7 @@ public class NetlistParser extends AbstractInputParser {
 		
 		Net temp= structureManager.retrieveNet(currentLine[1], true);
 		temp.setIsClockNet(true);
+		globalNet = temp.getName();
 		
 	}
 
