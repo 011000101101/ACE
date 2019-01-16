@@ -11,6 +11,11 @@ import java.io.IOException;
 import designAnalyzer.ParameterManager;
 import designAnalyzer.structures.StructureManager;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public abstract class AbstractWriter {
 
 	/**

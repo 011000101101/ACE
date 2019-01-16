@@ -6,6 +6,11 @@ import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.timingAnalyzer.TimingAnalyzer;
 
+/**
+ * 
+ * @author Dennis Grotz, Rumei Ma, Vincenz Mechler
+ *
+ */
 public class SimplePath {
 
 	TimingAnalyzer timingAnalyzer;
