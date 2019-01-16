@@ -1315,8 +1315,8 @@ public class Placer {
 			}
 			*/
 			output[xCoord][yCoord][subBlk1 ? 1 : 0]= b;
-			b.setCoordinates(xCoord, yCoord);
 			b.setSubblk_1(subBlk1);
+			b.setCoordinates(xCoord, yCoord);
 			numberOfSlotsLeft--;
 			System.out.println("set initial coordinates: placed " + ((b instanceof IOBlock) ? "IOBlock" : "LogicBlock") + " [" + b.getName() + "] at (" + xCoord + "," + yCoord + ")" );
 		}
