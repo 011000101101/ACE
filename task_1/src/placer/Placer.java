@@ -2,6 +2,7 @@ package placer;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -93,7 +94,15 @@ public class Placer {
 	private static int biasX;
 
 	private static int biasY;
+	
+	private static List<Double> outputTotalWiringCost= new ArrayList<Double>();
 
+	private static List<Double> outputAcceptanceRate= new ArrayList<Double>();
+
+	private static List<Double> outputRLimit= new ArrayList<Double>();
+
+	private static List<Double> outputRLimitLogicBlock= new ArrayList<Double>();
+	
 	/**
 	 * HashMap stores Ui and Vi values for each net
 	 * value contains five values: Ui x, Ui y, Vi x, Vi y, wiring cost for this net
@@ -117,6 +126,11 @@ public class Placer {
 	 */
 	private static double oldWiringCost= 0.0;
 
+	/**
+	 * for whether output of variables is needed
+	 */
+	private static boolean diagnoseDataFlag = false;
+
 	
 	/**
 	 * main method
@@ -135,9 +149,11 @@ public class Placer {
 		if(commandLineDoubleInput[0] == -1) lambda= 0.5; //default value
 		else lambda= commandLineDoubleInput[0]; //value passed via command line
 		int stepCountFactor;
-		System.out.println("stepCountFACTOR: "+ commandLineDoubleInput[1]);
-		if(commandLineDoubleInput[1] == -1) stepCountFactor= 10; //default value
-		else stepCountFactor= (int)commandLineDoubleInput[1]; //value passed via command line
+		System.out.println("stepCountFACTOR: "+ commandLineInput[10]);
+		if(commandLineInput[10] == -1) stepCountFactor= 10; //default value
+		else stepCountFactor= (int)commandLineInput[10]; //value passed via command line
+		
+		if(commandLineInput[11] == 0) diagnoseDataFlag= true; //set flag to true
 		
 		long seed;
 		if(commandLineInput[9] == -1) seed= 0; //default value
@@ -197,7 +213,7 @@ public class Placer {
 	 * @return
 	 */
 	private static int[] parseCommandlineArguments(String[] args) {
-		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 		for(int i = 3; i< args.length; i++) {
 			switch(args[i]) {
 			case "-X":
@@ -250,6 +266,16 @@ public class Placer {
 				parameterInitialized[9]= Integer.valueOf(args[i]);
 			break;
 			
+
+			case "-stepCountFactor":
+				i++;
+				parameterInitialized[10]= Integer.valueOf(args[i]);
+//				System.out.println("stepCountF.: "+ parameterInitialized[1]);
+			break;
+			
+			case "-diagnoseData":
+				parameterInitialized[11]= 0;
+			break;
 			}
 		}
 		return parameterInitialized;
@@ -257,7 +283,7 @@ public class Placer {
 	
 	private static double[] parseCommandlineDoubleArguments(String[] args) {
 		
-		double[] parameterInitialized = new double[] {-1,-1};
+		double[] parameterInitialized = new double[] {-1};
 		for(int i = 3; i< args.length; i++) {
 			
 			switch(args[i]) {
@@ -265,12 +291,6 @@ public class Placer {
 			case "-lambda":
 				i++;
 				parameterInitialized[0]= Double.valueOf(args[i]);
-			break;
-			
-			case "-stepCountFactor":
-				i++;
-				parameterInitialized[1]= Double.valueOf(args[i]);
-				System.out.println("stepCountF.: "+ parameterInitialized[1]);
 			break;
 			
 			}
@@ -327,9 +347,12 @@ public class Placer {
 		double rA= 1;
 		int acceptedTurns= 0;
 		int rejectedTurns= 0;
+		outputAcceptanceRate.add(rA);
 		double rLimit = computeInitialrLimit() ; //absolute norm
+		outputRLimit.add(rLimit);
 		double rLimitInitial= rLimit;
-		double rLimitLogicBlocks = computeInitialrLimitLogicBlocks() ;  //infinity norm (for efficient random slot selection)
+		double rLimitLogicBlocks = computeInitialrLimitLogicBlocks();  //infinity norm (for efficient random slot selection)
+		outputRLimitLogicBlock.add(rLimitLogicBlocks);
 		double critExp = computeNewExponent(rLimit, rLimitInitial); 
 		
 		int numberOfNets= 0;
@@ -357,7 +380,6 @@ public class Placer {
 		oldWiringCost = returnVal;
 
 		System.out.println("old wiring cost: " + oldWiringCost);
-		
 		analyzeTiming() ; 
 		double temp = 1000000;//computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda, TimingCost(critExp), oldWiringCost) ; 
 		
@@ -368,6 +390,8 @@ public class Placer {
 		double avgPathsPerNet= paths.size() / (double) numberOfNets;
 		double oldTimingCost = TimingCost(critExp) ; 
 		
+		outputTotalWiringCost.add(oldTimingCost + oldWiringCost);
+		
 		System.out.println("initial Temp: " + temp);
 		System.out.println("Temp limit: " + (0.005 * avgPathsPerNet * avgTimingCostPerPath));
 		System.out.println("avgPathsPerNet " +avgPathsPerNet);
@@ -375,7 +399,7 @@ public class Placer {
 
 		System.out.println("initial timing Cost: "+ oldTimingCost);
 		System.out.println("initial wiring Cost: "+ oldWiringCost);
-		while(temp > (0.005 * avgPathsPerNet * avgTimingCostPerPath)) { 
+		while(temp > (0.005 * avgPathsPerNet * avgTimingCostPerPath)) {
 //			System.out.println(0.005 * avgPathsPerNet * avgTimingCostPerPath);
 			System.out.println("Temp: " + temp);
 //			System.out.println("test");
@@ -394,10 +418,17 @@ public class Placer {
 			oldWiringCost = returnVal;
 //			System.out.println("old wiring cost: " + oldWiringCost);
 			oldTimingCost = TimingCost(critExp) ; 
-			for(int j = 0; j < stepCount; j++) { 
+			for(int j = 0; j < stepCount; j++) {
 				
 				double swapAnywaysFactor= rand.nextDouble();
 				/*Snew = GenerateSwap(S, Rlimit) ; */
+				double newTimingCost;
+				double deltaWiringCost;
+				double deltaTimingCost;
+				double newWiringCost;
+				double deltaCost;
+				
+				
 				if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
 					swapIOBlocks(sBlocks, rLimit, logicBlockSwap);
 					
@@ -406,12 +437,13 @@ public class Placer {
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					double newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
-					double deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
+					newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
 					
-					double deltaTimingCost = newTimingCost - oldTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
-					double newWiringCost = oldWiringCost + deltaWiringCost; 
-					double deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
+					deltaTimingCost = newTimingCost - oldTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
+					newWiringCost = oldWiringCost + deltaWiringCost; 
+					deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
+					
 					if (deltaCost <= 0) { 
 						//System.out.println("swapped io block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
 						applySwap(sBlocks, logicBlockSwap);
@@ -448,15 +480,15 @@ public class Placer {
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					double newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					//
-					double deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
+					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
 					//double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
-					double deltaTimingCost = newTimingCost - oldTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
+					deltaTimingCost = newTimingCost - oldTimingCost ; //TODO improve, cache valid old value, only compute change in logicBlocks, etc
 					//
-					double newWiringCost = oldWiringCost + deltaWiringCost; 
+					newWiringCost = oldWiringCost + deltaWiringCost; 
 					//double deltaWiringCost = oldWiringCost - newWiringCost ; 
-					double deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
+					deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
 					if (deltaCost <= 0) { 
 //						System.out.println("swapped logic block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
 						applySwap(sBlocks, logicBlockSwap);
@@ -484,6 +516,15 @@ public class Placer {
 					}
 				}
 
+				
+			}
+
+			//to track totalWiringCost, AcceptanceRate, RLimit and RLimitLogicBlock right after each step#
+			if(diagnoseDataFlag) {
+				outputTotalWiringCost.add(cost);
+				outputAcceptanceRate.add(rA);
+				outputRLimit.add(rLimit);
+				outputRLimitLogicBlock.add(rLimitLogicBlocks);
 			}
 			rA= acceptedTurns / (acceptedTurns + rejectedTurns); //compute new rA
 			acceptedTurns= 0; //reset counters for rA computation
@@ -492,6 +533,7 @@ public class Placer {
 			rLimit = UpdateRlimit(rLimit, rA) ; //TODO verify that "new" rA is used
 			rLimitLogicBlocks = UpdateRlimitLogicBlocks(rLimitLogicBlocks, rA) ;
 			critExp = computeNewExponent(rLimit, rLimitInitial) ; 
+			
 		}
 		System.out.println("final timing Cost: "+ oldTimingCost);
 		System.out.println("final wiring Cost: "+ oldWiringCost);
