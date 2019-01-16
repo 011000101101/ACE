@@ -26,6 +26,14 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.timingAnalyzer.TimingAnalyzer;
 import placer.outputWriter.PlacementWriter;
 import org.jfree.data.xy.*;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYDotRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 
 public class Placer {
 	
@@ -96,7 +104,7 @@ public class Placer {
 
 	private static int biasY;
 	
-	private static List<Double> outputTotalWiringCost= new ArrayList<Double>();
+	private static List<Double> outputTotalCost= new ArrayList<Double>();
 
 	private static List<Double> outputAcceptanceRate= new ArrayList<Double>();
 
@@ -405,7 +413,7 @@ public class Placer {
 		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
 		double avgPathsPerNet= paths.size() / (double) numberOfNets;
 		
-		outputTotalWiringCost.add(oldTimingCost + oldWiringCost);
+		outputTotalCost.add(oldTimingCost + oldWiringCost);
 		
 		System.out.println("initial Temp: " + temp);
 		System.out.println("Temp limit: " + (0.005 * avgPathsPerNet * avgTimingCostPerPath));
@@ -553,7 +561,7 @@ public class Placer {
 
 			//to track totalWiringCost, AcceptanceRate, RLimit and RLimitLogicBlock right after each step#
 			if(diagnoseDataFlag) {
-				outputTotalWiringCost.add(cost);
+				outputTotalCost.add(cost);
 				outputAcceptanceRate.add(rA);
 				outputRLimit.add(rLimit);
 				outputRLimitLogicBlock.add(rLimitLogicBlocks);
@@ -1332,17 +1340,71 @@ public class Placer {
 		XYSeries totalWiringCostSerie = new XYSeries("Total Wiring Cost");	
 		XYSeries acceptanceRateSerie = new XYSeries("Acceptance Rate");	
 		XYSeries rLimitSerie = new XYSeries("R Limit");	
-		XYSeries rLimitLogicBlocksSerie = new XYSeries("R Limit Logic Blocks");	 //TODO more fitting name
+		XYSeries rLimitLogicBlocksSerie = new XYSeries("R Limit Logic Blocks");	 //TODO better fitting name
+		
+		System.out.println(outputTotalCost.size());
 		for(int i = 0; i < outputAcceptanceRate.size()-1; i++) {
-			totalWiringCostSerie.add(i, outputTotalWiringCost.get(i));
+			totalWiringCostSerie.add(i, outputTotalCost.get(i));
 			acceptanceRateSerie.add(i, outputAcceptanceRate.get(i));
 			rLimitSerie.add(i, outputRLimit.get(i));
 			rLimitLogicBlocksSerie.add(i, outputRLimitLogicBlock.get(i));
 		}
-		XYSeriesCollection dataset = new XYSeriesCollection();
-		dataset.addSeries(totalWiringCostSerie);
-		dataset.addSeries(acceptanceRateSerie);
-		dataset.addSeries(rLimitSerie);
-		dataset.addSeries(rLimitLogicBlocksSerie);
-	}
+		XYSeriesCollection datasetWC = new XYSeriesCollection();
+		XYSeriesCollection datasetAR = new XYSeriesCollection();
+		XYSeriesCollection datasetRL = new XYSeriesCollection();
+		XYSeriesCollection datasetRLL = new XYSeriesCollection();
+		
+		datasetWC.addSeries(totalWiringCostSerie);
+		datasetAR.addSeries(acceptanceRateSerie);
+		datasetRL.addSeries(rLimitSerie);
+		datasetRLL.addSeries(rLimitLogicBlocksSerie);
+		
+		XYSplineRenderer spline= new XYSplineRenderer();
+		XYLineAndShapeRenderer line= new XYLineAndShapeRenderer();
+		XYSplineRenderer spline2= new XYSplineRenderer();
+		XYSplineRenderer spline3= new XYSplineRenderer();
+		
+		
+		NumberAxis xAchse = new NumberAxis("Steps");
+		NumberAxis yWiring = new NumberAxis("Segments");
+		NumberAxis yRL = new NumberAxis("Segments");
+		NumberAxis yRLL = new NumberAxis("Segments");
+		NumberAxis yAR = new NumberAxis("percent");
+		
+		XYPlot plotWC = new XYPlot(datasetWC, xAchse, yWiring, spline);
+		XYPlot plotAR = new XYPlot(datasetAR, xAchse, yAR, line);
+		XYPlot plotRL = new XYPlot(datasetRL, xAchse, yRL, spline2);
+		XYPlot plotRLL = new XYPlot(datasetRLL, xAchse, yRLL, spline3);
+		
+		JFreeChart chartWC = new JFreeChart(plotWC);
+		JFreeChart chartAR = new JFreeChart(plotAR);
+		JFreeChart chartRL = new JFreeChart(plotRL);
+		JFreeChart chartRLL = new JFreeChart(plotRLL);
+		
+		ApplicationFrame frameWC = new ApplicationFrame("Total wiring cost");
+		ApplicationFrame frameAR = new ApplicationFrame("Acceptance rate");
+		ApplicationFrame frameRL = new ApplicationFrame("RLimit");
+		ApplicationFrame frameRLL = new ApplicationFrame("RLimit Logic Blocks");
+		
+		ChartPanel chartPanelWC = new ChartPanel(chartWC);
+		ChartPanel chartPanelAR = new ChartPanel(chartAR);
+		ChartPanel chartPanelRL = new ChartPanel(chartRL);
+		ChartPanel chartPanelRLL = new ChartPanel(chartRLL);
+	
+		frameWC.setContentPane(chartPanelWC);
+		frameAR.setContentPane(chartPanelAR);
+		frameRL.setContentPane(chartPanelRL);
+		frameRLL.setContentPane(chartPanelRLL);
+		
+		frameWC.pack();
+		frameAR.pack();
+		frameRL.pack();
+		frameRLL.pack(); 
+		
+		frameWC.setVisible(true);
+		frameAR.setVisible(true);
+		frameRL.setVisible(true);
+		frameRLL.setVisible(true);
+
+	}		
 }
