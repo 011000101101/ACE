@@ -130,16 +130,17 @@ public class Placer {
 		String placementFilePath= args[2];
 		
 		int[] commandLineInput = parseCommandlineArguments(args); //array in form from int to initialize architectureParser with
+		double[] commandLineDoubleInput = parseCommandlineDoubleArguments(args); //array in form from double to initialize architectureParser with
 		double lambda;
-		if(commandLineInput[9] == -1) lambda= 0.5; //default value
-		else lambda= commandLineInput[9]; //value passed via command line
+		if(commandLineDoubleInput[0] == -1) lambda= 0.5; //default value
+		else lambda= commandLineInput[0]; //value passed via command line
 		int stepCountFactor;
-		if(commandLineInput[10] == -1) stepCountFactor= 10; //default value
-		else stepCountFactor= commandLineInput[10]; //value passed via command line
+		if(commandLineDoubleInput[1] == -1) stepCountFactor= 10; //default value
+		else stepCountFactor= commandLineInput[1]; //value passed via command line
 		
 		long seed;
-		if(commandLineInput[11] == -1) seed= 0; //default value
-		else seed= commandLineInput[11]; //value passed via command line
+		if(commandLineInput[9] == -1) seed= 0; //default value
+		else seed= commandLineInput[9]; //value passed via command line
 		if(seed != 0) {
 			rand= new Random(seed);
 		}
@@ -187,14 +188,14 @@ public class Placer {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * stores every argument beside args[0,1,2,3] (path arguments) for the initialization of the arch file in an array
 	 * @param args 
 	 * @return
 	 */
 	private static int[] parseCommandlineArguments(String[] args) {
-		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 		for(int i = 3; i< args.length; i++) {
 			switch(args[i]) {
 			case "-X":
@@ -242,22 +243,35 @@ public class Placer {
 				parameterInitialized[8]= Integer.valueOf(args[i]);
 			break;
 			
-			case "-Lambda":
-				i++;
-				parameterInitialized[9]= Integer.valueOf(args[i]); //TODO no integers
-			break;
-			
-			case "-stepFactor":
-				i++;
-				parameterInitialized[10]= Integer.valueOf(args[i]);
-			break;
-			
 			case "-seed":
 				i++;
-				parameterInitialized[11]= Integer.valueOf(args[i]);
+				parameterInitialized[9]= Integer.valueOf(args[i]);
 			break;
 			
 			}
+		}
+		return parameterInitialized;
+	}
+	
+	private static double[] parseCommandlineDoubleArguments(String[] args) {
+		
+		double[] parameterInitialized = new double[] {-1,-1};
+		for(int i = 3; i< args.length; i++) {
+			
+			switch(args[i]) {
+			
+			case "-lambda":
+				i++;
+				parameterInitialized[0]= Double.valueOf(args[i]);
+			break;
+			
+			case "-stepCountFactor":
+				i++;
+				parameterInitialized[1]= Double.valueOf(args[i]);
+			break;
+			
+			}
+			
 		}
 		return parameterInitialized;
 	}
@@ -338,7 +352,7 @@ public class Placer {
 		System.out.println("old wiring cost: " + oldWiringCost);
 		
 		analyzeTiming() ; 
-		double temp = 10000;//computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
+		double temp = 10000;//computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda, TimingCost(critExp), oldWiringCost) ; 
 		
 		//double avgCostPerNet= getAvgCostPerNet();
 		//TODO check if works
@@ -785,7 +799,7 @@ public class Placer {
 			block1.setSubblk_1(logicBlockSwap[5] == 1);
 		}
 		if(block2 instanceof IOBlock) { //set subblk number
-			block1.setSubblk_1(logicBlockSwap[2] == 1);
+			block2.setSubblk_1(logicBlockSwap[2] == 1);
 		}
 	}
 
@@ -893,17 +907,20 @@ public class Placer {
 	 * @param lambda2 
 	 * @return initial temperature value
 	 */
-	private static double computeInitialTemperature(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
+	private static double computeInitialTemperature(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda, double oldTimingCost, double oldWiringCost) {
 		
 		System.out.println("computing initial temperature...");
 		double n= blockCount;
 		double cQuer= 0;
 		int sumCSquare= 0;
+		double cost= 1;
+		double deltaC= 0;
 		for(int i= 0; i < (int) n; i++) {
-			double cI= applySwapAndGetC(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda);
-			//System.out.println("cost after swap:" + cI);
-			sumCSquare+= cI * cI;
-			cQuer+= cI / n;
+			deltaC= applySwapAndGetC(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda);
+			cost= cost + deltaC;
+			//System.out.println("cost after swap:" + cost);
+			sumCSquare+= cost * cost;
+			cQuer+= cost / n;
 		}
 		System.out.println("initial temperature computed.");
 		System.out.println(sumCSquare);
