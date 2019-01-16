@@ -25,6 +25,7 @@ import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.timingAnalyzer.TimingAnalyzer;
 import placer.outputWriter.PlacementWriter;
+import org.jfree.data.xy.*;
 
 public class Placer {
 	
@@ -134,7 +135,7 @@ public class Placer {
 	/**
 	 * cache for total cost
 	 */
-	private static int cost;
+	private static double cost;
 
 	/**
 	 * for whether output of variables is needed
@@ -207,6 +208,9 @@ public class Placer {
 			
 			placementWriter.write(placementFilePath);
 			
+			if(diagnoseDataFlag) {
+				plotDiagnoseData();
+			}
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -216,6 +220,7 @@ public class Placer {
 			e.printStackTrace();
 		}
 	}
+
 
 	/**
 	 * stores every argument beside args[0,1,2,3] (path arguments) for the initialization of the arch file in an array
@@ -388,10 +393,10 @@ public class Placer {
 			}
 		}
 		oldWiringCost = returnVal;
+		analyzeTiming(); 
 		oldTimingCost = TimingCost(critExp) ; 
-
-		System.out.println("old wiring cost: " + oldWiringCost);
-		analyzeTiming() ; 
+		System.out.println("init timing cost: " + oldTimingCost);
+		System.out.println("INIT wiring cost: " + oldWiringCost);
 		double temp = computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
 		//double avgCostPerNet= getAvgCostPerNet();
@@ -409,7 +414,7 @@ public class Placer {
 
 		System.out.println("initial timing Cost: "+ oldTimingCost);
 		System.out.println("initial wiring Cost: "+ oldWiringCost);
-		while(temp > (0.005 * avgPathsPerNet * avgTimingCostPerPath)) {
+		while(temp > (0.005 * avgPathsPerNet * avgTimingCostPerPath)) { //0.005 * cost) {//experimental: use avg timing cost per path instead of complete cost and per net
 //			System.out.println(0.005 * avgPathsPerNet * avgTimingCostPerPath);
 			System.out.println("Temp: " + temp);
 //			System.out.println("test");
@@ -461,6 +466,7 @@ public class Placer {
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 						acceptedTurns++;
+						cost += deltaCost;
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { 
 						//System.out.println("swapped io block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
@@ -468,6 +474,7 @@ public class Placer {
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 						acceptedTurns++;
+						cost += deltaCost;
 					}
 					else {
 						rejectedTurns++;
@@ -505,6 +512,7 @@ public class Placer {
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 						acceptedTurns++;
+						cost += deltaCost;
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))/*exp(-∆C/T)*/) { 
 //						System.out.println("swapped logic block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
@@ -512,6 +520,7 @@ public class Placer {
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 						acceptedTurns++;
+						cost += deltaCost;
 					}
 					else {
 						rejectedTurns++;
@@ -610,7 +619,7 @@ public class Placer {
 
 	private static double newTimingCostSwap(double ce, int[] logicBlockSwap) {
 		double sum= 0;
-		System.out.println("size of paths list in placer: " + paths.size());
+		//System.out.println("size of paths list in placer: " + paths.size());
 		for(SimplePath p : paths) {
 			sum += p.timingCostSwap(ce, logicBlockSwap);
 		}
@@ -990,6 +999,7 @@ public class Placer {
 			cost += cI;
 			sumCSquare+= cost * cost;
 			cQuer+= cost / n;
+//			System.out.println("ci: " + cI);
 		}
 		System.out.println("initial temperature computed.");
 		System.out.println("sumCSqure: " +sumCSquare);
@@ -1027,9 +1037,14 @@ public class Placer {
 		//System.out.println("new wiring cost: " + newWiringCost);
 		//System.out.println("new cost computed.");
 		
-		
+		System.out.println(blockSwap[0] + "," + blockSwap[1] + "," +blockSwap[2] + "-" + blockSwap[3] + "," + blockSwap[4] + "," +blockSwap[5]);
+		System.out.println("deltaWCOST " +calcDeltaTotalWiringCost(blockSwap, sBlocks));
 		applySwap(sBlocks, blockSwap);
-		
+
+//		System.out.println("oldWCOST: "+ oldWiringCost);
+//		System.out.println("timingCOST: "+ newTimingCost);
+//		System.out.println("wiringCOST: "+ newWiringCost);
+//		System.out.println("totalCOST: "+ (lambda * (newTimingCost - oldTimingCost) / oldTimingCost + (1 - lambda) * (newWiringCost - oldWiringCost) / oldWiringCost));
 		return lambda * (newTimingCost - oldTimingCost) / oldTimingCost + (1 - lambda) * (newWiringCost - oldWiringCost) / oldWiringCost;  //TODO verify cost function
 		
 	}
@@ -1258,5 +1273,26 @@ public class Placer {
 		
 		return output;
 		
+	}
+
+	/**
+	 * plots total wiring cost, acceptance rate, rLimit and rLimit logic block
+	 */
+	private static void plotDiagnoseData() {
+		XYSeries totalWiringCostSerie = new XYSeries("Total Wiring Cost");	
+		XYSeries acceptanceRateSerie = new XYSeries("Acceptance Rate");	
+		XYSeries rLimitSerie = new XYSeries("R Limit");	
+		XYSeries rLimitLogicBlocksSerie = new XYSeries("R Limit Logic Blocks");	 //TODO more fitting name
+		for(int i = 0; i < outputAcceptanceRate.size()-1; i++) {
+			totalWiringCostSerie.add(i, outputTotalWiringCost.get(i));
+			acceptanceRateSerie.add(i, outputAcceptanceRate.get(i));
+			rLimitSerie.add(i, outputRLimit.get(i));
+			rLimitLogicBlocksSerie.add(i, outputRLimitLogicBlock.get(i));
+		}
+		XYSeriesCollection dataset = new XYSeriesCollection();
+		dataset.addSeries(totalWiringCostSerie);
+		dataset.addSeries(acceptanceRateSerie);
+		dataset.addSeries(rLimitSerie);
+		dataset.addSeries(rLimitLogicBlocksSerie);
 	}
 }
