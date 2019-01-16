@@ -72,29 +72,15 @@ public class Net {
 	 */
 	private SimplePath[] sinkingPaths;
 	
-	/**
-	 * cache to be able to restore old value if swap was rejected
-	 */
+	//for Star+ o(1) update
 	private double uix;
 	
-	/**
-	 * cache to be able to restore old value if swap was rejected
-	 */
 	private double uiy;
 	
-	/**
-	 * cache to be able to restore old value if swap was rejected
-	 */
 	private double vix;
 	
-	/**
-	 * cache to be able to restore old value if swap was rejected
-	 */
 	private double viy;
 	
-	/**
-	 * cache to be able to restore old value if swap was rejected
-	 */
 	private double wiringCost= 0;
 
 	/**
@@ -102,27 +88,34 @@ public class Net {
 	 */
 	private boolean updated= false;
 
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double uixOld;
 
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double uiyOld;
 
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double vixOld;
-
+	
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double viyOld;
 
+	/**
+	 * cache to be able to restore old value if swap was rejected
+	 */
 	private double oldWiringCost;
 
 	private boolean buffersChanged= false;
 	
 	
-	
-	// TODO remove in final version
-	/*
-	public Net(String newName, int newAssignedIdentifier) {
-		name= newName;
-		assignedIdentifier= newAssignedIdentifier;
-	}
-	*/
 	
 	
 	public Net(String newName, int newAssignedIdentifier, boolean newIsClockNet) {
@@ -263,7 +256,6 @@ public class Net {
 		return sinks.keySet();
 	}
 
-
 	public boolean recoverCurrentPathElement(int xCoordinate, int yCoordinate, int track, boolean isChanX, boolean isPin) {
 
 		activePathElement= source.getBranchingElement(xCoordinate, yCoordinate , track, isChanX, isPin, true);
@@ -322,14 +314,6 @@ public class Net {
 		return criticalSink;
 	}
 
-	// TODO remove in final version
-	/*
-	public void setIsClockNet(boolean newIsClockNet) {
-		
-		isClockNet= newIsClockNet;
-		
-	}
-	*/
 	
 	public Map<NetlistBlock, IPin> getSinkMap(){
 		return sinks;
@@ -424,6 +408,9 @@ public class Net {
 		}
 	}
 	
+	/**
+	 * initializes star+ metric value
+	 */
 	public void initializeWiringCost() {
 		NetlistBlock[] currentBlocks;
 		uix = 0;
@@ -450,6 +437,13 @@ public class Net {
 		return wiringCost;
 	}
 
+	/**
+	 * update star+ metric values and stores them locally
+	 * @param block1
+	 * @param block2
+	 * @param logicBlockSwap
+	 * @return
+	 */
 	public double update (NetlistBlock block1, NetlistBlock block2, int[] logicBlockSwap) {
 		if(!updated) {
 			

@@ -210,6 +210,10 @@ public abstract class NetlistBlock extends PathElement{
 		connectedPaths.add(p);
 	}
 	
+	/**
+	 * standard getter
+	 * @return
+	 */
 	public List<SimplePath> getConnectedPaths(){
 		return connectedPaths;
 	}

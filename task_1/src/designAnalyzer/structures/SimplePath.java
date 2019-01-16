@@ -15,7 +15,6 @@ public class SimplePath {
 
 	TimingAnalyzer timingAnalyzer;
 	ParameterManager parameterManager;
-	//StructureManager structureManager;
 	
 	private int delayExact; //tA always 0, as simplePath originated at an external input or the output of a flipflop
 	private int tR;
@@ -41,9 +40,17 @@ public class SimplePath {
 
 	private NetlistBlock source;
 	private NetlistBlock sink;
+	
+	/**
+	 * blocks between source and sink, null if path doesnt contain combinatorial blocks
+	 */
 	private NetlistBlock[] intermediate= null;
 	
+	/**
+	 * net the sink is connected to
+	 */
 	private Net sinkingNet;
+	
 	/**
 	 * shows if one of the connected blocks has been swapped after the last execution of timingCostSwap()
 	 */
@@ -85,7 +92,6 @@ public class SimplePath {
 		criticality= 1 - ((double) slack / (double) dMax);
 		tR= -1; //reset tR for next cycle
 		//structureManager.updateSlackMap(source, sink, slack);
-		testLookUpDelay();
 	}
 	
 	/**
@@ -144,6 +150,10 @@ public class SimplePath {
 		return cost;
 	}
 
+	/**
+	 * looks up the new delay value for this path in the LUTs
+	 * @return
+	 */
 	private int lookUpDelay() {
 		int delayTemp= 0;
 		if(intermediate == null) { //only one net
@@ -174,13 +184,13 @@ public class SimplePath {
 		return delayTemp;
 	}
 	
-	//TODO remove in final version
-	private void testLookUpDelay() {
-		if(! (lookUpDelay() == computeDelay())) {
-			System.err.println("path delay lookup yielded wrong result: expected " + computeDelay() + " , got " + lookUpDelay());
-		}
-	}
 
+	/**
+	 * returns the new timing cost after swap
+	 * @param ce
+	 * @param logicBlockSwap
+	 * @return
+	 */
 	public double timingCostSwap(double ce, int[] logicBlockSwap) {
 		oldCost= cost;
 //		System.out.println("timingCostSwap: oldCost= " + oldCost);
@@ -189,10 +199,14 @@ public class SimplePath {
 //		System.out.println("timingCostSwap: ce= " + ce);
 //		System.out.println("timingCostSwap: lookUpDelaySwap(logicBlockSwap)= " + lookUpDelaySwap(logicBlockSwap));
 //		System.out.println("timingCostSwap: cost= " + cost);
-		testLookUpDelay();
 		return cost;
 	}
 
+	/**
+	 * looks up the new delay value for this path in the LUTs after a swap
+	 * @param logicBlockSwap
+	 * @return
+	 */
 	private double lookUpDelaySwap(int[] logicBlockSwap) {
 		int delayTemp= 0;
 		if(intermediate == null) { //only one net
@@ -225,6 +239,13 @@ public class SimplePath {
 		return delayTemp;
 	}
 
+	/**
+	 * looks up the new delay value for this path in the LUTs, only called when the value has changed
+	 * @param from
+	 * @param to
+	 * @param logicBlockSwap
+	 * @return
+	 */
 	private int lookUpChanged(NetlistBlock from, NetlistBlock to, int[] logicBlockSwap) {
 
 		if(unchanged) return timingAnalyzer.lookUpSinglePathNoEndpoints(from, to, from.getX(), from.getY(), to.getX(), to.getY());
@@ -266,10 +287,18 @@ public class SimplePath {
 		
 	}
 	
+	/**
+	 * standard getter
+	 * @return
+	 */
 	public boolean getUpdated() {
 		return updated;
 	}
 	
+	/**
+	 * standard setter
+	 * @param newUpdated
+	 */
 	public void setUpdated(boolean newUpdated) {
 		updated= newUpdated;
 	}
