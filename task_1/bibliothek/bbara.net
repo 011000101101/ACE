@@ -1,0 +1,155 @@
+.global clock
+
+.input bbara_in_3_
+pinlist: bbara_in_3_ 
+
+.input bbara_in_2_
+pinlist: bbara_in_2_ 
+
+.input bbara_in_1_
+pinlist: bbara_in_1_ 
+
+.input bbara_in_0_
+pinlist: bbara_in_0_ 
+
+.input clock
+pinlist: clock 
+
+.output out:bbara_out_1_
+pinlist: bbara_out_1_ 
+
+.output out:bbara_out_0_
+pinlist: bbara_out_0_ 
+
+.clb bbara_out_1_  # Only LUT used.
+pinlist: n_n61 n_n63 [27] open bbara_out_1_ open 
+subblock: bbara_out_1_ 0 1 2 open 4 open 
+
+.clb bbara_out_0_  # Only LUT used.
+pinlist: n_n61 n_n63 [36] open bbara_out_0_ open 
+subblock: bbara_out_0_ 0 1 2 open 4 open 
+
+.clb n_n60  # Both LUT and LATCH used.
+pinlist: n_n60 [52] [172] [173] n_n60 clock 
+subblock: n_n60 0 1 2 3 4 5 
+
+.clb n_n61  # Both LUT and LATCH used.
+pinlist: [31] [43] [174] [177] n_n61 clock 
+subblock: n_n61 0 1 2 3 4 5 
+
+.clb n_n62  # Both LUT and LATCH used.
+pinlist: bbara_in_2_ [37] [38] [39] n_n62 clock 
+subblock: n_n62 0 1 2 3 4 5 
+
+.clb n_n63  # Both LUT and LATCH used.
+pinlist: [14] [182] open open n_n63 clock 
+subblock: n_n63 0 1 open open 4 5 
+
+.clb [27]  # Only LUT used.
+pinlist: bbara_in_2_ bbara_in_1_ bbara_in_0_ open [27] open 
+subblock: [27] 0 1 2 open 4 open 
+
+.clb [21]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n61 open [21] open 
+subblock: [21] 0 1 2 open 4 open 
+
+.clb [29]  # Only LUT used.
+pinlist: bbara_in_3_ bbara_in_2_ n_n62 n_n63 [29] open 
+subblock: [29] 0 1 2 3 4 open 
+
+.clb [22]  # Only LUT used.
+pinlist: bbara_in_3_ bbara_in_2_ open open [22] open 
+subblock: [22] 0 1 open open 4 open 
+
+.clb [24]  # Only LUT used.
+pinlist: bbara_in_2_ n_n60 n_n62 open [24] open 
+subblock: [24] 0 1 2 open 4 open 
+
+.clb [31]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n60 n_n61 [31] open 
+subblock: [31] 0 1 2 3 4 open 
+
+.clb [35]  # Only LUT used.
+pinlist: bbara_in_2_ bbara_in_1_ bbara_in_0_ n_n61 [35] open 
+subblock: [35] 0 1 2 3 4 open 
+
+.clb [25]  # Only LUT used.
+pinlist: n_n61 n_n63 open open [25] open 
+subblock: [25] 0 1 open open 4 open 
+
+.clb [36]  # Only LUT used.
+pinlist: bbara_in_3_ bbara_in_2_ bbara_in_1_ bbara_in_0_ [36] open 
+subblock: [36] 0 1 2 3 4 open 
+
+.clb [14]  # Only LUT used.
+pinlist: [21] [22] [25] [181] [14] open 
+subblock: [14] 0 1 2 3 4 open 
+
+.clb [37]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n62 open [37] open 
+subblock: [37] 0 1 2 open 4 open 
+
+.clb [38]  # Only LUT used.
+pinlist: bbara_in_3_ n_n62 n_n63 [179] [38] open 
+subblock: [38] 0 1 2 3 4 open 
+
+.clb [39]  # Only LUT used.
+pinlist: bbara_in_3_ n_n60 n_n62 [40] [39] open 
+subblock: [39] 0 1 2 3 4 open 
+
+.clb [40]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n63 open [40] open 
+subblock: [40] 0 1 2 open 4 open 
+
+.clb [43]  # Only LUT used.
+pinlist: bbara_in_3_ bbara_in_2_ [21] [175] [43] open 
+subblock: [43] 0 1 2 3 4 open 
+
+.clb [52]  # Only LUT used.
+pinlist: bbara_in_3_ bbara_in_2_ n_n61 n_n62 [52] open 
+subblock: [52] 0 1 2 3 4 open 
+
+.clb [168]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n60 n_n61 [168] open 
+subblock: [168] 0 1 2 3 4 open 
+
+.clb [169]  # Only LUT used.
+pinlist: n_n63 bbara_in_2_ open open [169] open 
+subblock: [169] 0 1 open open 4 open 
+
+.clb [172]  # Only LUT used.
+pinlist: bbara_in_2_ bbara_in_1_ bbara_in_0_ n_n62 [172] open 
+subblock: [172] 0 1 2 3 4 open 
+
+.clb [173]  # Only LUT used.
+pinlist: [21] [29] [168] [169] [173] open 
+subblock: [173] 0 1 2 3 4 open 
+
+.clb [174]  # Only LUT used.
+pinlist: n_n62 bbara_in_2_ open open [174] open 
+subblock: [174] 0 1 open open 4 open 
+
+.clb [175]  # Only LUT used.
+pinlist: n_n60 n_n61 n_n63 open [175] open 
+subblock: [175] 0 1 2 open 4 open 
+
+.clb [177]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n61 [24] [177] open 
+subblock: [177] 0 1 2 3 4 open 
+
+.clb [179]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n60 n_n61 [179] open 
+subblock: [179] 0 1 2 3 4 open 
+
+.clb [180]  # Only LUT used.
+pinlist: bbara_in_1_ bbara_in_0_ n_n61 open [180] open 
+subblock: [180] 0 1 2 open 4 open 
+
+.clb [181]  # Only LUT used.
+pinlist: n_n62 n_n60 open open [181] open 
+subblock: [181] 0 1 open open 4 open 
+
+.clb [182]  # Only LUT used.
+pinlist: n_n63 [24] [35] [180] [182] open 
+subblock: [182] 0 1 2 3 4 open 
+

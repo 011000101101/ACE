@@ -1,0 +1,5 @@
+C:/Uni/Semester5/Praktikum_ACE/minimalschaltungen/bbara.net
+C:/Uni/Semester5/Praktikum_ACE/test_von_uns/test.arch
+C:/Uni/Semester5/Praktikum_ACE/test_von_uns/bbara.p
+-stepCountFactor
+100

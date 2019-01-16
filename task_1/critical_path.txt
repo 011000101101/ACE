@@ -1,0 +1,9 @@
+estimated critical path: 
+ 
+(time in ns) 
+ 
+Node:			Time:
+Type:	Name:	Location:	Delay:	tA ('T-Arrival'):
+--	--	--	--	--
+I_BLOCK	bbara_in_2_	(7,3)0		0
+CLB(seq)	[43]	(1,3)		5300
