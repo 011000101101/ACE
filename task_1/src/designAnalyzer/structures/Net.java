@@ -444,8 +444,14 @@ public class Net {
 				uiy += deltaUiy;
 				vix += deltaVix;
 				viy += deltaViy;
+				System.out.println("uix " +uix);
+				System.out.println("uiy " +uiy);
+				System.out.println("vix " +vix);
+				System.out.println("uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI " +(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI));
 				wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI);
 				wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
+//				System.out.println("wiringCostX " +wiringCostX);
+//				System.out.println("wiringCostY "+wiringCostY);
 				oldWiringCost = wiringCost;
 				wiringCost = wiringCostX + wiringCostY;
 				deltaWiringCost+= (oldWiringCost - wiringCost);

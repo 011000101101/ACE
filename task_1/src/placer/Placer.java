@@ -397,7 +397,7 @@ public class Placer {
 		oldTimingCost = TimingCost(critExp) ; 
 		System.out.println("init timing cost: " + oldTimingCost);
 		System.out.println("INIT wiring cost: " + oldWiringCost);
-		double temp = computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
+		double temp = 10000; //computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
 		//double avgCostPerNet= getAvgCostPerNet();
 		//TODO check if works
@@ -574,11 +574,11 @@ public class Placer {
 	 * @return delta wiring cost before swap and after swap: oldCost minus newCost: for good swaps, the result is positiv
 	 */
 	private static double calcDeltaTotalWiringCost(int[] logicBlockSwap, NetlistBlock[][][] sBlocks) {
-		//System.out.println(logicBlockSwap[0] + " ; " + logicBlockSwap[1]);
+		System.out.println(logicBlockSwap[0] + " ; " + logicBlockSwap[1]);
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
-		//System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
+		System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
-		//System.out.println(logicBlockSwap[2] + " ; " + logicBlockSwap[3]);
+		System.out.println(logicBlockSwap[3] + " ; " + logicBlockSwap[4]);
 		Net[] affectedNets = block1.getNet();
 		double returnVal = 0;
 		for(Net net: affectedNets) { 
@@ -613,7 +613,7 @@ public class Placer {
 				net.resetUpdatedFlag();
 			}
 		}
-		//System.out.println("wtf" + returnVal);
+		System.out.println("delta wiring cost: " + returnVal);
 		return returnVal;
 	}
 
