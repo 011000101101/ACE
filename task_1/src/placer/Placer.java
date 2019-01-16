@@ -124,7 +124,17 @@ public class Placer {
 	/**
 	 * cache for wiring cost
 	 */
-	private static double oldWiringCost= 0.0;
+	private static double oldWiringCost;
+
+	/**
+	 * cache for timing cost
+	 */
+	private static double oldTimingCost;
+
+	/**
+	 * cache for total cost
+	 */
+	private static int cost;
 
 	/**
 	 * for whether output of variables is needed
@@ -378,17 +388,17 @@ public class Placer {
 			}
 		}
 		oldWiringCost = returnVal;
+		oldTimingCost = TimingCost(critExp) ; 
 
 		System.out.println("old wiring cost: " + oldWiringCost);
 		analyzeTiming() ; 
-		double temp = 1000000;//computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda, TimingCost(critExp), oldWiringCost) ; 
+		double temp = computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
 		//double avgCostPerNet= getAvgCostPerNet();
 		//TODO check if works
 		//experimental: use avg timing cost per path instead of complete cost and per net
 		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
 		double avgPathsPerNet= paths.size() / (double) numberOfNets;
-		double oldTimingCost = TimingCost(critExp) ; 
 		
 		outputTotalWiringCost.add(oldTimingCost + oldWiringCost);
 		
@@ -966,18 +976,18 @@ public class Placer {
 	 * @param lambda2 
 	 * @return initial temperature value
 	 */
-	private static double computeInitialTemperature(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda, double oldTimingCost, double oldWiringCost) {
+	private static double computeInitialTemperature(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
 		
 		System.out.println("computing initial temperature...");
 		double n= blockCount;
 		double cQuer= 0;
 		int sumCSquare= 0;
-		double cost= 1;
-		double deltaC= 0;
+		cost= 1;
+		double cI;
 		for(int i= 0; i < (int) n; i++) {
-			deltaC= applySwapAndGetC(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda);
-			cost= cost + deltaC;
+			cI= applySwapAndGetCDelta(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda);
 			//System.out.println("cost after swap:" + cost);
+			cost += cI;
 			sumCSquare+= cost * cost;
 			cQuer+= cost / n;
 		}
@@ -997,7 +1007,7 @@ public class Placer {
 	 * @param lambda lambda for weighting wiring and timing cost
 	 * @return cost after the swap
 	 */
-	private static double applySwapAndGetC(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
+	private static double applySwapAndGetCDelta(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
 
 		int[] blockSwap= new int[6];
 		if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
@@ -1020,7 +1030,7 @@ public class Placer {
 		
 		applySwap(sBlocks, blockSwap);
 		
-		return lambda * newTimingCost + (1 - lambda) * newWiringCost;  //TODO verify cost function
+		return lambda * (newTimingCost - oldTimingCost) / oldTimingCost + (1 - lambda) * (newWiringCost - oldWiringCost) / oldWiringCost;  //TODO verify cost function
 		
 	}
 
