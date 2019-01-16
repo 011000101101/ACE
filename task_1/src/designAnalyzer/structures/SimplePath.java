@@ -184,6 +184,7 @@ public class SimplePath {
 //		System.out.println("timingCostSwap: ce= " + ce);
 //		System.out.println("timingCostSwap: lookUpDelaySwap(logicBlockSwap)= " + lookUpDelaySwap(logicBlockSwap));
 //		System.out.println("timingCostSwap: cost= " + cost);
+		testLookUpDelay();
 		return cost;
 	}
 

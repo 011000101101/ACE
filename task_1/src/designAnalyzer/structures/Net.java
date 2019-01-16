@@ -527,6 +527,7 @@ public class Net {
 	 */
 	public void resetUpdatedFlag() {
 		updated= false;
+		buffersChanged= false;
 	}
 
 
@@ -539,7 +540,6 @@ public class Net {
 		vix= vixOld;
 		viy= viyOld;
 		wiringCost= oldWiringCost;
-		buffersChanged= false;
 	}
 
 
