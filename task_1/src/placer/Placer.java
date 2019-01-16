@@ -404,7 +404,7 @@ public class Placer {
 		System.out.println("init timing cost: " + oldTimingCost);
 		System.out.println("INIT wiring cost: " + oldWiringCost);
 		
-		double temp = 10000; //computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
+		double temp = computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
 		//double avgCostPerNet= getAvgCostPerNet();
 		//TODO check if works
@@ -420,7 +420,8 @@ public class Placer {
 
 		System.out.println("initial timing Cost: "+ oldTimingCost);
 		System.out.println("initial wiring Cost: "+ oldWiringCost);
-		while(temp > (0.005 * avgPathsPerNet * avgTimingCostPerPath)) { //0.005 * cost / parameterManager.getNetCollection().size()) {//experimental: use avg timing cost per path instead of complete cost and per net
+		System.out.println("initial total Cost: "+ cost);
+		while(temp > (0.005 * cost / structureManager.getNetCollection().size())) { //0.005 * avgPathsPerNet * avgTimingCostPerPath) {//experimental: use avg timing cost per path instead of complete cost and per net
 //			System.out.println(0.005 * avgPathsPerNet * avgTimingCostPerPath);
 			System.out.println("Temp: " + temp);
 //			System.out.println("test");
