@@ -1,6 +1,10 @@
 package placer;
 
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -225,7 +229,8 @@ public class Placer {
 			placementWriter.write(placementFilePath);
 			
 			if(diagnoseDataFlag) {
-				plotDiagnoseData();
+				printDiagnoseData(placementFilePath);
+				//plotDiagnoseData();
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -1376,6 +1381,73 @@ public class Placer {
 		}
 		
 		return output;
+		
+	}
+
+	/**
+	 * prints total wiring cost, acceptance rate, rLimit and rLimit logic block into files (as lines of 'x,y' pairs where x = datapoint, y= value
+	 * @param placementFilePath 
+	 */
+	private static void printDiagnoseData(String newFilePath) {
+		String filePath= newFilePath + ".costData";
+		File outputFile= new File(filePath);
+		try {
+			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
+			
+			for(int i = 0; i < outputTotalCost.size()-1; i++) {
+				writer.write(i + "," + outputTotalCost.get(i) + "\n");
+			}
+			
+			writer.close();
+		} catch (IOException e) {
+			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
+			e.printStackTrace();
+		}
+		
+		filePath= newFilePath + ".rAData";
+		outputFile= new File(filePath);
+		try {
+			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
+			
+			for(int i = 0; i < outputAcceptanceRate.size()-1; i++) {
+				writer.write(i + "," + outputAcceptanceRate.get(i) + "\n");
+			}
+			
+			writer.close();
+		} catch (IOException e) {
+			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
+			e.printStackTrace();
+		}
+		
+		filePath= newFilePath + ".rLimitData";
+		outputFile= new File(filePath);
+		try {
+			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
+			
+			for(int i = 0; i < outputRLimit.size()-1; i++) {
+				writer.write(i + "," + outputRLimit.get(i) + "\n");
+			}
+			
+			writer.close();
+		} catch (IOException e) {
+			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
+			e.printStackTrace();
+		}
+		
+		filePath= newFilePath + ".rLimitLBData";
+		outputFile= new File(filePath);
+		try {
+			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
+			
+			for(int i = 0; i < outputRLimitLogicBlock.size()-1; i++) {
+				writer.write(i + "," + outputRLimitLogicBlock.get(i) + "\n");
+			}
+			
+			writer.close();
+		} catch (IOException e) {
+			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
+			e.printStackTrace();
+		}
 		
 	}
 
