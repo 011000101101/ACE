@@ -2,6 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/rumei/Downloads/jfreechart-1.0.19/jfreechart-1.0.19-demo.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/rumei/Downloads/jfreechart-1.0.19/jfreechart-1.0.19-demo.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

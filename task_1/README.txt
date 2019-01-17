@@ -5,655 +5,421 @@ Vincenz Mechler 2817217
 Rollen der Gruppenmitglied:
 	Vincenz:
 		-erstellen der Grundstruktur 
-		-Implementierung der structures-package
-		-Implementierung der Netlist- und Routing-Parser
-		-Implementierung consistencychecker und timinganalyzer
+		-Timing Cost 
+		-place Funktion
+		-SimplePath
 		-gelegentlich dokumentation
+		
 	Rumei und Dennis:
-		-Placementparser
-		-Architectureparser
-		-DesignAnalyzer
-		-ErrorReporter
+		-WiringCost
+		-main- und IO-Funktionen
 		-Dokumentation vervollständigt
+		-Testen
 
+Die Leistungsdaten des verwendeten Testrechners: Prozessor: Intel Core i3-8130U Takt: 3.1GHz Speicher: DDR3 4GB Betriebssystem: Windows 10 64-bit 
 
-Compilen des Programms:
-	1. Den Ordner src als Arbeitsverzeichnis in Command shell festlegen
-	2. javac src\designAnalyzer\DesignAnalyzer.java
-	3. java designAnalyzer.DesignAnalyzer + Pfade der Inputfiles(siehe unten) + Parameter (siehe unten)
-
-Parameter beim Aufruf des Programms:
-	nach java DesignAnalyzer müssen 3 oder 4 (je nach dem, ob routing file angegeben wird) volle Dateipfade in Linux-Notation (/ statt \) angegeben werden. Die Files sollen in folgender
-	Reihenfolge angegeben werden: *.net *.arch *.p (und optional) *.r 
-	Darauf folgend dürfen Parameterpaare gemäß der Bezeichnung in der Aufgabenstellung wie zum Beispiel "-W 3" genutzt werden. Die Reihenfolge untereinander ist irrelevant.
-	
-Fehlerausgabesemantik:
-	nach dem ersten ErrorReport sind alle anderen Ausgaben des Programms unverbindlich, die Ausführung wird jedoch so weit wie möglich fortgesetzt. 
-	
-	
-
-	
+Ausführen des Programms:
+	java -jar placer.jar [absoluter pfad netlist file] [absoluter pfad arch file] [absoluter pfad destination von .p file] -X 8 -Y 8
+	Flags:
+		-diagnoseData: print and plot data
+		-lambda [value(float)]: custom wert für lambda, default 0,5
+		-stepCountFactor [value(int)]: custom wert für Schrittzahl Multiplikator, default 10
+		
 Commithistory aus git:
 
-
-
-
-commit a67a6e8b6ec9ca2a6f053c86dd885b2996fa6e79
+commit e3fa84e530e4136607e4738045e745cfc98203d8 (HEAD -> task_2)
+Merge: 9d0b6e6 bcb43d3
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 23:27:12 2018 +0100
+Date:   Wed Jan 16 21:28:21 2019 +0100
 
-    removed debug output
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit 85c04a4b5391593af1a259d2c11538f7f6ee0b4b
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 23:23:31 2018 +0100
-
-    fixed channel printing...!
-
-commit e8b655caea8ba48c67147e77db9b3be36e5f970e
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 23:13:18 2018 +0100
-
-    fixed channel printing...
-
-commit c6fd9f3d60d9280b1a241963bb9fdc3ed74011d0
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 23:10:56 2018 +0100
-
-    fixed channel printing..
-
-commit b6b9314e3cb94906f4cd75a64095610c19cfd928
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 23:07:41 2018 +0100
-
-    fixed channel printing.
-
-commit 18bbd7892c5b271b9cc0784a4962d044a6d93ffa
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 23:04:22 2018 +0100
-
-    fixed channel printing
-
-commit 70fd4ff5fc8d32e3a2d6437de2787d6b9a06972d
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 23:01:20 2018 +0100
-
-    sunk in despair while trying to fix critical path output...
-
-commit 5863d471a28f07257855294e376fbddb52a3c41e
+commit 9d0b6e633aaa2b0f7cb1989d67ee0ca8faedc792
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 22:04:50 2018 +0100
-
-    fixing minor bugs
-
-commit 88d8247c39265235b29893e34c7dec7188daa05d
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 22:03:18 2018 +0100
-
-    fixing timing analysis
-
-commit 1f10427b4d31310d12f526f429a08213525f6a0e
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 21:56:46 2018 +0100
-
-    fixing timing analysis
-
-commit 57f1b2d85d2b14ec68cc3ce1a4c05b9797104bad
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 21:51:38 2018 +0100
-
-    fixing timing analysis
-
-commit 3e249cf3e5b1e12574ecd6e0057639955165f3df
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 21:40:17 2018 +0100
-
-    fixing timing analysis
-
-commit c9f658d5b609258f99729055493b29d558ea56c4
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 21:08:57 2018 +0100
-
-    fixed minor bugs
-
-commit d5e3f08a761da1f6d31ad5164230f220de1d4ff8
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 21:04:11 2018 +0100
-
-    fixing clock net error
-
-commit 4265a6890c88543f9770eee71e7c02be1be50d64
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:59:08 2018 +0100
-
-    fixing clock net error
-
-commit 270b18cedfd07c5ebd657f824f5e9e7e5256bf5a
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:50:23 2018 +0100
-
-    fixing clock net error
-
-commit 8073c4c5010556c68e48f2805f9b9bf8cbdde42f
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:48:42 2018 +0100
-
-    fixing clock net error
-
-commit b2e17e56e242a6b9f776f14a982a5bb5a89d3638
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:42:54 2018 +0100
-
-    fixing clock net error
-
-commit 0c985b484bbb05657a02863a32abd7c725a4e24f
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:30:06 2018 +0100
-
-    fixing an false invalid pin error
-
-commit e7184ffc145dda814749ab3044caaac2d5cf37ab
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:19:38 2018 +0100
-
-    fixing an false invalid pin error
-
-commit 33be29a1af3059b338a7922b6a5582d9df9ce6ef
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:11:26 2018 +0100
-
-    still fixing the clocknet parsing error
-
-commit 8ce6ffde756d052c34dc207142acd3daa8ed0d74
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:07:33 2018 +0100
-
-    still fixing the clocknet parsing error
-
-commit d7c69cee24ac6e1ffae3b75f327e236c6464683a
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 20:04:05 2018 +0100
+Date:   Wed Jan 16 21:27:34 2019 +0100
 
     added documentation
-    
-    fixed routing parser trying to route clock nets
 
-commit ff5ab6c1fcb4de6134be8f3de20b9f28b14b521f
+commit bcb43d37030acfa685b06577166c353b2c23e2bd (origin/task_2)
 Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 19:21:09 2018 +0100
+Date:   Wed Jan 16 21:07:30 2019 +0100
 
-    activated consistency checker
+    added raw diagnostic data printing method (output to files)
 
-commit ab31029a88dbce2f5dfb2725f39599d904759dc3
+commit 1ec74a756cac3ab6a188ce99b8833c085f317eb6
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 19:16:09 2018 +0100
+Date:   Wed Jan 16 20:53:44 2019 +0100
 
-    finished readme
-
-commit 750144310f0ead764dda99f04ebd34a9bb802c2f
-Merge: 1f828c8 b5c23c1
+:...skipping...
+commit e3fa84e530e4136607e4738045e745cfc98203d8 (HEAD -> task_2)
+Merge: 9d0b6e6 bcb43d3
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 18:27:15 2018 +0100
+Date:   Wed Jan 16 21:28:21 2019 +0100
 
-    Merge branch 'master' of https://github.com/011000101101/ACE
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit b5c23c1199b015e47f85da1347a05a1d7e1ea7ec
-Merge: 80c0c56 27c4905
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 18:26:35 2018 +0100
-
-    Merge branch 'master' of https://github.com/011000101101/ACE
-    merge...
-
-commit 80c0c56fb9025712ae4d692d7c6834090e4f3761
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 18:26:16 2018 +0100
-
-    implemented consistency checker and edited Net to be able to keep track of routed sinks
-
-commit 1f828c8e768e0b8350c57ce6c6eb8fb41443ddc4
+commit 9d0b6e633aaa2b0f7cb1989d67ee0ca8faedc792
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 18:26:15 2018 +0100
+Date:   Wed Jan 16 21:27:34 2019 +0100
 
-    created new file README.txt
+    added documentation
 
-commit 27c4905d869be84cd25c6a7bf78261f92b0572ac
+commit bcb43d37030acfa685b06577166c353b2c23e2bd (origin/task_2)
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Jan 16 21:07:30 2019 +0100
+
+    added raw diagnostic data printing method (output to files)
+
+commit 1ec74a756cac3ab6a188ce99b8833c085f317eb6
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 17:08:04 2018 +0100
+Date:   Wed Jan 16 20:53:44 2019 +0100
 
-    author in every file
+    final phase
 
-commit 0c109192fda006227e843d6b273e08e0ed6d6e0c
-Merge: 1fc10a6 a89fe5f
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 16:29:21 2018 +0100
-
-    Merge branch 'master' of https://github.com/011000101101/ACE
-    merge...
-
-commit a89fe5f71c0e196d59fbd0ffb565acaf1a58fed9
+commit 6fd25311e5dd2b35fee42ee61d2d495b27b60693
+Merge: ab45248 90d2f55
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 16:29:02 2018 +0100
+Date:   Wed Jan 16 20:12:10 2019 +0100
 
-    comments and | in output
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit 1fc10a6f963404c540e02a102a37ed02504a9a00
+commit ab4524831de7806a6973c8a666e47f7396ad1df2
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 20:12:04 2019 +0100
+
+    nothing changed much
+
+commit 90d2f558e3e9fb8b2df72604585ebb82d8145ff5
 Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 16:28:15 2018 +0100
+Date:   Wed Jan 16 20:05:44 2019 +0100
 
-    fixed critical path output to start t origin even if combinatorial logic blocks are involved
+    fixed initial temperature computation and outer loop creterion
 
-commit 09bd6dc68f76a66deb085ab372ca164e2511895d
-Merge: 86febee 3ccf6f8
+commit f4535fbca2b64c07fdb78fc7d5f5c812ef2c33a2
+Merge: 9efe849 434bc91
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 19:37:03 2019 +0100
+
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
+
+commit 9efe8498efd9f7258ecaa3a2888989c2af4cd3cd
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 19:36:57 2019 +0100
+
+    output
+
+commit 434bc9154a72cbe2342afcdcdf823dfe9303e22d
 Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 16:00:07 2018 +0100
+Date:   Wed Jan 16 19:35:58 2019 +0100
 
-    Merge branch 'master' of https://github.com/011000101101/ACE
+    fixed rLimit update bug
+
+    fixed wiringCostDelta NaN bug
+
+commit e71d6a4560b2936cf561f1c9a2a517d7ab023986
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 17:35:01 2019 +0100
+
+    added test files in bibliothek
+
+commit c91f2ba677ab270164d480fb9712a595ac5b3806
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 17:30:47 2019 +0100
+
+    fixed bug in random io block placement
+
+commit 286033a77573343d356e1f05178eef56750dc6f6
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 17:29:04 2019 +0100
+
+    added library file
+
+commit e4a48247100475ccae3e601d43eeba48dacc11a2
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 17:25:27 2019 +0100
+
+    still bugged
+
+commit 82bf909397dc434906e2f5d1dee0ac162216a584 (refs/stash)
+Merge: cdd4d62 4d5b249
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 16:02:22 2019 +0100
+
+    WIP on (no branch): cdd4d62 fixed remaining obvious buggs
+
+commit 4d5b2494114d736ddd6339b900af343f38ba573f
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 16:02:21 2019 +0100
+
+    index on (no branch): cdd4d62 fixed remaining obvious buggs
+
+commit 03caa4474b51df4e614b9105e076a156879ccef6
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 15:57:27 2019 +0100
+
+    need to reverse, NAN
+
+commit da21b1aa360397cf20a952eb9bdb56a099fb27d7
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 15:28:21 2019 +0100
+
+    series for plotting added
+
+commit 39fcea6978d7177eaf2222ad78d300636e872c99
+Merge: 2ff19d3 4c22757
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 14:33:40 2019 +0100
+
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
+
+commit 2ff19d3b26fb00871f2bbfee4b22f1a185dd9229
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 14:33:19 2019 +0100
+
+    added diagnoseData
+
+commit 4c22757e9a9010af49edabdc52045441716613ca
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Jan 16 14:32:37 2019 +0100
+
+    fixed initial temperature computation and introduced global timing and total cost buffers
+
+commit cdd4d62ad339596f6f3da57fd70dd80120a52910
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Wed Jan 16 13:06:06 2019 +0100
+
+    fixed remaining obvious buggs
+
+commit 122ba51ff4114b773ef06c60f49ca1693c63c20a
+Author: Vincenz Mechler <011000101101@gmx.de>
+Date:   Wed Jan 16 11:44:33 2019 +0100
+
+    fixed ioBlockSwap bug and added support for double command line arguments, started reworking the initial temperature function
+
+commit 8e99b09a3a38bedafecceaa08667fa3207b300c2
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Tue Jan 15 21:31:20 2019 +0100
+
+    die hoffnung stirbt zu letzt
+
+commit cdddd0ff0d39273112b54a12b14867fe4938559e
+Merge: 8cac5d4 135ad63
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Tue Jan 15 20:56:55 2019 +0100
+
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
+
+commit 8cac5d4358c6ea5b10affcfa4030e9aa540fffb6
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Tue Jan 15 20:56:47 2019 +0100
+
+    debuggen -rumei
+
+commit 135ad637389d02c17c8f2df8058052078d07d146
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Jan 15 20:56:15 2019 +0100
+
+    fixed timing cost bug
+
+commit 1dc27fa487f95154ab76b9f3702aca0915925223
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Jan 15 20:30:31 2019 +0100
+
+    fixed various bugs
+
+commit aad8adc8c6a65f9a50276b4f498f8e5a31229914
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Jan 15 19:26:28 2019 +0100
+
+    created cache for wiring cost
+
+commit edc2d95f79b6f69035fa18fd3137b98367574a5f
+Merge: 72f76fe e2bcd7a
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Jan 15 19:22:03 2019 +0100
+
     merge
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit 86febee1469daefbc35f28f5176b7d2ca039bba2
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 15:59:59 2018 +0100
-
-    fixed error that did not recognize end of file and tried to parse on
-
-commit 3ccf6f8ba87363c39d8964f3c6c2b9715d50b078
+commit e2bcd7a07dcf8c777bfce34e546df0835838bdea
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 15:58:40 2018 +0100
+Date:   Tue Jan 15 19:21:53 2019 +0100
 
-    small changes to routingparser
+    moved wiring cost to Net(class)
 
-commit bdf4acd5fb3a5163e3416c6ab2bb8aadc616d0f6
+commit 72f76feb6eeda396f41a74c33d77a184f7eebc22
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Jan 15 19:20:48 2019 +0100
+
+    fixed initial block placement method and applySwap method
+
+commit 510eedc4da5ad7bd9bdc2d86ed7132c9c93b12aa
+Merge: 7e7c59f 076304c
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 15:55:22 2018 +0100
+Date:   Tue Jan 15 18:14:59 2019 +0100
 
-    ErrorReporter typo
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit 4c414888d7e72e3c2871c322324782ce063fbaed
+commit 7e7c59f31c15d290b4be6207d146d6dfc01d73a6
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 15:47:31 2018 +0100
+Date:   Tue Jan 15 18:12:00 2019 +0100
 
-    typo in errorreport
+    nothing changed?
 
-commit f06a43981d44e48706bae4e02cd64fab3e38dbe4
-Merge: 3a5b333 b1d5195
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 15:40:30 2018 +0100
+commit 076304c241d9709653f4d9d8d751c73ff2b22793
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Jan 15 00:32:05 2019 +0100
 
-    tidied up failed merge
+    finished first implementation and started debugging
 
-commit 3a5b333086517882bb8134f7b9aaf214a4fa90b8
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 15:36:59 2018 +0100
+commit bd50649a9e40b7cf218324405a49770329c44124
+Merge: 8cf4bd7 0a8a62c
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Jan 14 16:42:36 2019 +0100
 
-    implemented parsing of pins
-
-commit b1d5195b845a0cd63e3f89de60dfbf2e747cf45c
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 15:35:34 2018 +0100
-
-    isneighbour finished
-
-commit 47293dfe92bd67a690b22c6816858945c0b181f5
-Merge: 855a030 cdf8216
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 15:07:44 2018 +0100
-
-    Merge branch 'master' of https://github.com/011000101101/ACE
     merge
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit cdf82160985a45ccfb62d3eeb06ec68a87ffa12a
+commit 0a8a62c82643a0bbbe9b025195d5e87f30a5332b
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 15:07:14 2018 +0100
+Date:   Mon Jan 14 16:38:47 2019 +0100
 
-    ipin isneighbour
+    parseCommandlineArgument updated
 
-commit 855a0309ce4dc6d201329111ad2f245eaedbd0f0
-Merge: d50df4c a9da7a6
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 15:06:41 2018 +0100
+commit 8cf4bd7e2057382ada9af7bc49e83297ca790302 (origin/task_2_vincenz)
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Jan 14 16:38:18 2019 +0100
 
-    Merge branch 'master' of https://github.com/011000101101/ACE
-    merged
+    implemented some TODOs and removed unnecessary methods
 
-commit d50df4c22f2f7a68295c22cb8b75a0cc47ba9381
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 15:06:24 2018 +0100
-
-    nothing much
-
-commit a9da7a691b93ba77355100fa7f33c6e0733ed7f0
+commit b21f958b04893d235966e049c78f77c3b3b37eec
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 15:05:35 2018 +0100
+Date:   Mon Jan 14 15:57:11 2019 +0100
 
-    ipin isneighbour
+    getBlocks() in class Net and getNet() in class NetlistBlock implemented
 
-commit 7ebd3937d34790531fc6d08ca5d4e63c31a040f3
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 15:03:38 2018 +0100
+commit 9c370e1ebef98dd43df92513d40b00c8d73d69ec
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Jan 14 15:30:31 2019 +0100
 
-    Revert "ss"
-    revert bad commits
-    
-    This reverts commit a1b29bd5e3e78bdb56624d31deca82eac90edb06.
+    removed fullfilled TODOs and fixed bug in simplePath generation in Placer.place()
 
-commit a1b29bd5e3e78bdb56624d31deca82eac90edb06
+commit 0603da4645eccdc64aee3dcef9858d393a22a8ca
+Merge: f0d773d 5283291
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 14:47:20 2018 +0100
+Date:   Mon Jan 14 15:25:52 2019 +0100
 
-    ss
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit 47af51aace449c0c155baeb952c779833b26829f
-Merge: a6842f9 46f0f39
+commit f0d773d29c77859cc82b6132cdb8055695b2b8e9
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 14:46:19 2018 +0100
+Date:   Mon Jan 14 15:16:36 2019 +0100
 
-    Merge branch 'master' of https://github.com/011000101101/ACE
+    commit before pull required
 
-commit a6842f94cfe90518f92d59dd1227379a133c9db6
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Nov 28 14:44:13 2018 +0100
-
-    sss
-
-commit 46f0f3907d6ac871cc2a2ad0cb7d709aae002b2e
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 14:43:44 2018 +0100
-
-    added explicit data structures for IPin and OPin and implemented most inherited methods, edited annotation methods of blocks and channels to match Pins
-
-commit eb7eff4c8680d5c7a7e0c171c2579a6cf3612529
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Nov 28 13:38:07 2018 +0100
-
-    fixed many minor errors
-    
-    implemented missing methods in blocks and channels
-
-commit cce59b6e16a4064e760a81806d403820826bf886
-Merge: 4acab51 ce8ef96
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Nov 27 22:01:23 2018 +0100
-
-    finished ErrorReporter vorerst
-
-commit 4acab51093da53ef0ad9605036ac788637a8ee8b
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Nov 27 21:59:02 2018 +0100
-
-    errrorReport finished, vorerst
-
-commit ce8ef968ea20cab52ac0b16df672b6972787d9b0
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 20:34:46 2018 +0100
-
-    whatever
-
-commit 902436eb449d5d63a786fc9bf0bb554b6eb6a788
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 20:23:15 2018 +0100
-
-    edited gitignore to ignore data folder
-
-commit 787025d233c0f0eb668130b922ff51dc6ae959c9
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 20:18:42 2018 +0100
-
-    removed two unused imports
-
-commit f5472fd5fb8352b9f736c39ff1433b3cf167c025
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 20:14:00 2018 +0100
-
-    implemented printing of critical path
-    
-    implemented isNeighbour(...) function in all subclasses of PathElement
-    
-    general clean up
-
-commit 2628da7edc477e1938a1bf931a56245979a53fb9
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 17:47:01 2018 +0100
-
-    finished RoutingParser
-    
-    updated access to constants of ParameterManager
-    
-    added and edited ErrorReporter functions
-
-commit 9f080fb4fd6edbe87401690c6c88dd8dbac63914
-Merge: 4bcfb3c 7f32040
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Nov 27 16:52:39 2018 +0100
-
-    ...Merge branch 'master' of https://github.com/011000101101/ACE
-
-commit 4bcfb3c97b3db72935d980563afd054162fe4e09
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Nov 27 16:50:17 2018 +0100
-
-    finished architecture parser and command line parsing
-
-commit 7f32040ff8b208879d9173bdee7e307592a41a89
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 14:06:33 2018 +0100
-
-    minor changes in RoutingParser
-
-commit 500bedd3891efe84ff8a2e812d812e10768cfb56
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 13:41:57 2018 +0100
-
-    deaktivated unused methods in PathElement and subclasses
-
-commit 33172cb2a1def89d59384e73f3f2589b260b44e2
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Nov 27 13:24:26 2018 +0100
-
-    merged routingParser.java
-
-commit 9f947d976913aaaef3d755cd4229913b657e3db7
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 01:28:02 2018 +0100
-
-    corrected faulty path structure: moved DesignAnalyzer.java from package timingAnalyzer to package designAnalyzer.timingAnalyzer
-
-commit 229790af47393ef4225945c73b12746af16ecf71
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Tue Nov 27 01:19:48 2018 +0100
-
-    implemented timing analysis and slack annotation
-
-commit 3e296f24771fabe0bbadbf7345bbbb63096ceac4
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Mon Nov 26 20:06:56 2018 +0100
-
-    corrected errors in timing estimation
-
-commit 89665d8ebc43173160d148e9168ac6d788de43dd
-Merge: c9f00f9 2dee970
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Mon Nov 26 19:51:11 2018 +0100
-
-    Merge branch 'master' of https://github.com/011000101101/ACE
-
-commit c9f00f9431feeb4fc6f190b85defc292d699a002
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Mon Nov 26 19:50:34 2018 +0100
-
-    Revert "finished implementation of timing estimation"
-    
-    This reverts commit 09b4382d7feccaa8a94bd058de0534e684533234.
-
-commit 09b4382d7feccaa8a94bd058de0534e684533234
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Mon Nov 26 19:42:20 2018 +0100
-
-    finished implementation of timing estimation
-
-commit 2dee970e073ba6240d961e97a31e3a410f4c7b47
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Mon Nov 26 19:42:20 2018 +0100
-
-    finished implementation of timing estimation
-
-commit 200d2f3667cf78553e8f6c68bf0b593001b665ae
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Fri Nov 23 15:06:36 2018 +0100
-
-    to Rumei: todo finish cases 3, 5, 7
-
-commit 78f28645ce784f9509a26b67a9dee8eef51132a5
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Fri Nov 23 14:51:58 2018 +0100
-
-    to Rumei: finish 3,5,7 in timinganalyzer
-
-commit 4dae2f2b518fee9bc5f8c6cf0f67264c0837cef9
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Fri Nov 23 12:52:05 2018 +0100
-
-    created package and class TimingAnalyzer and started implementation of timing estimization
-
-commit 031865d64f887cd210a61ea6dd040ec3e194b7e5
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Thu Nov 22 20:14:12 2018 +0100
-
-    worked on RoutingParser
-
-commit 2bbaf2d94418ccdcb03d8b48c86932780ac4a0d4
-Merge: 971120c fabbe04
-Author: Vincenz Mechler <vm71xepe@clientmaster.rbg.informatik.tu-darmstadt.de>
-Date:   Thu Nov 22 18:00:14 2018 +0100
+commit 5283291ff0e38da9199142a2be3a6e3e37e6512e
+Merge: c62f6dc 0c7526c
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Jan 14 15:04:56 2019 +0100
 
     merged
 
-commit 971120ce2929687f4b5f7a57620a383bfbfbb2dd
-Author: Vincenz Mechler <vm71xepe@clientmaster.rbg.informatik.tu-darmstadt.de>
-Date:   Thu Nov 22 17:57:24 2018 +0100
+commit c62f6dc54081f15c9c46eb55c1a1ef89f6deca73
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Jan 14 15:02:21 2019 +0100
 
-    started work at RoutingParser
+    cleaned up TODOs
 
-commit fabbe04637227bdcf545993e92c2ed8e86634ccf
+commit 0c7526c335a16438453ba7a0d52ef8fa3c471daa
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Thu Nov 22 17:44:09 2018 +0100
+Date:   Mon Jan 14 14:47:09 2019 +0100
 
-    implemented placement parser and with that several small changes to rest
+    wiring cost and delta wiring cost kinda finished, needs to be checked by
+    Lord Vincenz
 
-commit c4abafb04d3f0912c8388367677436148823e8fe
-Author: Vincenz Mechler <vm71xepe@clientmaster.rbg.informatik.tu-darmstadt.de>
-Date:   Thu Nov 22 16:05:26 2018 +0100
+commit db355a3b63e120b444ddd652e4dc2ecc740dd52d
+Merge: 99a1523 a15b6a0
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Mon Jan 14 13:43:50 2019 +0100
 
-    added parametr manager to abstract input parser
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit d25f8b39f5137ab510be2c8287181abc298d623d
-Author: Vincenz Mechler <vm71xepe@clientmaster.rbg.informatik.tu-darmstadt.de>
-Date:   Thu Nov 22 15:15:07 2018 +0100
+commit 99a1523b58256dce7b7d14d1c3fe780d7f9b8aab
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Mon Jan 14 13:43:37 2019 +0100
 
-    implemented path structure and critical path computation
+    few minor changes
 
-commit f042b5c5377a9e36459e368a847c65ea6d6a5c59
-Author: Vincenz Mechler <vm71xepe@clientmaster.rbg.informatik.tu-darmstadt.de>
-Date:   Thu Nov 22 12:39:03 2018 +0100
-
-    edited structures package ans subpackages, removed old pathElement stubs and added channels package and classes
-
-commit 226599170eed5f80de3b79c0a7c02ee3e282328a
+commit a15b6a03c1cbdff61c6c88aa739e3fb851cc6648
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Thu Nov 22 03:17:22 2018 +0100
+Date:   Mon Jan 14 13:35:44 2019 +0100
 
-    added ParameterManager
-    
-    added method for block placement in Structure manager and moved some code from ConsistencyChecker
-    
-    added method for block placement in NetlistBlock
+    implemented PlacementWriter and AbstractWriter and staged new files for commit...
 
-commit 1ce5670c70d5ee8c9026d67d0f1725a6d6f93684
+commit 2dc44e6f3d9598e2d9d323dc72051401e8d9b810
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Wed Nov 21 23:45:13 2018 +0100
+Date:   Mon Jan 14 13:34:35 2019 +0100
 
-    added parseHead() function in AbstractInputParser
+    implemented PlacementWriter and AbstractWriter
 
-commit 880b3fee11fab8693a70aed418f062b87d276f01
+commit 570ed2640acbca5aa26ed0aad4aa5328483fb2e0
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Wed Nov 21 22:16:08 2018 +0100
+Date:   Mon Jan 14 01:52:19 2019 +0100
 
-    added ConsistencyChecker and implemented placement checking
+    finished implementation of timing cost
 
-commit 433b398c43f077bc72ca1206c554dbcd41201aaa
+commit d2c66f0a6f09967af62695429ea24783a0652a83
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Wed Nov 21 21:44:46 2018 +0100
+Date:   Sun Jan 13 22:10:57 2019 +0100
 
-    filled main class \(DesignAnalyzer\) with basic control flow
-    
-    added block management to StructureManeger
-    
-    added method stubs in ErrorReporter
+    implemented timing analysis (ta and slack annotation)
 
-commit bdca60196c78c1ad12301e2a4b433f28e952b4ee
+commit 2315faa04cb528614dffeff654931b3d3f88f173
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Wed Nov 21 21:07:37 2018 +0100
+Date:   Sun Jan 13 18:00:59 2019 +0100
 
-    moved parseNetlistFile() method of NetlistParser to AbstractInputParser and renamed to parseAll, defined abstract method parseOneBlock in AbstractInputParser
+    merged and fixed compilation errors
 
-commit 0a5ef04bd90c7d46615393139d3baae8417b3736
+commit 4b83a0b5725d332a7aada31cd8b9f9eb4c69c715
+Merge: aa2ff5d bc413ab
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Wed Nov 21 20:58:07 2018 +0100
+Date:   Sun Jan 13 17:57:30 2019 +0100
 
-    updated package structure
-    
-    introduced StructureManager and moved exesting code there
-    
-    modified AbstractInputParser and completed NetlistParser
-    
-    added some method stubs to ErrorReporter
+    merge
+    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
 
-commit 29879bad460e6943197412f2544298589d824c7d
+commit aa2ff5d8622d6b77c8dd9da17606572b95526464
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Wed Nov 21 14:21:38 2018 +0100
+Date:   Sun Jan 13 17:57:24 2019 +0100
 
-    implemented NetlistParser (nearly finished)
-    
-    added ErrorReporter and implemented reportSyntaxError(...) and reportSyntaxMultipleChoiceError(...)
-    
-    modified and augmented data structures
+    completed swapping methods
 
-commit f20a86d91b13da3b3d9e5759555a359f8e9460eb
+commit bc413ab93af60b9ae638efea7e62e2c1d0e7f249
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Sun Jan 13 16:16:58 2019 +0100
+
+    WiringCost started to implement
+
+commit b15732a6eac07f2d15b619b7a29cb438927137b6
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Nov 20 17:52:01 2018 +0100
+Date:   Sun Jan 13 13:41:49 2019 +0100
 
-    added datastructure and parser class structures
-    
-    started implementation of AbstractInputParser
-    
-    filled datastructure classes with attributes (partly)
+    changed placement structure and began with block swap implementation
 
-commit a83673e96eb1d0659af681682134cfa85ec06de9
+commit 294e7f80014cd9074f954bc434bf221c0756dbde
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Nov 20 16:21:12 2018 +0100
+Date:   Mon Jan 7 23:11:39 2019 +0100
 
-    renamed package
+    implemented logic of inner loop and changed cost computation structure
 
-commit a2f61d4089ae7d8f995c53f4ce964f8404020580
+commit 2331cf8aef0e0321fdf12999cbe052273dd44545
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Nov 20 16:07:04 2018 +0100
+Date:   Thu Jan 3 05:05:49 2019 +0100
 
-    modified gitignore
+    changed iOBlocks ańd logicBlocks from lists to Arays for efficient access
 
-commit e02399a540170844b25f38fc5f101065f90545bd
+commit ca89f6eafbec5c5a41e4b3f5e843ac7100dbe847
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Nov 20 16:04:20 2018 +0100
+Date:   Thu Jan 3 03:35:27 2019 +0100
 
-    added input parser structure
-
-commit a6360a00e3480ae1dd2f5537f675307cfe7fed2b
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Nov 20 15:53:38 2018 +0100
-
-    created main class
-
-commit b011a853c5a583ce3610dc22e9542e6ecf3964b4
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Nov 20 15:27:03 2018 +0100
-
-    initial commit --project creation
+    begun implementation of Placer.java, implemented main method, algorithm control flow and initial placement generator methods
