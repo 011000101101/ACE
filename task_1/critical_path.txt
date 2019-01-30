@@ -5,5 +5,5 @@ estimated critical path:
 Node:			Time:
 Type:	Name:	Location:	Delay:	tA ('T-Arrival'):
 --	--	--	--	--
-I_BLOCK	p_3_2_	(4,0)0		0
-CLB(seq)	p_188_761_	(22,20)		20800
+CLB(seq)	[242]	(6,10)		0
+CLB(seq)	[3469]	(65,65)		58800

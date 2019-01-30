@@ -464,9 +464,10 @@ public class Placer {
 //		System.out.println("initial wiring Cost: "+ oldWiringCost);
 //		System.out.println("initial total Cost: "+ cost);
 		double outerLoopBound= (0.005 * cost / structureManager.getNetCollection().size());
+		System.out.println("outerLoopBound: " + outerLoopBound);
 		while(temp > outerLoopBound) { //0.005 * avgPathsPerNet * avgTimingCostPerPath) {//experimental: use avg timing cost per path instead of complete cost and per net
 //			System.out.println(0.005 * avgPathsPerNet * avgTimingCostPerPath);
-//			System.out.println("Temp: " + temp);
+			System.out.println("Temp: " + temp);
 //			System.out.println("test");
 			/* compute Ta, Tr and slack() */ 
 			analyzeTiming() ; 
@@ -1136,7 +1137,7 @@ public class Placer {
 	 */
 	private static double computeInitialTemperature(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
 		
-//		System.out.println("computing initial temperature...");
+		System.out.println("computing initial temperature...");
 		double n= blockCount;
 		double cQuer= 0;
 		int sumCSquare= 0;
@@ -1156,7 +1157,7 @@ public class Placer {
 		for(int i= 0; i < (int) n; i++) {
 			sumDeltaCSquare+= Math.pow(cI[i] - cQuer, 2);
 		}
-//		System.out.println("initial temperature computed.");
+		System.out.println("initial temperature computed.");
 //		System.out.println("sumCSqure: " +sumCSquare);
 //		System.out.println("n " + n);
 //		System.out.println("c quer " +cQuer);
@@ -1214,7 +1215,7 @@ public class Placer {
 		
 		int numberOfSlotsLeft= placingAreaSize * placingAreaSize;
 		//System.out.println(placingAreaSize);
-		biasX= (parameterManager.X_GRID_SIZE - placingAreaSize) / 2 + 1;
+		biasX= (parameterManager.X_GRID_SIZE - placingAreaSize) / 2 + 1; //+1 to compensate for row/column of IO blocks
 		biasY= (parameterManager.Y_GRID_SIZE - placingAreaSize) / 2 + 1;
 		NetlistBlock[][][] output= new NetlistBlock[parameterManager.X_GRID_SIZE + 2][parameterManager.Y_GRID_SIZE + 2][2];
 		for(LogicBlock b : logicBlocks) {
