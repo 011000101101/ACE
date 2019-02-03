@@ -9,11 +9,15 @@ public class ChannelWithCost extends ResourceWithCost{
 	
 	private Boolean horizontal;
 	
+	private int usedCounter;
+	private int usedCounterValidityDate;
+	
 	public ChannelWithCost(int newX, int newY, boolean newHorizontal, double newCost, ChannelWithCost newPrevious) {
 		super(newCost, newPrevious);
 		x= newX;
 		y= newY;
 		horizontal= newHorizontal;
+		usedCounter= 0;
 	}
 	
 	@Override
@@ -33,6 +37,17 @@ public class ChannelWithCost extends ResourceWithCost{
 	@Override
 	public void addChannelToPriorityQueue(PriorityQueue<ChannelWithCost> pQ) {
 		pQ.add(this);
+	}
+
+	public void setUsed(int iterationCounter) {
+		if(usedCounterValidityDate == iterationCounter) {
+			usedCounter++;
+		}
+		else {
+			//TODO maybe update Hv?
+			usedCounterValidityDate= iterationCounter;
+			usedCounter= 1;
+		}
 	}
 	
 }

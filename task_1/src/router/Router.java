@@ -159,7 +159,7 @@ public class Router {
 				}
 				
 				currentChannel = pQ.poll(); 
-				currentChannel.setUsed();
+				currentChannel.setUsed(iterationCounter);
 				
 			}
 
