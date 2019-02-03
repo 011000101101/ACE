@@ -142,7 +142,7 @@ public class Router {
 			
 			routingTreeRoot.addAllChannelsToPriorityQueue(pQ);
 			currentChannel = pQ.poll(); 
-			currentChannel.setUsed();
+			currentChannel.setUsed(iterationCounter);
 			while(!containsChannelWithCost(inputChannels, currentChannel)) {
 				
 				neighbouringChannels= getNeighbouringChannels(currentChannel);
@@ -159,7 +159,7 @@ public class Router {
 				}
 				
 				currentChannel = pQ.poll(); 
-				currentChannel.setUsed();
+				currentChannel.setUsed(iterationCounter);
 				
 			}
 
