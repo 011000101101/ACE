@@ -194,8 +194,9 @@ public class Router {
 	}
 
 	/**
-	 * Crit(i, j) = max(0.99 - slack(i, j) /Dmax , 0)
-	 * cost(u, v) = Crit(u, v) * du,v + [1 - Crit(u, v)] * bv * hv * pv 
+	 * computes the cost of the current channel 
+	 * cost(u, v) = bv * hv * pv 
+	 * b(v)
 	 * h(v)i = h(v)i-1 + max(0, occupancy(v) - capacity(v))
 	 * @param xCoordinateChannel
 	 * @param yCoordinateChannel
