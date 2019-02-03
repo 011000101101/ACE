@@ -9,7 +9,7 @@ public class ChannelWithCost extends ResourceWithCost{
 
 	private int x;
 	private int y;
-	private static double hv;
+	private double hv;
 	
 	private static ParameterManager parameterManager;
 	private Boolean horizontal;
@@ -30,6 +30,8 @@ public class ChannelWithCost extends ResourceWithCost{
 	public void updateHistoryCongestion() {
 		hv = hv + Math.max(0, usedCounter - parameterManager.CHANNEL_WIDTH);
 	}
+	
+	
 	/**
 	 * computes the cost of the current channel 
 	 * cost(u, v) = bv * hv * pv 
@@ -41,7 +43,7 @@ public class ChannelWithCost extends ResourceWithCost{
 	 * @param channelOrientation
 	 * @return
 	 */
-	public static double computeCost(int channelXCoordinate, int channelYCoordinate, boolean channelOrientation, double pFak) {
+	public double computeCost(int channelXCoordinate, int channelYCoordinate, boolean channelOrientation, double pFak) {
 	 
 		double pv = 1 + Math.max(0, (usedCounter + 1 - parameterManager.CHANNEL_WIDTH)* pFak );
 		return hv * pv;

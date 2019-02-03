@@ -3,22 +3,55 @@ package router;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.awt.Point;
+import java.io.FileNotFoundException;
 
 import designAnalyzer.ParameterManager;
+import designAnalyzer.errorReporter.ErrorReporter;
+import designAnalyzer.inputParser.ArchitectureParser;
+import designAnalyzer.inputParser.NetlistParser;
+import designAnalyzer.inputParser.PlacementParser;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
+import designAnalyzer.structures.pathElements.blocks.IOBlock;
+import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
+import designAnalyzer.timingAnalyzer.TimingAnalyzer;
+import placer.Placer;
+import placer.outputWriter.PlacementWriter;
 import router.structures.resourceWithCost.ChannelWithCost;
 import router.structures.resourceWithCost.ResourceWithCost;
 import router.structures.tree.NodeOfResource;
 import router.structures.blockPinCost.BlockPinCost;
 import router.structures.blockPinCost.IOBlockPinCost;
+import router.outputWriter.RoutingWriter;
 
 public class Router {
 
+	/**
+	 * reference to instance of input parser
+	 */
+	private static NetlistParser netlistParser;
+	
+	/**
+	 * reference to instance of input parser
+	 */
+	private static ArchitectureParser architectureParser;
+	
+	/**
+	 * 
+	 */
+	private static PlacementParser placementParser;
+	
+	/**
+	 * reference to instance of routing writer
+	 */
+	private static RoutingWriter routingWriter; //TODO
+	
 	/**
 	 * iteration limit for globalRouter
 	 */
@@ -50,24 +83,114 @@ public class Router {
 		
 		
 		// TODO input parsing and basic datastructure initialization
-		
-		
-		parameterManager= ParameterManager.getInstance();
-		structureManager= StructureManager.getInstance();
-		channelUsedCount= new int[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
-		channelCostIndex= new double[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
-		channelCostNotYetComputedFlagIndex= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
-		
-		channelIndex= new ChannelWithCost[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
-		
-		blockPinCosts= new HashMap<NetlistBlock, BlockPinCost>(structureManager.getBlockMap().values().size()); //TODO check hashmap initialization
-		
-		
-		//TODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter, if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
-		//parameterManager.setChannelWidth(...); //set new channel width before execution of global router
-		globalRouter();
+		String netlistFilePath= args[0];
+		String architectureFilePath= args[1];
+		String placementFilePath= args[2];
+		String routingFilePath = args[3];
+		int[] commandLineInput = parseCommandlineArguments(args);
+		try {
+			architectureParser= new ArchitectureParser(architectureFilePath, commandLineInput);
 
+			architectureParser.parseAll();
+			ParameterManager.initialize(netlistFilePath, architectureFilePath, placementFilePath, architectureParser.getAllParameters());
+
+			netlistParser= new NetlistParser(netlistFilePath);
+			netlistParser.parseAll();
+			
+			placementParser = new PlacementParser(placementFilePath);
+			
+			routingWriter= new RoutingWriter();
+			
+		
+			structureManager= StructureManager.getInstance();
+			parameterManager= ParameterManager.getInstance();			
+			
+			channelUsedCount= new int[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
+			channelCostIndex= new double[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
+			channelCostNotYetComputedFlagIndex= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
+			
+			channelIndex= new ChannelWithCost[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
+			
+			blockPinCosts= new HashMap<NetlistBlock, BlockPinCost>(structureManager.getBlockMap().values().size()); //TODO check hashmap initialization
+			
+			
+			//TODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter, if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
+			//parameterManager.setChannelWidth(...); //set new channel width before execution of global router
+			globalRouter();
+
+			
+			routingWriter.write(routingFilePath);
+
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			ErrorReporter.reportFileNotFoundError(e.toString());
+		} catch (Exception e) {
+			System.err.println("Execution aborted as a result of previously detected errors.");
+			e.printStackTrace();
+		}
 	}
+	
+
+	
+	/**
+	 * stores every argument beside args[0,1,2,3] (path arguments) for the initialization of the arch file in an array
+	 * @param args 
+	 * @return
+	 */
+	private static int[] parseCommandlineArguments(String[] args) {
+		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+		for(int i = 3; i< args.length; i++) {
+			switch(args[i]) {
+			case "-X":
+				i++;
+				parameterInitialized[0]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Y":
+				i++;
+				parameterInitialized[1]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-W":
+				i++;
+				parameterInitialized[2]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Tipad":
+				i++;
+				parameterInitialized[3]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Topad":
+				i++;
+				parameterInitialized[4]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Tswitch":
+				i++;
+				parameterInitialized[5]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-Tcomb":
+				i++;
+				parameterInitialized[6]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-TFFin":
+				i++;
+				parameterInitialized[7]= Integer.valueOf(args[i]);
+			break;
+			
+			case "-TFFout":
+				i++;
+				parameterInitialized[8]= Integer.valueOf(args[i]);
+			break;
+			}
+		}
+		return parameterInitialized;
+	}
+	
 	
 	/**
 	 * global routing algorithm routing all nets repeatedly for up to [limit] number of times or until the placement has been routed validly
