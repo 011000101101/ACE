@@ -64,6 +64,7 @@ public class Router {
 		
 		
 		//TODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter, if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
+		//parameterManager.setChannelWidth(...); //set new channel width before execution of global router
 		globalRouter();
 
 	}
