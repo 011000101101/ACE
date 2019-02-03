@@ -15,6 +15,7 @@ import router.structures.resourceWithCost.ChannelWithCost;
 import router.structures.resourceWithCost.ResourceWithCost;
 import router.structures.tree.NodeOfResource;
 import router.structures.blockPinCost.BlockPinCost;
+import router.structures.blockPinCost.IOBlockPinCost;
 
 public class Router {
 
@@ -122,7 +123,7 @@ public class Router {
 		//HashMap<RtgRsrc,int> PathCost ; (reuse global cost array(s))
 		NetlistBlock source= currentNet.getSource(); 
 		//RT.add(i, ()) ; 
-		resetResourceCosts(); //TODO self-invalidating cost storage: e.g. save iteration counter when writing and check if counter == current when reading, else invalid
+		//resetResourceCosts(); //TODO self-invalidating cost storage: e.g. save iteration counter when writing and check if counter == current when reading, else invalid
 		
 		initializeSourceCosts(source, pQ);
 		
@@ -151,7 +152,7 @@ public class Router {
 					
 					if(neighbouringChannels[j].notYetComputed(iterationCounter)) { 
 						
-						neighbouringChannels[j].setCostAndPrevious(currentChannel, iterationCounter);
+						neighbouringChannels[j].setPathCostAndPrevious(currentChannel, iterationCounter);
 						pQ.add(neighbouringChannels[j]);
 					
 					}
@@ -184,6 +185,29 @@ public class Router {
 		
 		return (RT) ; //TODO return only relevant information
 
+	}
+
+	private static ChannelWithCost[] getInputChannels(NetlistBlock sink) {
+		BlockPinCost tmp= blockPinCosts.get(sink);
+		if(tmp instanceof IOBlockPinCost) {
+			if(((IOBlockPinCost) tmp).getLeftOrRight()) { //left ot top io
+				if(((IOBlockPinCost) tmp).getLeftOrTop()) { //left io
+					return new ChannelWithCost[]{channelIndex[sink.getX()][sink.getY()][0]};
+				}
+				else { //top io
+					return new ChannelWithCost[]{channelIndex[sink.getX()][sink.getY() - 1][1]};
+				}
+			}
+			else { //
+				if(((IOBlockPinCost) tmp).getLeftOrTop()) {
+					return new ChannelWithCost[]{channelIndex[sink.getX()][sink.getY()][0]};
+				}
+				else {
+					return new ChannelWithCost[]{channelIndex[sink.getX()][sink.getY()][1]};
+				}
+			}
+		}
+		return null;
 	}
 
 	private static boolean containsChannelWithCost(ChannelWithCost[] inputChannels, ChannelWithCost currentChannel) {
@@ -223,7 +247,7 @@ public class Router {
 	private static void initializeSourceCosts(NetlistBlock source, PriorityQueue<ChannelWithCost> pQ) {
 		ChannelWithCost[] outputChannels= getOutputChannels(source);
 		for(int j= 0; j < outputChannels.length; j++) {
-			outputChannels[j].setCostAndPrevious(null, iterationCounter); //initialize cost as first channel of path
+			outputChannels[j].setPathCostAndPrevious(null, iterationCounter); //initialize cost as first channel of path
 			pQ.add(outputChannels[j]); //add to priority queue
 		}
 	}
