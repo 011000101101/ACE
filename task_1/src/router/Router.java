@@ -217,25 +217,7 @@ public class Router {
 		return false;
 	}
 
-	/**
-	 * Crit(i, j) = max(0.99 - slack(i, j) /Dmax , 0)
-	 * cost(u, v) = Crit(u, v) * du,v + [1 - Crit(u, v)] * bv * hv * pv 
-	 * h(v)i = h(v)i-1 + max(0, occupancy(v) - capacity(v))
-	 * @param xCoordinateChannel
-	 * @param yCoordinateChannel
-	 * @param channelOrientation
-	 * @return
-	 */
-	private static double computeCost(int channelXCoordinate, int channelYCoordinate, boolean channelOrientation, double pFak, ChannelWithCost channelU) {
-	
-		double crit = 1;//TODO
-		double delay = 1;
-		double bv = 1;	//TODO bv always 1?
-		double hv = 1; //TODO
-		//	p(v) = 1 + max(0, [occupancy(v) + 1 - capacity(v)] * pfak 
-		double pv = 1 + Math.max(0, (channelUsedCount[channelXCoordinate][channelYCoordinate][channelOrientation? 1 : 0] + 1 - parameterManager.CHANNEL_WIDTH)* pFak );
-		return crit * delay + (1 - crit) * bv * hv * pv;
-	}
+
 
 	private static void initializeSinkCosts(NetlistBlock sink, ChannelWithCost[] inputChannels) {
 		BlockPinCost sinkPins= blockPinCosts.get(sink);
