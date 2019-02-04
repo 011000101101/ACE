@@ -88,6 +88,8 @@ public class Router {
 
 	private static Collection<NodeOfResource> currentRouting;
 
+	private static int pFak;
+
 	public static void main(String[] args) {
 		
 		
@@ -108,7 +110,7 @@ public class Router {
 			
 			placementParser = new PlacementParser(placementFilePath);
 			
-			routingWriter= new RoutingWriter();
+			routingWriter= new RoutingWriter(routingFilePath);
 			
 		
 			structureManager= StructureManager.getInstance();
@@ -122,13 +124,18 @@ public class Router {
 			
 			blockPinCosts= new HashMap<NetlistBlock, BlockPinCost>(structureManager.getBlockMap().values().size()); //TODO check hashmap initialization
 			
+			//TODO check if possible to start algorithm with real pFak of 1 instead of 0.5, would eliminate need to multiply every time
+			//pFak halved every time it is used to be able to use int and shifting, instead of double and multiplication
+			pFak= 1;
+			
 			
 			//TODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter, if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
 			//parameterManager.setChannelWidth(...); //set new channel width before execution of global router
 			globalRouter();
+			pFak= pFak<<1;
 
 			
-			routingWriter.write(routingFilePath);
+			routingWriter.write(currentRouting);
 
 			
 		} catch (FileNotFoundException e) {
@@ -217,6 +224,11 @@ public class Router {
 			//foreach r in RRG.Edges do TODO implement this
 				//r.updateHistory() ;
 				//r.updateWith(pv) ;
+			
+			// no history for input pins, because there is no need (no blocking by 3rd party possible) 
+			for(ChannelWithCost c : usedChannels) {
+				c.updateHistoryCongestion();
+			}
 		}
 		if (iterationCounter > limit) {
 			return false ;
@@ -272,8 +284,6 @@ public class Router {
 		ChannelWithCost currentChannel;
 		ChannelWithCost[] neighbouringChannels= new ChannelWithCost[6];
 		
-		double pFak = 0.5 * Math.pow(2 ,globalIterationCounter);
-		
 		for( NetlistBlock sink : currentNet.getSinks() ) {
 			/* route Verbindung zur Senke sink */
 			BlockPinCost sinkCosts= blockPinCosts.get(sink);
@@ -303,7 +313,7 @@ public class Router {
 //					}
 					
 					//saves one method call...
-					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(currentChannel, iterationCounter);
+					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(currentChannel, pFak, iterationCounter);
 					pQ.add(neighbouringChannels[j]);
 					
 				}
@@ -312,6 +322,8 @@ public class Router {
 				
 			}
 
+			currentChannel.setSinkPinUsed(sink, iterationCounter);
+			
 			resetSinkCosts(inputChannels);
 
 			
@@ -454,7 +466,7 @@ public class Router {
 	private static void initializeSourceCosts(NetlistBlock source, PriorityQueue<ChannelWithCost> pQ) {
 		ChannelWithCost[] outputChannels= getOutputChannels(source);
 		for(int j= 0; j < outputChannels.length; j++) {
-			outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(null, iterationCounter); //initialize cost as first channel of path
+			outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(null, pFak, iterationCounter); //initialize cost as first channel of path
 			pQ.add(outputChannels[j]); //add to priority queue
 		}
 	}

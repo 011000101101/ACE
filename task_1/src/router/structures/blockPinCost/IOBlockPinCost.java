@@ -1,6 +1,12 @@
 package router.structures.blockPinCost;
 
+import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
+
 public class IOBlockPinCost extends BlockPinCost {
+
+	public IOBlockPinCost(NetlistBlock newBlock) {
+		super(newBlock);
+	}
 
 	/**
 	 * flag if it is (left or right) IO block
