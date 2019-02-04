@@ -169,19 +169,21 @@ public abstract class AbstractChannel extends PathElement{
 	
 	
 	@Override
-	protected int annotateTA() {
+	protected int annotateTA(int[] exactWireLengt) {
 		
-		tA= previous.analyzeTA();
+		tA= previous.analyzeTA(exactWireLengt);
 		tA+= parameterManager.T_SWITCH;
+		exactWireLengt[0] =exactWireLengt[0] + 1; //add CHANNEL segment
+		exactWireLengt[3]= exactWireLengt[3] + 1; //add SWITCH segment
 		return tA;
 	}
 	
-	protected int annotateTRAndSlack(int criticalPathLength) {
+	protected int annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
 
 		tR= Integer.MAX_VALUE;
 		for(PathElement p : next.keySet()) {
-			int temp= p.analyzeTRAndSlack(criticalPathLength); //p.tR
-			int w= p.analyzeTA() - tA; //p.tA already computed -> retrieve, path length is difference to local
+			int temp= p.analyzeTRAndSlack(criticalPathLength, exactWireLengthDummy); //p.tR
+			int w= p.analyzeTA(exactWireLengthDummy) - tA; //p.tA already computed -> retrieve, path length is difference to local
 			int slack= temp - tA - w; //slack of connection from this to p
 			next.replace(p, -1, slack); //store slack
 			temp-= w; //compute tR candidate

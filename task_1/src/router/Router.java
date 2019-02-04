@@ -324,7 +324,7 @@ public class Router {
 
 			currentChannel.setSinkPinUsed(sink, iterationCounter);
 			
-			resetSinkCosts(inputChannels);
+			resetSinkCosts(inputChannels, pQ);
 
 			
 			ChannelWithCost tmpChannel;
@@ -471,8 +471,12 @@ public class Router {
 		}
 	}
 
-	private static void resetSinkCosts(ChannelWithCost[] inputChannels) {
+	private static void resetSinkCosts(ChannelWithCost[] inputChannels, PriorityQueue<ChannelWithCost> pQ) {
 		for(int j= 0; j < inputChannels.length; j++) {
+			//no need for guard: remove(...) is optional operation
+			//if(pQ.contains(inputChannels[j])) {
+				pQ.remove(inputChannels[j]);
+			//}
 			inputChannels[j].resetLastChannel();
 		}
 	}

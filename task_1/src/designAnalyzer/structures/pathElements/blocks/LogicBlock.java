@@ -143,18 +143,19 @@ public class LogicBlock extends NetlistBlock {
 	}
 	
 	@Override
-	protected int annotateTA() {
+	protected int annotateTA(int[] exactWireLengt) {
 
 		if(pinAssignments[5] == null) { //is combinatorial block
 			tA= -1;
 			for(PathElement p : previous) { // find critical previous node and its tA
-				int temp= p.analyzeTA();
+				int temp= p.analyzeTA(exactWireLengt);
 				if(temp > tA) {
 					tA= temp;
 					criticalPrevious= p;
 				}
 			}
 			tA+= parameterManager.T_COMB; //always connected to a IPIN, is combinatorial Block
+			exactWireLengt[4]= exactWireLengt[4] + 1; //add COMB segment
 		}
 		else {
 			tA= 0; //is sequential block, starting point for annotation algorithm
@@ -164,22 +165,35 @@ public class LogicBlock extends NetlistBlock {
 	}
 	
 	@Override
-	public int startAnalyzeTA(PathElement iPin) {
+	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) {
 
+		//TODO remove
+		if(iPin == null) System.err.println("Error: 003");
+		boolean reached= false;
+		
 		if(pinAssignments[5] != null) {
 			
 			for(IPin p : previous) {
 				int i = previous.indexOf(p);
 				if(p.equals(iPin)) {
 					
-					int temp= p.analyzeTA();
+					//TODO remove
+					reached= true;
+					
+					int temp= p.analyzeTA(exactWireLengt);
 				
 					tA2[i]= temp;
 					
 					tA2[i]+= parameterManager.T_FFIN; //always connected to a IPIN, is sequential Block
+					exactWireLengt[5]= exactWireLengt[5] + 1; //add a FFIN segment
 					return tA2[i];
 					
 				}
+				
+				//TODO remove
+				if(!reached) System.err.println("Error: 004");
+				if(!reached) System.err.println(toString());
+				if(!reached) System.err.println(iPin.toString());
 					
 			}
 		}
@@ -191,11 +205,11 @@ public class LogicBlock extends NetlistBlock {
 	
 
 	@Override
-	protected int annotateTRAndSlack(int criticalPathLength) {
+	protected int annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
 
 		if(pinAssignments[5] == null) { //is combinatorial block
-			tR= next.analyzeTRAndSlack(criticalPathLength); //next.tR
-			int w= next.analyzeTA() - tA; //next.tA already computed -> retrieve, path length is difference to local
+			tR= next.analyzeTRAndSlack(criticalPathLength, exactWireLengthDummy); //next.tR
+			int w= next.analyzeTA(exactWireLengthDummy) - tA; //next.tA already computed -> retrieve, path length is difference to local
 			int slack= tR - tA - w; //slack of connection from this to p
 			slackToNext= slack; //store slack
 			tR-= w; //compute local tR
@@ -208,10 +222,10 @@ public class LogicBlock extends NetlistBlock {
 		
 	
 	@Override
-	public void startAnalyzeTRAndSlack(int criticalPathLength) {
+	public void startAnalyzeTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
 
 		if(pinAssignments[5] != null) {
-			next.analyzeTRAndSlack(criticalPathLength);
+			next.analyzeTRAndSlack(criticalPathLength, exactWireLengthDummy);
 		}
 		else {
 			//do nothing

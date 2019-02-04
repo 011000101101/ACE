@@ -147,19 +147,20 @@ public class IPin extends PathElement{
 	}
 
 	@Override
-	protected int annotateTA() {
+	protected int annotateTA(int[] exactWireLengt) {
 		
-		tA= previous.analyzeTA();
+		tA= previous.analyzeTA(exactWireLengt);
 		tA+= parameterManager.T_SWITCH; //previous always channel
+		exactWireLengt[3]= exactWireLengt[3] + 1; //add SWITCH segment
 		return tA;
 		
 	}
 
 	@Override
-	protected int annotateTRAndSlack(int criticalPathLength) {
+	protected int annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
 		
-		tR= next.analyzeTRAndSlack(criticalPathLength); //next.tR
-		int w= next.analyzeTA() - tA; //next.tA already computed -> retrieve, path length is difference to local
+		tR= next.analyzeTRAndSlack(criticalPathLength, exactWireLengthDummy); //next.tR
+		int w= next.analyzeTA(exactWireLengthDummy) - tA; //next.tA already computed -> retrieve, path length is difference to local
 		int slack= tR - tA - w; //slack of connection from this to p
 		slackToNext= slack; //store slack
 		tR-= w; //compute local tR
