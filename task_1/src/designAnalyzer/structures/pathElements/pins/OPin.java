@@ -134,15 +134,17 @@ public class OPin extends PathElement {
 	}
 
 	@Override
-	protected int annotateTA() {
+	protected int annotateTA(int[] exactWireLengt) {
 		
-		tA= previous.analyzeTA();
+		tA= previous.analyzeTA(exactWireLengt);
 		if(previous instanceof IOBlock) {//previous is external input block
 			tA+= parameterManager.T_IPAD; 
+			exactWireLengt[1]= exactWireLengt[1] + 1; //add IPAD segment
 		}
 		else { //previous is logic block
 			if(((LogicBlock) previous).isSequential()) {
 				tA += parameterManager.T_FFOUT; //previous is clocked logic block
+				exactWireLengt[6]= exactWireLengt[6] + 1; //add FFOUT segment
 			}
 			// else do nothing, previous is unclocked logic block, delay already handled in logicBlock
 		}
@@ -150,14 +152,14 @@ public class OPin extends PathElement {
 	}
 
 	@Override
-	protected int annotateTRAndSlack(int criticalPathLength) {
+	protected int annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
 
 		tR= Integer.MAX_VALUE;
 		for(PathElement p : next.keySet()) {
 			
-			int temp= p.analyzeTRAndSlack(criticalPathLength); //p.tR
+			int temp= p.analyzeTRAndSlack(criticalPathLength, exactWireLengthDummy); //p.tR
 
-			int w= p.analyzeTA() - tA; //p.tA already computed -> retrieve, path length is difference to local
+			int w= p.analyzeTA(exactWireLengthDummy) - tA; //p.tA already computed -> retrieve, path length is difference to local
 			int slack= temp - tA - w; //slack of connection from this to p
 			next.replace(p, -1, slack); //store slack
 			temp-= w; //compute tR candidate

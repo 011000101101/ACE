@@ -131,41 +131,43 @@ public abstract class PathElement {
 
 	/**
 	 * returns the single signal source of this PathElement, if present, else returns null
+	 * @param exactWireLengt 
 	 * @return the PathElement that acts as source to this PathElement
 	 */
 	/*
 	protected abstract PathElement getSingleSource();
 	*/
 
-	public int analyzeTA() {
+	public int analyzeTA(int[] exactWireLengt) {
 		if(tA != -1) {
 			return tA;
 		}
 		else {
-			return annotateTA();
+			return annotateTA(exactWireLengt);
 		}
 	}
 	
-	public int analyzeTRAndSlack(int criticalPathLength) {
+	public int analyzeTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
 		if(tR != -1) {
 			return tR;
 		}
 		else {
-			return annotateTRAndSlack(criticalPathLength);
+			return annotateTRAndSlack(criticalPathLength, exactWireLengthDummy);
 		}
 	}
 	
 	/**
 	 * annotates tA first for all previous nodes, then for this node
+	 * @param exactWireLengt 
 	 * @return
 	 */
-	protected abstract int annotateTA();
+	protected abstract int annotateTA(int[] exactWireLengt);
 	
 	/**
 	 * annotates tA first for all next nodes, then for this node
 	 * @return
 	 */
-	protected abstract int annotateTRAndSlack(int criticalPathLength);
+	protected abstract int annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy);
 	
 	/**
 	 * inserts directed edge into routing graph by linking a previous node to this node

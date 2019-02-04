@@ -36,6 +36,7 @@ public class NodeOfResource {
 	
 	public NodeOfResource(ResourceWithCost newData) {
 		data= newData;
+		child= null;
 	}
 	
 	public NodeOfResource(ResourceWithCost newData, NodeOfResource newChild) {

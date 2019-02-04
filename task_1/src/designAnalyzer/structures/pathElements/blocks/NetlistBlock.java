@@ -168,9 +168,9 @@ public abstract class NetlistBlock extends PathElement{
 	public int getBlockNumber() {
 		return blockNumber;
 	}
-	public abstract int startAnalyzeTA(PathElement iPin);
+	public abstract int startAnalyzeTA(PathElement iPin, int[] exactWireLengt);
 	
-	public abstract void startAnalyzeTRAndSlack(int criticalPathLength);
+	public abstract void startAnalyzeTRAndSlack(int criticalPathLength, int[] exactWireLengthexactWireLengthDummy);
 
 	/**
 	 * checks if the inpin or outpin is a neighbour of this block <br>

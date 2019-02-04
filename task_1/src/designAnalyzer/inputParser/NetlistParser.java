@@ -100,7 +100,8 @@ public class NetlistParser extends AbstractInputParser {
 	 */
 	private NetlistBlock parseInputBlock() {
 		
-		if(!currentLine[1].equals(globalNet)) {
+		//parse clock input block, handle seperately in placer
+		//if(!currentLine[1].equals(globalNet)) { 
 			NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
 			
 			currentLine= readLineAndTokenize();
@@ -124,10 +125,10 @@ public class NetlistParser extends AbstractInputParser {
 			
 			return currentBlock;
 			
-		}
+		//}
 
-		currentLine= readLineAndTokenize();
-		return null;
+		//currentLine= readLineAndTokenize();
+		//return null;
 	}
 	
 	/**

@@ -2,6 +2,7 @@ package designAnalyzer.timingAnalyzer;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import designAnalyzer.ParameterManager;
@@ -165,7 +166,7 @@ public class TimingAnalyzer {
 		output.append("\n"); //new line
 		
 		
-		printToFile(output);
+		printToFile(output, true);
 		System.out.println(output.toString());
 		
 	}
@@ -469,9 +470,11 @@ public class TimingAnalyzer {
 		Net criticalNet= null; 
 		int criticalPathLength= -1;
 		
+		List<int[]> exactWireLengths= new LinkedList<int[]>();
+		
 		for(Net n : nets) {
 			if(!n.getIsClocknNet()) { // ignore clock nets
-				int temp= n.annotateTA();
+				int temp= n.annotateTA(exactWireLengths);
 				if(temp > criticalPathLength){
 					criticalPathLength= temp;
 					criticalNet= n;
@@ -479,14 +482,82 @@ public class TimingAnalyzer {
 			}
 		}
 		
-		//
+		int[] exactWiringLengthDummy= new int[8]; //create dummy (Ta already computed and will only be retrieved, no need to store anything as all segments have already been counted
+		// 
 		for(Net n : nets) {
 			if(!n.getIsClocknNet()) { // ignore clock nets
-				n.annotateTRAndSlack(criticalPathLength);
+				n.annotateTRAndSlack(criticalPathLength, exactWiringLengthDummy);
 			}
 		}
 		
 		printCriticalPath(criticalNet); //output the critical path
+		
+		printExactWireLenghts(exactWireLengths);
+		
+	}
+
+	/**
+	 * print the exact wire lengths in segments for each net and the overall sum
+	 * @param exactWireLengths
+	 */
+	private void printExactWireLenghts(List<int[]> exactWireLengths) {
+		int[] exactWieLengthSums= new int[7];
+		StringBuilder output= new StringBuilder();
+		output.append("\n\n");
+		output.append("exact wire length per path (in segments): \n \n");
+		output.append("net#:\tpath#:\tCHAN:\tIPAD:\tOPAD:\tSWITCH:\tCOMB:\tFFIN:\tFFOUT:\n");
+		output.append("---\t---\t---\t---\t---\t---\t---\t---\t---\n");
+		for(int[] wl : exactWireLengths) {
+			output.append("[");
+			output.append(wl[7]);
+			output.append("]");
+			output.append("\t");
+			output.append("-");
+			output.append(wl[8]);
+			output.append("-");
+			output.append("\t");
+			output.append(wl[0]);
+			output.append("\t");
+			output.append(wl[1]);
+			output.append("\t");
+			output.append(wl[2]);
+			output.append("\t");
+			output.append(wl[3]);
+			output.append("\t");
+			output.append(wl[4]);
+			output.append("\t");
+			output.append(wl[5]);
+			output.append("\t");
+			output.append(wl[6]);
+			output.append("\n");
+			
+			for(int j= 0; j < exactWieLengthSums.length; j++) {
+				exactWieLengthSums[j]+= wl[j];
+			}
+		}
+		output.append("---\t---\t---\t---\t---\t---\t---\t---\t---\n");
+		
+		output.append("[all]");
+		output.append("\t");
+		output.append("\t");
+		output.append(exactWieLengthSums[0]);
+		output.append("\t");
+		output.append(exactWieLengthSums[1]);
+		output.append("\t");
+		output.append(exactWieLengthSums[2]);
+		output.append("\t");
+		output.append(exactWieLengthSums[3]);
+		output.append("\t");
+		output.append(exactWieLengthSums[4]);
+		output.append("\t");
+		output.append(exactWieLengthSums[5]);
+		output.append("\t");
+		output.append(exactWieLengthSums[6]);
+		output.append("\n");
+		
+		
+		printToFile(output, false);
+		System.out.println(output.toString());
 		
 	}
 
@@ -504,7 +575,7 @@ public class TimingAnalyzer {
 		
 		criticalNet.printCriticalPath(output);
 		
-		printToFile(output);
+		printToFile(output, true);
 		System.out.println(output.toString());
 		
 	}
@@ -553,10 +624,18 @@ public class TimingAnalyzer {
 	/**
 	 * saves output to file
 	 * @param output
+	 * @param criticalPath
 	 */
-	private void printToFile(StringBuilder output) {
+	private void printToFile(StringBuilder output, boolean criticalPath) {
+		String filename;
+		if(criticalPath) {
+			filename= "critical_path";
+		}
+		else {
+			filename= "segment_count";
+		}
 		try {
-			PrintWriter writer = new PrintWriter("critical_path.txt", "UTF-8");
+			PrintWriter writer = new PrintWriter(filename + ".txt", "UTF-8");
 			writer.append(output);
 			writer.close();
 		}

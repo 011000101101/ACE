@@ -2,6 +2,8 @@ package designAnalyzer.structures.pathElements.blocks;
 
 
 
+import java.util.List;
+
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.pins.IPin;
@@ -75,7 +77,7 @@ public class IOBlock extends NetlistBlock {
 	*/
 	
 	@Override
-	protected int annotateTA() {
+	protected int annotateTA(int[] exactWireLengt) {
 
 		tA= 0;	//is external input block
 		return 0;
@@ -83,16 +85,17 @@ public class IOBlock extends NetlistBlock {
 	}
 	
 	@Override
-	public int startAnalyzeTA(PathElement iPin) { //is external output block
+	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) { //is external output block
 
-		tA= previous.analyzeTA();
+		tA= previous.analyzeTA(exactWireLengt);
 		tA+= parameterManager.T_OPAD; //always connected to a IPIN
+		exactWireLengt[2]= exactWireLengt[2] + 1; //add a OPAD element
 		return tA;
 		
 	}
 	
 	@Override
-	protected int annotateTRAndSlack(int criticalPathLength) {
+	protected int annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
 
 		tR= criticalPathLength;	//is external Output block
 		return tR;
@@ -100,10 +103,10 @@ public class IOBlock extends NetlistBlock {
 	}
 	
 	@Override
-	public void startAnalyzeTRAndSlack(int criticalPathLength) { //is external input block
+	public void startAnalyzeTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) { //is external input block
 
-		int tR= next.analyzeTRAndSlack(criticalPathLength); //next.tR
-		int w= next.analyzeTA() - tA; //next.tA already computed -> retrieve, path length is difference to local
+		int tR= next.analyzeTRAndSlack(criticalPathLength, exactWireLengthDummy); //next.tR
+		int w= next.analyzeTA(exactWireLengthDummy) - tA; //next.tA already computed -> retrieve, path length is difference to local
 		int slack= tR - tA - w; //slack of connection from this to p
 		slackToNext= slack; //store slack
 		tR-= w; //compute local tR
