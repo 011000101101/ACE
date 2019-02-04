@@ -98,10 +98,10 @@ public class Router {
 			netlistParser.parseAll();
 			
 			placementParser = new PlacementParser(placementFilePath);
+			placementParser.parseAll();
 			
 			routingWriter= new RoutingWriter();
 			
-		
 			structureManager= StructureManager.getInstance();
 			parameterManager= ParameterManager.getInstance();			
 			
