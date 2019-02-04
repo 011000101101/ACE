@@ -25,15 +25,15 @@ public class IOBlockPinCost extends BlockPinCost {
 	private int usedCounter= 0;
 	private int usedCounterValidityDate= 0;
 	
-	public double getInPinCost() {
-		//TODO return static value? IO pins can only be used once in routing, or placement is invalid
-		return 0;
-	}
+//	public double getInPinCost() {
+//		//T ODO return static value? IO pins can only be used once in routing, or placement is invalid
+//		return 0;
+//	}
 	
-	public double getOutPinCost() {
-		//TODO return static value? IO pins can only be used once in routing, or placement is invalid
-		return 0;
-	}
+//	public double getOutPinCost() {
+//		//T ODO return static value? IO pins can only be used once in routing, or placement is invalid
+//		return 0;
+//	}
 	
 	public boolean getLeftOrRight() {
 		return leftOrRight;

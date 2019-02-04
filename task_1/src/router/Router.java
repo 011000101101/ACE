@@ -313,7 +313,7 @@ public class Router {
 //					}
 					
 					//saves one method call...
-					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(currentChannel, pFak, iterationCounter);
+					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(currentChannel, pFak, currentChannelWidth, iterationCounter);
 					pQ.add(neighbouringChannels[j]);
 					
 				}
@@ -466,7 +466,7 @@ public class Router {
 	private static void initializeSourceCosts(NetlistBlock source, PriorityQueue<ChannelWithCost> pQ) {
 		ChannelWithCost[] outputChannels= getOutputChannels(source);
 		for(int j= 0; j < outputChannels.length; j++) {
-			outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(null, pFak, iterationCounter); //initialize cost as first channel of path
+			outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(null, pFak, currentChannelWidth, iterationCounter); //initialize cost as first channel of path
 			pQ.add(outputChannels[j]); //add to priority queue
 		}
 	}

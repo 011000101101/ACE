@@ -49,8 +49,8 @@ public class ChannelWithCost extends ResourceWithCost{
 	 * @param channelOrientation
 	 * @return
 	 */
-	public double computeCost(int pFak, int iterationCounter) {
-		double pv = (double) 1 + (double) Math.max(0, (double) (usedCounter + 1 - parameterManager.CHANNEL_WIDTH) * 0.5 * (double) pFak );
+	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter) {
+		double pv = (double) 1 + (double) Math.max(0, (double) (usedCounter + 1 - currentChannelWidth) * 0.5 * (double) pFak );
 		if(sinkToReach == null) {
 			return hv * pv; //bv = 1
 		}
@@ -108,7 +108,6 @@ public class ChannelWithCost extends ResourceWithCost{
 			usedCounter++;
 		}
 		else {
-			//TODO maybe update Hv?
 			usedCounterValidityDate= iterationCounter;
 			usedCounter= 1;
 		}
@@ -127,11 +126,11 @@ public class ChannelWithCost extends ResourceWithCost{
 		costValidityDate= -1; //invalidate cost, which was specific to this sink
 	}
 
-	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ChannelWithCost newPrevious, int pFak, int iterationCounter) {
+	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ChannelWithCost newPrevious, int pFak, int currentChannelWidth, int iterationCounter) {
 		if(costValidityDate == iterationCounter) return;
 		else {
 			previous= newPrevious;
-			cost= computeCost(pFak, iterationCounter);
+			cost= computeCost(pFak, currentChannelWidth, iterationCounter);
 			costValidityDate= iterationCounter;
 		}
 	}
