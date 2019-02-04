@@ -62,7 +62,8 @@ public abstract class PathElement {
 		output.append(System.getProperty("line.separator"));
 	}
 
-
+	public abstract String forRoutingFile();
+	
 	public abstract void getInfo(StringBuilder output);
 
 	/**
@@ -181,6 +182,8 @@ public abstract class PathElement {
 	 */
 	public abstract void addNext(PathElement newNext);
 
+	public abstract PathElement getNext();
+	
 	public abstract String getName();
 
 	public abstract PathElement getOrigin();

@@ -13,6 +13,7 @@ import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
 import designAnalyzer.structures.pathElements.pins.IPin;
+import designAnalyzer.structures.pathElements.pins.OPin;
 
 /**
  * 
@@ -359,6 +360,31 @@ public class LogicBlock extends NetlistBlock {
 		}
 		return null;
 		
+	}
+
+	/**
+	 * returns a string
+	 * @param oPin
+	 */
+	public static String appendStringPin(OPin oPin) {
+		
+		StringBuilder pinString = null;
+		int numberOfOPin;
+		for() //TODO how to get the pinnumber
+		pinString.append("Pin: " );
+		return pinString.toString();
+	}
+
+	@Override
+	public String forRoutingFile() {
+		return null;
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public PathElement getNext() {
+		return next;
 	}
 	
 	

@@ -7,6 +7,7 @@ import java.util.List;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.pins.IPin;
+import designAnalyzer.structures.pathElements.pins.OPin;
 
 /**
  * 
@@ -217,6 +218,22 @@ public class IOBlock extends NetlistBlock {
 
 		return previous.getOrigin();
 		
+	}
+
+	public static String appendStringPad(OPin oPin) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String forRoutingFile() {
+		return null;
+		
+	}
+
+	@Override
+	public PathElement getNext() {
+		return next;
 	}
 	
 }
