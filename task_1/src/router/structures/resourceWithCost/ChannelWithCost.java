@@ -3,6 +3,7 @@ package router.structures.resourceWithCost;
 import java.util.PriorityQueue;
 
 import designAnalyzer.ParameterManager;
+import router.structures.blockPinCost.BlockPinCost;
 
 
 public class ChannelWithCost extends ResourceWithCost{
@@ -16,6 +17,8 @@ public class ChannelWithCost extends ResourceWithCost{
 	
 	private static int usedCounter;
 	private int usedCounterValidityDate;
+	
+	BlockPinCost sinkToReach;
 	
 	public ChannelWithCost(int newX, int newY, boolean newHorizontal, double newCost, ChannelWithCost newPrevious) {
 		super(newCost, newPrevious);
@@ -76,6 +79,27 @@ public class ChannelWithCost extends ResourceWithCost{
 			//TODO maybe update Hv?
 			usedCounterValidityDate= iterationCounter;
 			usedCounter= 1;
+		}
+	}
+
+	public int getUsedCounter() {
+		return usedCounter;
+	}
+
+	public void setLastChannel(BlockPinCost sinkPins) {
+		sinkToReach= sinkPins;
+	}
+
+	public void resetLastChannel() {
+		sinkToReach= null;
+	}
+
+	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ChannelWithCost newPrevious, int iterationCounter) {
+		if(costValidityDate == iterationCounter) return;
+		else {
+			previous= newPrevious;
+			cost= computeCost();
+			costValidityDate= iterationCounter;
 		}
 	}
 	
