@@ -158,6 +158,10 @@ public class Net {
 		sinks.put(currentBlock, null);
 		
 	}
+	
+//	public void linkSinkToPin(NetlistBlock currentBlock, IPin pin) {
+//		sinks.put(currentBlock, pin);
+//	}
 
 
 	/**
@@ -214,7 +218,7 @@ public class Net {
 	public boolean containsSink(NetlistBlock checkSink, IPin iPin) {
 		for(NetlistBlock b : sinks.keySet()){
 			if(b.equals(checkSink)){
-				sinks.replace(b, iPin);
+				sinks.put(b, iPin);
 				return true;
 			}
 		}
@@ -279,14 +283,16 @@ public class Net {
 		for(NetlistBlock b : sinks.keySet()) {
 			int[] exactWireLengt= new int[9]; //create counter for segments of this (extended) net (combinatorial paths sinking in this net will be computed completely, but only in their sinkng net.
 			int temp= b.startAnalyzeTA(sinks.get(b), exactWireLengt);
-			exactWireLengt[7]= netNumber; //save netNumber
-			exactWireLengt[8]= pathCounter;
-			exactWireLengths.add(exactWireLengt); //save segment counter
+			if(temp != -1) { // == -1 -> internal node of combinatorial path...
+				exactWireLengt[7]= netNumber; //save netNumber
+				exactWireLengt[8]= pathCounter;
+				exactWireLengths.add(exactWireLengt); //save segment counter
+				pathCounter++;
+			}
 			if(temp > criticalLength) {
 				criticalLength= temp;
 				criticalSink= b;
 			}
-			pathCounter++;
 		}
 		return criticalLength;
 	}

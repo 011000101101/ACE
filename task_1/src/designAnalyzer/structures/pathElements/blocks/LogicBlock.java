@@ -168,9 +168,6 @@ public class LogicBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) {
 
-		//TODO remove
-		if(iPin == null) System.err.println("Error: 003");
-		boolean reached= false;
 		
 		if(pinAssignments[5] != null) {
 			
@@ -178,8 +175,6 @@ public class LogicBlock extends NetlistBlock {
 				int i = previous.indexOf(p);
 				if(p.equals(iPin)) {
 					
-					//TODO remove
-					reached= true;
 					
 					int temp= p.analyzeTA(exactWireLengt);
 				
@@ -190,11 +185,6 @@ public class LogicBlock extends NetlistBlock {
 					return tA2[i];
 					
 				}
-				
-				//TODO remove
-				if(!reached) System.err.println("Error: 004");
-				if(!reached) System.err.println(toString());
-				if(!reached) System.err.println(iPin.toString());
 					
 			}
 		}

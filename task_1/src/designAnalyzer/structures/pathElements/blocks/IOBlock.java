@@ -88,6 +88,7 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) { //is external output block
 
+		
 		tA= previous.analyzeTA(exactWireLengt);
 		tA+= parameterManager.T_OPAD; //always connected to a IPIN
 		exactWireLengt[2]= exactWireLengt[2] + 1; //add a OPAD element

@@ -276,6 +276,8 @@ public class RoutingParser extends AbstractInputParser {
 		
 		linkAndSetActive(currentNet, currentBlock);
 		
+		//currentNet.linkSinkToPin(currentBlock, currentIPin);
+		
 		
 		
 	}
