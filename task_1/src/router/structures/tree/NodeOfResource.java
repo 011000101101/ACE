@@ -85,4 +85,11 @@ public class NodeOfResource {
 		child.addAllChannelsToPriorityQueue(pQ);
 	}
 	
+	public NodeOfResource getSibling() {
+		return sibling;
+	}
+	
+	public ResourceWithCost getData() {
+		return data;
+	}
 }

@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import designAnalyzer.ParameterManager;
 import designAnalyzer.structures.Net;
@@ -14,6 +17,8 @@ import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.pins.OPin;
+import router.structures.resourceWithCost.ChannelWithCost;
+import router.structures.resourceWithCost.ResourceWithCost;
 import router.structures.tree.NodeOfResource;
 
 public class RoutingWriter{
@@ -54,7 +59,7 @@ public class RoutingWriter{
 	 * sets the new file path, creates a file and writes it
 	 * @param newFilePath the path for the file to be written
 	 */
-	public void write(String routingFilePath, Collection<NodeOfResource> finalRouting) {
+	public void write(String routingFilePath, Map<Net, NodeOfResource> finalRouting) {
 		
 		filePath= routingFilePath;
 		outputFile= new File(filePath);
@@ -71,7 +76,7 @@ public class RoutingWriter{
 	/**
 	 * writes the complete file, block by block until end of file (indicated by null)
 	 */
-	private void writeAll(Collection<NodeOfResource> finalRouting) {
+	private void writeAll(Map<Net, NodeOfResource> finalRouting) {
 		
 		try {
 			writeHeader();
@@ -99,27 +104,63 @@ public class RoutingWriter{
 		
 	}
 
-	protected void writeAllBlocks(Collection<NodeOfResource> finalRouting) throws IOException {
-
-		for(Net n : structureManager.getNetCollection()) {
-			writeOneBlock(n, finalRouting);
+	protected void writeAllBlocks(Map<Net, NodeOfResource> finalRouting) throws IOException {
+		
+		int netNumber = 0;
+		for(Net n : finalRouting.keySet()) {
+			outputFileWriter.write("Net " + netNumber + " (" + n.getName() + ")");
+			writeOneBlock(n, finalRouting.get(n));
+			netNumber++;
 		}
 		
 	}
 
-	private void writeOneBlock(Net n, Collection<NodeOfResource> finalRouting) throws IOException {
+	private void writeOneBlock(Net n, NodeOfResource nodeOfResource) throws IOException {
 		
-		outputFileWriter.write("SOURCE (" + n.getSource().getX() + "," + n.getSource().getY() + ") "); //TODO fix red underlining 
+		List<Object[]> branchingPoint = new LinkedList<Object[]>();
+		ChannelWithCost lastChannelParsed = null;
+		
+		outputFileWriter.write("SOURCE (" + n.getSource().getX() + "," + n.getSource().getY() + ") "); 
 		if(n.getSource() instanceof LogicBlock) {
-			outputFileWriter.write("Class: 1");
+			outputFileWriter.write("Class: 1" + "\n");
+			outputFileWriter.write("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pin: " + getPinNumber(n.getSource(),nodeOfResource) +"\n");
 		}
 		else if(n.getSource() instanceof IOBlock){
 			outputFileWriter.write("Pad: ");
 			
 			if(n.getSource().getSubblk_1()) {
-				outputFileWriter.write("1");
-			} else outputFileWriter.write("0");
+				outputFileWriter.write("1" + "\n");
+				outputFileWriter.write("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 1" +"\n");
+			} else {
+				outputFileWriter.write("0" + "\n");
+				outputFileWriter.write("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 0" +"\n");
+			}
 		}
+		for(NodeOfResource currentNode = nodeOfResource; currentNode.getChild() == null && branchingPoint.size() == 0; currentNode = currentNode.getChild()) { //TODO size?
+			if(currentNode.getData() instanceof ChannelWithCost) {//channel
+				if(currentNode.getSibling() != null) {
+					addToBranch(branchingPoint, currentNode.getSibling(), lastChannelParsed);
+				}
+				ChannelWithCost currentChannel = (ChannelWithCost)currentNode.getData();
+				outputFileWriter.write("CHANNEL" + (currentChannel.getHorizontal() ?"X (" : "Y (") + currentChannel.getX() + "," + currentChannel.getY() + ") Track: " + currentChannel.getTrack());
+				lastChannelParsed = currentChannel;
+			}
+			else {
+				
+			}
+		}
+		
+		
+	}
+
+	private void addToBranch(List<Object[]> list, NodeOfResource newEntryNode, ChannelWithCost newEntry) {//TODO more fitting names
+		// TODO Auto-generated method stub
+		
+	}
+
+	private String getPinNumber(NetlistBlock source, NodeOfResource nodeOfResource) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
