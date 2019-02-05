@@ -373,11 +373,16 @@ public class Placer {
 		List<IOBlock> iOBlocksTemp= new LinkedList<IOBlock>();
 		List<LogicBlock> logicBlocksTemp= new LinkedList<LogicBlock>();
 		for(NetlistBlock b : structureManager.getBlockMap().values()) {
-			if(b instanceof IOBlock) {
-				iOBlocksTemp.add((IOBlock) b);
+			if(b.isNoClockGeneratingBlock()) {
+				if(b instanceof IOBlock) {
+					iOBlocksTemp.add((IOBlock) b);
+				}
+				else if(b instanceof LogicBlock){
+					logicBlocksTemp.add((LogicBlock) b);
+				}
 			}
-			else if(b instanceof LogicBlock){
-				logicBlocksTemp.add((LogicBlock) b);
+			else {
+				//TODO add to list to place later
 			}
 		}
 //		System.out.println(iOBlocksTemp);
@@ -1238,6 +1243,10 @@ public class Placer {
 		for(IOBlock b : iOBlocks) {
 			
 			int index= rand.nextInt(numberOfSlotsLeft); //get random free slot and pad number
+			
+			placeSingleIOBlock(b, index, output);
+			
+			/*
 			boolean subBlk1= true;
 			int xCoord= 1; //first slot, left of top io
 			int yCoord= 0;
@@ -1330,6 +1339,9 @@ public class Placer {
 			output[xCoord][yCoord][subBlk1 ? 1 : 0]= b;
 			b.setSubblk_1(subBlk1);
 			b.setCoordinates(xCoord, yCoord);
+			
+			*/
+			
 			numberOfSlotsLeft--;
 //			System.out.println("set initial coordinates: placed " + ((b instanceof IOBlock) ? "IOBlock" : "LogicBlock") + " [" + b.getName() + "] at (" + xCoord + "," + yCoord + ")" );
 		}
@@ -1337,6 +1349,58 @@ public class Placer {
 		return output;
 		
 	}
+
+	private static void placeSingleIOBlock(IOBlock b, int index, NetlistBlock[][][] output) {
+		//start at lower side of left IO
+		boolean subBlk1= false;
+		int xCoord= 0;
+		int yCoord= 1;
+		while(index > 0 || output[xCoord][yCoord][subBlk1 ? 1 : 0] != null){
+			
+			if(output[xCoord][yCoord][subBlk1 ? 1 : 0] == null) {
+				index--; //count free slots since starting to walk
+			}
+			
+			if(subBlk1) { //go to next io pad (next coordinate) (clockwise)
+				
+				subBlk1= false;			
+	
+				
+				if(xCoord == 0) { //left IO
+					yCoord++;
+					if(yCoord == parameterManager.Y_GRID_SIZE + 1) { // reached top left corner
+						xCoord= 1; //skip corner
+					}
+				}
+				else if(yCoord == parameterManager.Y_GRID_SIZE + 1) { //top IO
+					xCoord++;
+					if(xCoord == parameterManager.X_GRID_SIZE + 1) { // reached top right corner
+						yCoord= parameterManager.Y_GRID_SIZE; //skip corner
+					}
+				}
+				else if(xCoord == parameterManager.X_GRID_SIZE + 1) { //right IO
+					yCoord--;
+					if(yCoord == 0) { // reached bottom right corner
+						xCoord= parameterManager.X_GRID_SIZE; //skip corner
+					}
+				}
+				else if(yCoord == 0) { //bottom IO
+					xCoord--;
+					if(xCoord == 0) { // reached top left corner
+						yCoord= 1; //skip corner
+					}
+				}
+				
+			}
+			else { //go to next io pad (same coordinates)
+				
+				subBlk1= true;
+				
+			}
+			
+		}
+	}
+
 
 	/**
 	 * prints total wiring cost, acceptance rate, rLimit and rLimit logic block into files (as lines of 'x,y' pairs where x = datapoint, y= value
