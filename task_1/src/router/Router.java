@@ -162,7 +162,7 @@ public class Router {
 			pFak= pFak<<1;
 
 			
-			routingWriter.write(routingFilePath);//also give the method currentRouting?
+			routingWriter.write(routingFilePath, finalRouting);
 
 			
 		} catch (FileNotFoundException e) {
