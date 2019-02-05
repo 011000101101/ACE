@@ -71,7 +71,7 @@ public class Router {
 	private static double[][][] channelCostIndex;
 	private static boolean[][][] channelCostNotYetComputedFlagIndex;
 	
-	private static ChannelWithCost[][][] channelIndex;
+	private static ChannelWithCost[][][][] channelIndex;
 	
 	private static Map<NetlistBlock, BlockPinCost> blockPinCosts;
 
@@ -86,11 +86,11 @@ public class Router {
 
 	private static int currentChannelWidth;
 
-	private static Collection<NodeOfResource> currentRouting;
+	private static Map<Net, NodeOfResource> currentRouting;
 
 	private static int pFak;
 
-	private static Collection<NodeOfResource> finalRouting;
+	private static Map<Net, NodeOfResource> finalRouting;
 
 	public static void main(String[] args) {
 		
@@ -122,7 +122,9 @@ public class Router {
 			channelCostIndex= new double[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
 			channelCostNotYetComputedFlagIndex= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
 			
-			channelIndex= new ChannelWithCost[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
+			currentRouting= new HashMap<Net, NodeOfResource>(structureManager.getNetCollection().size());
+			
+			//channelIndex= new ChannelWithCost[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
 			
 			blockPinCosts= new HashMap<NetlistBlock, BlockPinCost>(structureManager.getBlockMap().values().size()); //TODO check hashmap initialization
 			
@@ -239,6 +241,8 @@ public class Router {
 	 * global routing algorithm routing all nets repeatedly for up to [limit] number of times or until the placement has been routed validly
 	 */
 	private static boolean globalRouter() {
+		channelIndex= new ChannelWithCost[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2][currentChannelWidth];
+		
 		iterationCounter= -1 ; 
 		while(sharedressources() && iterationCounter < limit) {
 			iterationCounter++ ;
@@ -246,7 +250,7 @@ public class Router {
 			usedChannels.clear();
 			usedSinkPins.clear();
 			for( Net n : nets) { 
-				currentRouting.add(signalRouter(n,iterationCounter)); 
+				currentRouting.put(n, signalRouter(n,iterationCounter)); 
 			} 
 			//foreach r in RRG.Edges do TODO implement this
 				//r.updateHistory() ;
