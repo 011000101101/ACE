@@ -254,6 +254,7 @@ public class Placer {
 	
 			
 		    placeClockGeneratingBlocks();
+		    normalizeIOBlockPadPlacement();
 		    
 			placementWriter.write(placementFilePath);
 		   
@@ -269,6 +270,12 @@ public class Placer {
 			System.err.println("Execution aborted as a result of previously detected errors.");
 			e.printStackTrace();
 		}
+	}
+
+
+	private static void normalizeIOBlockPadPlacement() {
+		// TODO Auto-generated method stub
+		
 	}
 
 
