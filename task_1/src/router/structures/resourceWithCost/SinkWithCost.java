@@ -91,5 +91,20 @@ public class SinkWithCost extends ResourceWithCost {
 			}
 		}
 	}
+	
+	public BlockPinCost getSinkCost(){
+		return sinkCost;
+	}
+	
+	public int getPinNum() {
+		if(leftOrRight) { //is left or right
+			if(leftOrBottom) return 1;
+			else return 3;
+		}
+		else { //is top or bottom
+			if(leftOrBottom) return 0;
+			else return 2;
+		}
+	}
 
 }

@@ -1,5 +1,7 @@
 package router.structures.blockPinCost;
 
+import designAnalyzer.structures.pathElements.blocks.IOBlock;
+import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public abstract class BlockPinCost {
@@ -20,4 +22,9 @@ public abstract class BlockPinCost {
 		return block.getY();
 	}
 
+
+	public NetlistBlock getBlock() {
+		return block;
+	}
+	
 }

@@ -19,6 +19,7 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.pins.OPin;
 import router.structures.resourceWithCost.ChannelWithCost;
 import router.structures.resourceWithCost.ResourceWithCost;
+import router.structures.resourceWithCost.SinkWithCost;
 import router.structures.tree.NodeOfResource;
 
 public class RoutingWriter{
@@ -49,6 +50,10 @@ public class RoutingWriter{
 	 */
 	private ParameterManager parameterManager;
 
+	/**
+	 * the last line of routingFile, which will be duplicated for branching, saved as a string
+	 */
+	private String duplicateLineCache = null;
 	
 	public RoutingWriter() {
 		parameterManager= ParameterManager.getInstance();
@@ -117,51 +122,97 @@ public class RoutingWriter{
 
 	private void writeOneBlock(Net n, NodeOfResource nodeOfResource) throws IOException {
 		
-		List<Object[]> branchingPoint = new LinkedList<Object[]>();
-		ChannelWithCost lastChannelParsed = null;
+		List<Object[]> branchingPoint = new LinkedList<Object[]>(); //list, which contains arrays of String and NodeOfResource
 		
 		outputFileWriter.write("SOURCE (" + n.getSource().getX() + "," + n.getSource().getY() + ") "); 
 		if(n.getSource() instanceof LogicBlock) {
 			outputFileWriter.write("Class: 1" + "\n");
-			outputFileWriter.write("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pin: " + getPinNumber(n.getSource(),nodeOfResource) +"\n");
+			duplicateLineCache = ("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pin: 4" +"\n");
+			outputFileWriter.write(duplicateLineCache);
 		}
 		else if(n.getSource() instanceof IOBlock){
 			outputFileWriter.write("Pad: ");
 			
 			if(n.getSource().getSubblk_1()) {
 				outputFileWriter.write("1" + "\n");
-				outputFileWriter.write("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 1" +"\n");
+				duplicateLineCache = ("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 1" +"\n");
+				outputFileWriter.write(duplicateLineCache);
 			} else {
 				outputFileWriter.write("0" + "\n");
-				outputFileWriter.write("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 0" +"\n");
+				duplicateLineCache = ("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 0" +"\n");
+				outputFileWriter.write(duplicateLineCache);
 			}
 		}
-		for(NodeOfResource currentNode = nodeOfResource; currentNode.getChild() == null && branchingPoint.size() == 0; currentNode = currentNode.getChild()) { //TODO size?
-			if(currentNode.getData() instanceof ChannelWithCost) {//channel
-				if(currentNode.getSibling() != null) {
-					addToBranch(branchingPoint, currentNode.getSibling(), lastChannelParsed);
-				}
-				ChannelWithCost currentChannel = (ChannelWithCost)currentNode.getData();
-				outputFileWriter.write("CHANNEL" + (currentChannel.getHorizontal() ?"X (" : "Y (") + currentChannel.getX() + "," + currentChannel.getY() + ") Track: " + currentChannel.getTrack());
-				lastChannelParsed = currentChannel;
+		
+		while(nodeOfResource != null) {
+			
+			while(nodeOfResource != null) {
+				
+				writeLines(branchingPoint, nodeOfResource);
+				
+				nodeOfResource= nodeOfResource.getChild();
+			}
+			
+			Object[] tmp = branchingPoint.get(0);
+			branchingPoint.remove(0);
+			if(tmp != null) {
+				duplicateLineCache = (String) tmp[0];
+				nodeOfResource= (NodeOfResource)tmp[1];	
+				
+				outputFileWriter.write(duplicateLineCache);
+			
+			}
+			else nodeOfResource = null;
+			
+		}
+		
+		
+		
+	}
+
+	/**
+	  * writes one line for channels and two lines for (IPIN and SINK)
+	  * @param list
+	  * @param currentNode
+	  * @throws IOException
+	  */
+	private void writeLines(List<Object[]> list, NodeOfResource currentNode) throws IOException {
+		if(currentNode.getData() instanceof ChannelWithCost) {//channel
+			if(currentNode.getSibling() != null) {
+				addToList(list, currentNode.getSibling());
+			}
+			
+			ChannelWithCost currentChannel = (ChannelWithCost)currentNode.getData();
+			duplicateLineCache = ("CHANNEL" + (currentChannel.getHorizontal() ?"X (" : "Y (") + currentChannel.getX() + "," + currentChannel.getY() + ") Track: " + currentChannel.getTrackNum() + "\n");
+			
+			outputFileWriter.write(duplicateLineCache);
+		}
+		else {//instance of sink with cost 
+		
+			if(currentNode.getSibling() != null) {
+				addToList(list, currentNode.getSibling());
+			}	
+			SinkWithCost currentSink = (SinkWithCost)currentNode.getData();
+			duplicateLineCache = ("This should not be displayed");
+			outputFileWriter.write("IPIN (" + currentSink.getX() + "," + currentSink.getY() + ") ");
+			NetlistBlock currentBlock = currentSink.getSinkCost().getBlock();
+			if(currentBlock instanceof IOBlock) {
+				outputFileWriter.write("Pad: " + (currentBlock.getSubblk_1()? 1 : 0) + "\n");
+				outputFileWriter.write("Sink: (" + currentSink.getX() + "," + currentSink.getY() + ") Pad: " + (currentBlock.getSubblk_1()? 1 : 0) +"\n");
 			}
 			else {
-				
+				outputFileWriter.write("Pin: " + currentSink.getPinNum() + "\n");
+				outputFileWriter.write("Sink: (" + currentSink.getX() + "," + currentSink.getY() + ") Class: 0" + "\n");
 			}
 		}
+	}
+
+	private void addToList(List<Object[]> list, NodeOfResource entryNode) {//TODO more fitting names
 		
+		list.add(0, new Object[] {duplicateLineCache, entryNode});
 		
 	}
 
-	private void addToBranch(List<Object[]> list, NodeOfResource newEntryNode, ChannelWithCost newEntry) {//TODO more fitting names
-		// TODO Auto-generated method stub
-		
-	}
-
-	private String getPinNumber(NetlistBlock source, NodeOfResource nodeOfResource) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 	
