@@ -49,4 +49,14 @@ public class IOBlockPinCost extends BlockPinCost {
 		else return false;
 	}
 	
+	public void setInPinUsed(int iterationCounter) {
+		if(iterationCounter == usedCounterValidityDate) usedCounter++;
+		else usedCounter= 1;
+	}
+	
+	public int getInPinUsedCounter(int iterationCounter) {
+		if(iterationCounter == usedCounterValidityDate) return usedCounter;
+		else return 0;
+	}
+	
 }

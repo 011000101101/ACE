@@ -79,7 +79,7 @@ public class NodeOfResource {
 		else sibling.addSibling(additionalSibling);
 	}
 
-	public void addAllChannelsToPriorityQueue(PriorityQueue<ChannelWithCost> pQ) {
+	public void addAllChannelsToPriorityQueue(PriorityQueue<ResourceWithCost> pQ) {
 		data.addChannelToPriorityQueue(pQ);
 		sibling.addAllChannelsToPriorityQueue(pQ);
 		child.addAllChannelsToPriorityQueue(pQ);

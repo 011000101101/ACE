@@ -227,7 +227,7 @@ public class Router {
 			
 			// no history for input pins, because there is no need (no blocking by 3rd party possible) 
 			for(ChannelWithCost c : usedChannels) {
-				c.updateHistoryCongestion();
+				c.updateHistoryCongestion(iterationCounter);
 			}
 		}
 		if (iterationCounter > limit) {
@@ -244,7 +244,7 @@ public class Router {
 	 */
 	private static boolean sharedressources() {
 		for(ChannelWithCost c : usedChannels) {
-			if(c.getUsedCounter() > currentChannelWidth) return true;
+			if(c.getUsedCounter(iterationCounter) > currentChannelWidth) return true;
 		}
 		for(BlockPinCost p : usedSinkPins) {
 			if(p.limitExceeded(iterationCounter)) return true;
@@ -261,12 +261,12 @@ public class Router {
 		//Tree<Point> signalrouter(Net n) begin 
 		NodeOfResource routingTreeRoot ; 
 		//RtgRsrc i, j, w, v := nil ; (just coordinates, no seperate objects)
-		PriorityQueue<ChannelWithCost> pQ= new PriorityQueue<ChannelWithCost>(
+		PriorityQueue<ResourceWithCost> pQ= new PriorityQueue<ResourceWithCost>(
 			parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2, 
-			new Comparator<ChannelWithCost>() {
+			new Comparator<ResourceWithCost>() {
 
 				@Override
-				public int compare(ChannelWithCost point1, ChannelWithCost point2) {
+				public int compare(ResourceWithCost point1, ResourceWithCost point2) {
 					if(point1.getCost() < point2.getCost()) return -1;
 					if(point2.getCost() < point1.getCost()) return 1;
 					return 0;
@@ -281,7 +281,7 @@ public class Router {
 		
 		initializeSourceCosts(source, pQ);
 		
-		ChannelWithCost currentChannel;
+		ResourceWithCost currentChannel;
 		ChannelWithCost[] neighbouringChannels= new ChannelWithCost[6];
 		
 		for( NetlistBlock sink : currentNet.getSinks() ) {
@@ -297,9 +297,9 @@ public class Router {
 			routingTreeRoot.addAllChannelsToPriorityQueue(pQ);
 			currentChannel = pQ.poll(); 
 			currentChannel.setUsed(iterationCounter);
-			while(!containsChannelWithCost(inputChannels, currentChannel)) {
+			while(currentChannel instanceof ChannelWithCost) {
 				
-				getNeighbouringChannels(currentChannel, neighbouringChannels);
+				getNeighbouringChannels(((ChannelWithCost) currentChannel), neighbouringChannels);
 				
 				for(int j= 0; j < neighbouringChannels.length; j++) {
 					
@@ -313,38 +313,43 @@ public class Router {
 //					}
 					
 					//saves one method call...
-					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(currentChannel, pFak, currentChannelWidth, iterationCounter);
+					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, currentChannelWidth, iterationCounter);
 					pQ.add(neighbouringChannels[j]);
 					
+				}
+				
+				if(containsChannelWithCost(inputChannels, ((ChannelWithCost) currentChannel))) {
+					pQ.add(new SinkWithCost(sinkPins, (ChannelWithCost) currentChannel));
 				}
 				
 				currentChannel = pQ.poll(); 
 				
 			}
 
-			currentChannel.setSinkPinUsed(sink, iterationCounter);
+			//currentChannel.setSinkPinUsed(sink, iterationCounter);
 			
 			resetSinkCosts(inputChannels, pQ);
 
 			
 			ChannelWithCost tmpChannel;
 			
-			NodeOfResource currentBranch= new NodeOfResource(new SinkWithCost(sink, 0, currentChannel));
+			NodeOfResource currentBranch= new NodeOfResource(currentChannel); //is SinkWithCost per while loop criterion
 			NodeOfResource branchingPoint= routingTreeRoot.findBranchingPoint(currentChannel);
+			currentChannel.setUsed(iterationCounter);
+			usedSinkPins.add(sinkPins);
+			
+			tmpChannel= currentChannel.getPrevious();
 			
 			while (branchingPoint == null){
 				tmpChannel= currentChannel.getPrevious();
 				currentBranch= new NodeOfResource(currentChannel, currentBranch);
 
-				currentChannel.setUsed(iterationCounter);
-				usedChannels.add(currentChannel);
+				tmpChannel.setUsed(iterationCounter);
+				usedChannels.add(tmpChannel);
 				
-				currentChannel= tmpChannel;
-				branchingPoint= routingTreeRoot.findBranchingPoint(currentChannel); //tmp = current at this point
+				branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel);
 			}
 			branchingPoint.addChild(currentBranch);
-			
-			usedSinkPins.add(sinkPins);
 		}
 		
 		return routingTreeRoot;
@@ -463,7 +468,7 @@ public class Router {
 		}
 	}
 
-	private static void initializeSourceCosts(NetlistBlock source, PriorityQueue<ChannelWithCost> pQ) {
+	private static void initializeSourceCosts(NetlistBlock source, PriorityQueue<ResourceWithCost> pQ) {
 		ChannelWithCost[] outputChannels= getOutputChannels(source);
 		for(int j= 0; j < outputChannels.length; j++) {
 			outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(null, pFak, currentChannelWidth, iterationCounter); //initialize cost as first channel of path
@@ -471,7 +476,7 @@ public class Router {
 		}
 	}
 
-	private static void resetSinkCosts(ChannelWithCost[] inputChannels, PriorityQueue<ChannelWithCost> pQ) {
+	private static void resetSinkCosts(ChannelWithCost[] inputChannels, PriorityQueue<ResourceWithCost> pQ) {
 		for(int j= 0; j < inputChannels.length; j++) {
 			//no need for guard: remove(...) is optional operation
 			//if(pQ.contains(inputChannels[j])) {
