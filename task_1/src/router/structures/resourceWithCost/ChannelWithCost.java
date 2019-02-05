@@ -137,6 +137,31 @@ public class ChannelWithCost extends ResourceWithCost{
 		return trackNum;
 	}
 
+
+	@Override
+	public boolean neighbours(ResourceWithCost branchingPoint) {
+		if(branchingPoint instanceof ChannelWithCost) {
+			if(((ChannelWithCost) branchingPoint).getTrackNum() != trackNum) return false;
+			if(getHorizontal()) { //is a horizontal channel
+				if(x == branchingPoint.getX() - 1 && y == branchingPoint.getY() && ((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() + 1 && y == branchingPoint.getY() && ((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() && y == branchingPoint.getY() && !((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() - 1 && y == branchingPoint.getY() && !((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() && y == branchingPoint.getY() + 1 && !((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() - 1 && y == branchingPoint.getY() + 1 && !((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+			}
+			else { //is a vertical channel
+				if(x == branchingPoint.getX() && y == branchingPoint.getY() - 1 && !((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() && y == branchingPoint.getY() + 1 && !((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() && y == branchingPoint.getY() && ((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() && y == branchingPoint.getY() - 1 && ((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() + 1 && y == branchingPoint.getY() && ((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+				if(x == branchingPoint.getX() + 1 && y == branchingPoint.getY() - 1 && ((ChannelWithCost) branchingPoint).getHorizontal()) return true;
+			}
+		}
+		return false;
+	}
+
 //	public void setSinkPinUsed(NetlistBlock sink, int iterationCounter) {
 //		//TODO remove
 //		if(sinkToReach == null || !sinkToReach.equals(sink)) System.err.println("Error 002");

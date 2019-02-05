@@ -16,12 +16,15 @@ public abstract class ResourceWithCost {
 	ChannelWithCost previous; //possible to save space by just saving direction of previous (has to be direct neighbour), but then additional logic needed for backtracking
 	
 	int costValidityDate;
+
+	private boolean alreadyAdded;
 	
 	public ResourceWithCost(ChannelWithCost newPrevious) {
 		cost= 0;
 		previous= newPrevious;
 		costValidityDate= -1;
 		parameterManager= ParameterManager.getInstance();
+		alreadyAdded= false;
 		//TODO init Hv
 	}
 	
@@ -57,5 +60,16 @@ public abstract class ResourceWithCost {
 	}
 	
 	public abstract void addChannelToPriorityQueue(PriorityQueue<ResourceWithCost> pQ);
+	
+
+	public boolean alreadyAdded() {
+		return alreadyAdded;
+	}
+	
+	public void setAlreadyAdded(boolean newAlreadyAdded) {
+		alreadyAdded = newAlreadyAdded ;
+	}
+
+	public abstract boolean neighbours(ResourceWithCost branchingPoint);
 	
 }

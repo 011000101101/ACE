@@ -4,8 +4,24 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class IOBlockPinCost extends BlockPinCost {
 
-	public IOBlockPinCost(NetlistBlock newBlock) {
+	public IOBlockPinCost(NetlistBlock newBlock, int X_GRID_SIZE) {
 		super(newBlock);
+		if(newBlock.getX() == 0) {
+			leftOrRight= true;
+			leftOrTop= true;
+		}
+		else if(newBlock.getY() == 0) {
+			leftOrRight= false;
+			leftOrTop= false;
+		}
+		else if(newBlock.getX() == X_GRID_SIZE) {
+			leftOrRight= true;
+			leftOrTop= false;
+		}
+		else{
+			leftOrRight= false;
+			leftOrTop= true;
+		}
 	}
 
 	/**

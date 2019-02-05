@@ -62,7 +62,7 @@ public class Router {
 	/**
 	 * collection holding all nets to be routed
 	 */
-	private static Collection<Net> nets;
+	private static List<Net> nets;
 	
 	private static ParameterManager parameterManager;
 	private static StructureManager structureManager;
@@ -92,6 +92,8 @@ public class Router {
 	private static int pFak;
 
 	private static Map<Net, NodeOfResource> finalRouting;
+
+	private static Collection<ResourceWithCost> tmpUsedResources;
 
 	public static void main(String[] args) {
 		
@@ -123,7 +125,17 @@ public class Router {
 			channelCostIndex= new double[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
 			channelCostNotYetComputedFlagIndex= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
 			
-			channelIndex= new ChannelWithCost[0][0][0][0];
+			channelIndex= new ChannelWithCost[1][1][1][0];
+			
+			usedChannels= new LinkedList<ChannelWithCost>();
+			usedSinkPins= new LinkedList<BlockPinCost>();
+			nets= new LinkedList<Net>();
+			for(Net n : structureManager.getNetCollection()) { //generate all paths
+				if(! n.getIsClocknNet()) {
+					nets.add(n);
+				}
+			}
+			tmpUsedResources= new LinkedList<ResourceWithCost>();
 			
 			currentRouting= new HashMap<Net, NodeOfResource>(structureManager.getNetCollection().size());
 			
@@ -245,6 +257,10 @@ public class Router {
 	 */
 	private static boolean globalRouter() {
 		
+
+		//TODO remove
+		System.out.println("starting Global Router");
+		
 		if(channelIndex[0][0][0].length < currentChannelWidth) {
 			ChannelWithCost[][][][] alreadyCreatedChannels= channelIndex;
 			channelIndex= new ChannelWithCost[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2][currentChannelWidth];
@@ -263,7 +279,8 @@ public class Router {
 		}
 		
 		iterationCounter= -1 ; 
-		while(sharedressources() && iterationCounter < limit) {
+		boolean sharedResources= true;
+		while(sharedResources && iterationCounter < limit) {
 			iterationCounter++ ;
 			currentRouting.clear();
 			usedChannels.clear();
@@ -279,6 +296,7 @@ public class Router {
 			for(ChannelWithCost c : usedChannels) {
 				c.updateHistoryCongestion(iterationCounter);
 			}
+			sharedResources= sharedressources();
 		}
 		if (iterationCounter > limit) {
 			return false ;
@@ -308,6 +326,10 @@ public class Router {
 	 * @return 
 	 */
 	private static NodeOfResource signalRouter(Net currentNet, int globalIterationCounter) {
+		
+		//TODO remove
+		System.out.println("starting Signal Router");
+		
 		//Tree<Point> signalrouter(Net n) begin 
 		NodeOfResource routingTreeRoot= null; 
 		//RtgRsrc i, j, w, v := nil ; (just coordinates, no seperate objects)
@@ -335,10 +357,13 @@ public class Router {
 		ChannelWithCost[] neighbouringChannels= new ChannelWithCost[6];
 		
 		for( NetlistBlock sink : currentNet.getSinks() ) {
+
+			//TODO remove
+			System.out.println("flag 002");
+			
 			/* route Verbindung zur Senke sink */
 			//BlockPinCost sinkCosts= retrieveFromBlockPinCosts(blockPinCosts, sink);
 			
-			pQ.clear() ; 
 
 			ChannelWithCost[] inputChannels= getInputChannels(sink);
 			BlockPinCost sinkPins= retrieveFromBlockPinCosts(sink);
@@ -346,9 +371,11 @@ public class Router {
 			if(routingTreeRoot != null) {
 				routingTreeRoot.addAllChannelsToPriorityQueue(pQ);
 			}
-			currentChannel = pQ.poll(); 
+			currentChannel = pullFromPQ(pQ); 
 			currentChannel.setUsed(iterationCounter);
 			while(currentChannel instanceof ChannelWithCost) {
+				
+				System.err.println("flag 004");
 				
 				getNeighbouringChannels(((ChannelWithCost) currentChannel), neighbouringChannels);
 				
@@ -365,18 +392,27 @@ public class Router {
 					
 					//saves one method call...
 					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, currentChannelWidth, iterationCounter);
-					pQ.add(neighbouringChannels[j]);
+					addToPQ(neighbouringChannels[j], pQ);
+					//System.out.println(neighbouringChannels[j].toString());
+					System.err.println(j);
 					
 				}
+				//System.err.println(currentChannel.toString());
 				
 				if(containsChannelWithCost(inputChannels, ((ChannelWithCost) currentChannel))) {
-					pQ.add(new SinkWithCost(sinkPins, (ChannelWithCost) currentChannel));
+					System.err.println("err 010");
+					addToPQ(new SinkWithCost(sinkPins, (ChannelWithCost) currentChannel), pQ);
 				}
+
+				System.err.println("err 012" + currentChannel.toString());
 				
-				currentChannel = pQ.poll(); 
-				
+				currentChannel = pullFromPQ(pQ); 
+
+				//TODO remove
+				if(currentChannel == null) System.err.println("error 009");
 			}
 
+			
 			//currentChannel.setSinkPinUsed(sink, iterationCounter);
 			
 			resetSinkCosts(inputChannels, pQ);
@@ -393,7 +429,7 @@ public class Router {
 				tmpChannel= currentChannel.getPrevious();
 				
 				while (branchingPoint == null){
-					currentBranch= new NodeOfResource(currentChannel, currentBranch);
+					currentBranch= new NodeOfResource(tmpChannel, currentBranch);
 	
 					tmpChannel.setUsed(iterationCounter);
 					usedChannels.add(tmpChannel);
@@ -412,7 +448,7 @@ public class Router {
 				tmpChannel= currentChannel.getPrevious();
 				
 				while (tmpChannel != null){
-					currentBranch= new NodeOfResource(currentChannel, currentBranch);
+					currentBranch= new NodeOfResource(tmpChannel, currentBranch);
 					
 					tmpChannel.setUsed(iterationCounter);
 					usedChannels.add(tmpChannel);
@@ -422,6 +458,16 @@ public class Router {
 				
 				routingTreeRoot= currentBranch;
 			}
+			
+			for(ResourceWithCost r : pQ) {
+				r.setAlreadyAdded(false);
+			}
+			for(ResourceWithCost r : tmpUsedResources) {
+				r.setAlreadyAdded(false);
+			}
+			tmpUsedResources.clear();
+			pQ.clear() ; 
+			
 		}
 		
 		return routingTreeRoot;
@@ -434,7 +480,7 @@ public class Router {
 		BlockPinCost tmp= blockPinCosts.get(block);
 		if(tmp == null) {
 			if(block instanceof IOBlock) {
-				tmp= new IOBlockPinCost(block);
+				tmp= new IOBlockPinCost(block, parameterManager.X_GRID_SIZE);
 			}
 			else{
 				tmp= new LogicBlockPinCost(block);
@@ -451,11 +497,11 @@ public class Router {
 		int trackNum= currentChannel.getTrackNum();
 		if(currentChannel.getHorizontal()) { //is a horizontal channel
 			//no horizontal channels at x = 0
-			//if(currentChannel.getX() > 0) { //add left neighbor
-				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY()][1][trackNum];
+			if(currentChannel.getX() > 1) { //add left neighbor
+			neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY()][1][trackNum];
 				channelsAdded++;
-			//}
-			if(currentChannel.getX() < parameterManager.X_GRID_SIZE + 1) { //add right neighbor
+			}
+			if(currentChannel.getX() < parameterManager.X_GRID_SIZE) { //add right neighbor
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() + 1][currentChannel.getY()][1][trackNum];
 				channelsAdded++;
 			}
@@ -464,27 +510,27 @@ public class Router {
 				channelsAdded++;
 				//no horizontal channels at x = 0
 				//if(currentChannel.getX() > 0) {
-					neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY()][0][trackNum];
+				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY()][0][trackNum];
 					channelsAdded++;
 				//}
 			}
-			if(currentChannel.getY() < parameterManager.Y_GRID_SIZE + 1) { //add top neighbors
+			if(currentChannel.getY() < parameterManager.Y_GRID_SIZE) { //add top neighbors
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() + 1][0][trackNum];
 				channelsAdded++;
 				//no horizontal channels at x = 0
 				//if(currentChannel.getX() > 0) {
-					neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY() + 1][0][trackNum];
+				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY() + 1][0][trackNum];
 					channelsAdded++;
 				//}
 			}
 		}
 		else { //is a vertical channel
 			//no vertical channels at y = 0
-			//if(currentChannel.getY() > 0) {  //add bottom neighbor
-				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() - 1][0][trackNum];
+			if(currentChannel.getY() > 1) {  //add bottom neighbor
+			neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() - 1][0][trackNum];
 				channelsAdded++;
-			//}
-			if(currentChannel.getY() < parameterManager.Y_GRID_SIZE + 1) {  //add top neighbor
+			}
+			if(currentChannel.getY() < parameterManager.Y_GRID_SIZE) {  //add top neighbor
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() + 1][0][trackNum];
 				channelsAdded++;
 			}
@@ -493,20 +539,24 @@ public class Router {
 				channelsAdded++;
 				//no vertical channels at y = 0
 				//if(currentChannel.getX() > 0) {
-					neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() - 1][1][trackNum];
+				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() - 1][1][trackNum];
 					channelsAdded++;
 				//}
 			}
-			if(currentChannel.getX() < parameterManager.X_GRID_SIZE + 1) {  //add right neighbors
+			if(currentChannel.getX() < parameterManager.X_GRID_SIZE) {  //add right neighbors
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() + 1][currentChannel.getY()][1][trackNum];
 				channelsAdded++;
 				//no vertical channels at y = 0
 				//if(currentChannel.getX() > 0) {
-					neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() + 1][currentChannel.getY() - 1][1][trackNum];
+				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() + 1][currentChannel.getY() - 1][1][trackNum];
 					channelsAdded++;
 				//}
 			}
 			
+		}
+		
+		for(int j= channelsAdded; j < neighbouringChannels.length; j++) {
+			neighbouringChannels[j]= null;
 		}
 	}
 
@@ -516,22 +566,22 @@ public class Router {
 		BlockPinCost tmp= retrieveFromBlockPinCosts(sink);
 		if(tmp instanceof IOBlockPinCost) { //IO Block
 			ChannelWithCost[] outputChannels= new ChannelWithCost[currentChannelWidth];
-			if(((IOBlockPinCost) tmp).getLeftOrRight()) { //left ot top io
+			if(((IOBlockPinCost) tmp).getLeftOrRight()) { //left ot right io
 				if(((IOBlockPinCost) tmp).getLeftOrTop()) { //left io
 					for(int j= 0; j < currentChannelWidth; j++) {
 						outputChannels[j]= channelIndex[sink.getX()][sink.getY()][0][j];
 					}
 				}
-				else { //top io
+				else { //right io
 					for(int j= 0; j < currentChannelWidth; j++) {
-						outputChannels[j]= channelIndex[sink.getX()][sink.getY() - 1][1][j];
+						outputChannels[j]= channelIndex[sink.getX() - 1][sink.getY()][0][j];
 					}
 				}
 			}
-			else { //right or bottom io
-				if(((IOBlockPinCost) tmp).getLeftOrTop()) { //right io
+			else { //top or bottom io
+				if(((IOBlockPinCost) tmp).getLeftOrTop()) { //top io
 					for(int j= 0; j < currentChannelWidth; j++) {
-						outputChannels[j]= channelIndex[sink.getX() - 1][sink.getY()][0][j];
+						outputChannels[j]= channelIndex[sink.getX()][sink.getY() - 1][1][j];
 					}
 				}
 				else { //bottom io
@@ -539,6 +589,9 @@ public class Router {
 						outputChannels[j]= channelIndex[sink.getX()][sink.getY()][1][j];
 					}
 				}
+			}
+			for(int j= 0; j < currentChannelWidth; j++) {
+				System.out.println("err 013 " + outputChannels[j].toString());
 			}
 			return outputChannels;
 		}
@@ -549,6 +602,12 @@ public class Router {
 				outputChannels[j + currentChannelWidth]= channelIndex[sink.getX()][sink.getY()][0][j];
 				outputChannels[j + 2*currentChannelWidth]= channelIndex[sink.getX()][sink.getY() - 1][1][j];
 				outputChannels[j + 3*currentChannelWidth]= channelIndex[sink.getX() - 1][sink.getY()][0][j];
+			}
+			for(int j= 0; j < currentChannelWidth; j++) { //return all four surrounding channels
+				System.out.println("err 013 " + outputChannels[j].toString());
+				System.out.println("err 013 " + outputChannels[j + currentChannelWidth].toString());
+				System.out.println("err 013 " + outputChannels[j + currentChannelWidth*2].toString());
+				System.out.println("err 013 " + outputChannels[j + currentChannelWidth*3].toString());
 			}
 			return outputChannels;
 		}
@@ -571,9 +630,10 @@ public class Router {
 
 	private static void initializeSourceCosts(NetlistBlock source, PriorityQueue<ResourceWithCost> pQ) {
 		ChannelWithCost[] outputChannels= getOutputChannels(source);
+		
 		for(int j= 0; j < outputChannels.length; j++) {
 			outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(null, pFak, currentChannelWidth, iterationCounter); //initialize cost as first channel of path
-			pQ.add(outputChannels[j]); //add to priority queue
+			addToPQ(outputChannels[j], pQ); //add to priority queue
 		}
 	}
 
@@ -635,6 +695,20 @@ public class Router {
 	 */
 	private static void setChannelUsed(ChannelWithCost currentChannel) {
 		channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0]= channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0] + 1;
+	}
+	
+	private static void addToPQ(ResourceWithCost resource, PriorityQueue<ResourceWithCost> pQ) {
+		if(!resource.alreadyAdded()) {
+			resource.setAlreadyAdded(true);
+			pQ.add(resource);
+		}
+		else System.err.println("err 011 " + resource.toString());
+	}
+
+	private static ResourceWithCost pullFromPQ(PriorityQueue<ResourceWithCost> pQ) {
+		ResourceWithCost tmp= pQ.poll();
+		tmpUsedResources.add(tmp);
+		return tmp;
 	}
 
 }

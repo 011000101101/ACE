@@ -50,7 +50,7 @@ public class NodeOfResource {
 	 * @return the NodeOfPoint that contains a point equal to branchingPoint, or null if none such NodeOfPoint exists in the subtree
 	 */
 	public NodeOfResource findBranchingPoint(ResourceWithCost branchingPoint) {
-		if(data.equals(branchingPoint)) return this;
+		if(data.neighbours(branchingPoint)) return this;
 		NodeOfResource tmp= null;
 		if(child != null) tmp= child.findBranchingPoint(branchingPoint);
 		if(tmp == null && sibling != null) tmp= sibling.findBranchingPoint(branchingPoint);
@@ -80,9 +80,12 @@ public class NodeOfResource {
 	}
 
 	public void addAllChannelsToPriorityQueue(PriorityQueue<ResourceWithCost> pQ) {
+		
+		
 		data.addChannelToPriorityQueue(pQ);
-		sibling.addAllChannelsToPriorityQueue(pQ);
-		child.addAllChannelsToPriorityQueue(pQ);
+		data.setAlreadyAdded(true);
+		if(sibling != null) sibling.addAllChannelsToPriorityQueue(pQ);
+		if(child != null) child.addAllChannelsToPriorityQueue(pQ);
 	}
 	
 	public NodeOfResource getSibling() {

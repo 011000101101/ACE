@@ -107,4 +107,12 @@ public class SinkWithCost extends ResourceWithCost {
 		}
 	}
 
+
+
+	@Override
+	public boolean neighbours(ResourceWithCost branchingPoint) {
+		// won't be called...
+		return false;
+	}
+
 }
