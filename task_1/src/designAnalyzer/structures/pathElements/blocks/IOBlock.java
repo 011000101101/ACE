@@ -219,21 +219,5 @@ public class IOBlock extends NetlistBlock {
 		return previous.getOrigin();
 		
 	}
-
-	public static String appendStringPad(OPin oPin) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String forRoutingFile() {
-		return null;
-		
-	}
-
-	@Override
-	public PathElement getNext() {
-		return next;
-	}
 	
 }

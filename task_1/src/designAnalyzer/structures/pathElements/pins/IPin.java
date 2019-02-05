@@ -231,17 +231,4 @@ public class IPin extends PathElement{
 	public PathElement getOrigin() {
 		return previous.getOrigin();
 	}
-
-	@Override
-	public void forRoutingFile(StringBuilder output) {
-		
-		output.append("IPIN ");
-		output.append("(" + xCoordinate + "," + yCoordinate + ") " + "Pin: " +pinNumber + "/n"); //TODO implement alternative "pad"
-		
-	}
-	
-	@Override
-	public PathElement getNext() {
-		return next;
-	}
 }
