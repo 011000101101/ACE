@@ -286,7 +286,7 @@ public class Router {
 	 */
 	private static NodeOfResource signalRouter(Net currentNet, int globalIterationCounter) {
 		//Tree<Point> signalrouter(Net n) begin 
-		NodeOfResource routingTreeRoot ; 
+		NodeOfResource routingTreeRoot= null; 
 		//RtgRsrc i, j, w, v := nil ; (just coordinates, no seperate objects)
 		PriorityQueue<ResourceWithCost> pQ= new PriorityQueue<ResourceWithCost>(
 			parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2, 
@@ -320,8 +320,9 @@ public class Router {
 			ChannelWithCost[] inputChannels= getInputChannels(sink);
 			BlockPinCost sinkPins= blockPinCosts.get(sink);
 			initializeSinkCosts(sink, inputChannels, sinkPins);
-			
-			routingTreeRoot.addAllChannelsToPriorityQueue(pQ);
+			if(routingTreeRoot != null) {
+				routingTreeRoot.addAllChannelsToPriorityQueue(pQ);
+			}
 			currentChannel = pQ.poll(); 
 			currentChannel.setUsed(iterationCounter);
 			while(currentChannel instanceof ChannelWithCost) {
@@ -360,23 +361,44 @@ public class Router {
 			
 			ChannelWithCost tmpChannel;
 			
-			NodeOfResource currentBranch= new NodeOfResource(currentChannel); //is SinkWithCost per while loop criterion
-			NodeOfResource branchingPoint= routingTreeRoot.findBranchingPoint(currentChannel);
-			currentChannel.setUsed(iterationCounter);
-			usedSinkPins.add(sinkPins);
-			
-			tmpChannel= currentChannel.getPrevious();
-			
-			while (branchingPoint == null){
-				tmpChannel= currentChannel.getPrevious();
-				currentBranch= new NodeOfResource(currentChannel, currentBranch);
-
-				tmpChannel.setUsed(iterationCounter);
-				usedChannels.add(tmpChannel);
+			if(routingTreeRoot != null) {
+				NodeOfResource currentBranch= new NodeOfResource(currentChannel); //is SinkWithCost per while loop criterion
+				NodeOfResource branchingPoint= routingTreeRoot.findBranchingPoint(currentChannel);
+				currentChannel.setUsed(iterationCounter);
+				usedSinkPins.add(sinkPins);
 				
-				branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel);
+				tmpChannel= currentChannel.getPrevious();
+				
+				while (branchingPoint == null){
+					currentBranch= new NodeOfResource(currentChannel, currentBranch);
+	
+					tmpChannel.setUsed(iterationCounter);
+					usedChannels.add(tmpChannel);
+					
+					branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel);
+					
+					tmpChannel= tmpChannel.getPrevious();
+				}
+				branchingPoint.addChild(currentBranch);
 			}
-			branchingPoint.addChild(currentBranch);
+			else {
+				NodeOfResource currentBranch= new NodeOfResource(currentChannel);
+				currentChannel.setUsed(iterationCounter);
+				usedSinkPins.add(sinkPins);
+				
+				tmpChannel= currentChannel.getPrevious();
+				
+				while (tmpChannel != null){
+					currentBranch= new NodeOfResource(currentChannel, currentBranch);
+					
+					tmpChannel.setUsed(iterationCounter);
+					usedChannels.add(tmpChannel);
+					
+					tmpChannel= tmpChannel.getPrevious();
+				}
+				
+				routingTreeRoot= currentBranch;
+			}
 		}
 		
 		return routingTreeRoot;
