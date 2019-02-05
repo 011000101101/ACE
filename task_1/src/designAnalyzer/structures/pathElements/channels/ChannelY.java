@@ -69,9 +69,4 @@ public class ChannelY extends AbstractChannel {
 	public String getName() {
 		return "ChanY(" + xCoordinate + "," + yCoordinate + ")";
 	}
-	
-	@Override
-	public PathElement getNext() {
-		return next;
-	}
 }

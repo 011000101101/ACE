@@ -361,31 +361,6 @@ public class LogicBlock extends NetlistBlock {
 		return null;
 		
 	}
-
-	/**
-	 * returns a string
-	 * @param oPin
-	 */
-	public static String appendStringPin(OPin oPin) {
-		
-		StringBuilder pinString = null;
-		int numberOfOPin;
-		for() //TODO how to get the pinnumber
-		pinString.append("Pin: " );
-		return pinString.toString();
-	}
-
-	@Override
-	public String forRoutingFile() {
-		return null;
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public PathElement getNext() {
-		return next;
-	}
 	
 	
 	

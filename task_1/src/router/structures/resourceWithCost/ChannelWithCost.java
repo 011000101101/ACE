@@ -13,6 +13,7 @@ public class ChannelWithCost extends ResourceWithCost{
 
 	private int x;
 	private int y;
+	private int trackNum;
 	
 	private Boolean horizontal;
 	
@@ -22,8 +23,9 @@ public class ChannelWithCost extends ResourceWithCost{
 	
 	//BlockPinCost sinkToReach;
 	
-	public ChannelWithCost(int newX, int newY, boolean newHorizontal, ChannelWithCost newPrevious) {
-		super(newPrevious);
+	public ChannelWithCost(int newX, int newY, boolean newHorizontal, int newTrackNum) {
+		super(null);
+		trackNum= newTrackNum;
 		x= newX;
 		y= newY;
 		horizontal= newHorizontal;
@@ -44,8 +46,8 @@ public class ChannelWithCost extends ResourceWithCost{
 	 * @return
 	 */
 	@Override
-	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter) {
-		double pv = (double) 1 + (double) Math.max(0, (double) (usedCounter + 1 - currentChannelWidth) * 0.5 * (double) pFak );
+	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter) { //not - currentChannelWidth, but -1, because only one track, therefore + 1 - 1 = 0
+		double pv = (double) 1 + (double) Math.max(0, (double) (usedCounter /* + 1 - currentChannelWidth */ ) * 0.5 * (double) pFak );
 		//if(sinkToReach == null) {
 			return hv * pv; //bv = 1
 //		}
@@ -128,6 +130,11 @@ public class ChannelWithCost extends ResourceWithCost{
 		lastChannel= false;
 		//sinkToReach= null;
 		//costValidityDate= -1; //invalidate cost, which was specific to this sink
+	}
+
+
+	public int getTrackNum() {
+		return trackNum;
 	}
 
 //	public void setSinkPinUsed(NetlistBlock sink, int iterationCounter) {

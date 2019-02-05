@@ -70,15 +70,4 @@ public class ChannelX extends AbstractChannel {
 		return "ChanX(" + xCoordinate + "," + yCoordinate + ")";
 	}
 	
-	@Override
-	public PathElement getNext() {
-		return next;
-	}
-
-	@Override
-	public String forRoutingFile() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 }

@@ -226,18 +226,4 @@ public class OPin extends PathElement {
 	public PathElement getOrigin() {
 		return previous.getOrigin();
 	}
-
-	@Override
-	public void forRoutingFile(StringBuilder output) {
-		
-		output.append("OPIN ");
-		output.append("(" + xCoordinate + "," + yCoordinate + ") " + "Pin: " + 
-		((previous instanceof LogicBlock)? LogicBlock.appendStringPin(this) : IOBlock.appendStringPad(this)) + "/n"); 
-				
-	}
-	
-	@Override
-	public PathElement getNext() {
-		return next;
-	}
 }
