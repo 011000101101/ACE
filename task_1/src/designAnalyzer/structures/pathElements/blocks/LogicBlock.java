@@ -2,6 +2,7 @@ package designAnalyzer.structures.pathElements.blocks;
 
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -168,9 +169,6 @@ public class LogicBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) {
 
-		//TODO remove
-		if(iPin == null) System.err.println("Error: 003");
-		boolean reached= false;
 		
 		if(pinAssignments[5] != null) {
 			
@@ -178,8 +176,6 @@ public class LogicBlock extends NetlistBlock {
 				int i = previous.indexOf(p);
 				if(p.equals(iPin)) {
 					
-					//TODO remove
-					reached= true;
 					
 					int temp= p.analyzeTA(exactWireLengt);
 				
@@ -190,11 +186,6 @@ public class LogicBlock extends NetlistBlock {
 					return tA2[i];
 					
 				}
-				
-				//TODO remove
-				if(!reached) System.err.println("Error: 004");
-				if(!reached) System.err.println(toString());
-				if(!reached) System.err.println(iPin.toString());
 					
 			}
 		}
@@ -360,6 +351,17 @@ public class LogicBlock extends NetlistBlock {
 		}
 		return null;
 		
+	}
+	
+	@Override
+	public Net[] getNet() {
+		ArrayList<Net> returnArray = new ArrayList<Net>();
+		for(int i = 0; i <= pinAssignments.length - 2; i++) {
+			if(pinAssignments[i] != null && !pinAssignments[i].getIsClocknNet()) {
+				returnArray.add(pinAssignments[i]);
+			}
+		}
+		return returnArray.toArray(new Net[0]);
 	}
 	
 	

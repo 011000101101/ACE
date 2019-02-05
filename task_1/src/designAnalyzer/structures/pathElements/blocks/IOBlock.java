@@ -2,6 +2,7 @@ package designAnalyzer.structures.pathElements.blocks;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import designAnalyzer.structures.Net;
@@ -88,6 +89,7 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) { //is external output block
 
+		
 		tA= previous.analyzeTA(exactWireLengt);
 		tA+= parameterManager.T_OPAD; //always connected to a IPIN
 		exactWireLengt[2]= exactWireLengt[2] + 1; //add a OPAD element
@@ -218,6 +220,17 @@ public class IOBlock extends NetlistBlock {
 
 		return previous.getOrigin();
 		
+	}
+	
+	@Override
+	public Net[] getNet() {
+		ArrayList<Net> returnArray = new ArrayList<Net>();
+		for(int i = 0; i < pinAssignments.length; i++) {
+			if(pinAssignments[i] != null && !pinAssignments[i].getIsClocknNet()) {
+				returnArray.add(pinAssignments[i]);
+			}
+		}
+		return returnArray.toArray(new Net[0]);
 	}
 	
 }

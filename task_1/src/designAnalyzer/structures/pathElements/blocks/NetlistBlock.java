@@ -222,14 +222,16 @@ public abstract class NetlistBlock extends PathElement{
 	 * returns an array of connected nets without clock net
 	 * @return array of connected nets
 	 */
-	public Net[] getNet() {
-		ArrayList<Net> returnArray = new ArrayList<Net>();
-		for(int i = 0; i <= pinAssignments.length - 2; i++) {
-			if(pinAssignments[i] != null && !pinAssignments[i].getIsClocknNet()) {
-				returnArray.add(pinAssignments[i]);
+	public abstract Net[] getNet();
+
+	public boolean isNoClockGeneratingBlock() {
+		Net[] tmp= getNet();
+		for(int i = 0; i < tmp.length - 2; i++) {
+			if(pinAssignments[i] != null && pinAssignments[i].getIsClocknNet()) {
+				return false;
 			}
 		}
-		return returnArray.toArray(new Net[0]);
+		return true;
 	}
 
 	

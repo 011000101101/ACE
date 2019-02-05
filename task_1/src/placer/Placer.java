@@ -176,6 +176,13 @@ public class Placer {
 	 * for whether output of variables is needed
 	 */
 	private static boolean diagnoseDataFlag = false;
+	
+	private static List<NetlistBlock> clockGeneratingBlocks= new LinkedList<NetlistBlock>();
+
+	/**
+	 * current placement
+	 */
+	private static NetlistBlock[][][] sBlocks;
 
 	
 	/**
@@ -246,6 +253,8 @@ public class Placer {
 		    System.out.println("Execution time (without File IO) in ms: "+elapsedTime);
 	
 			
+		    placeClockGeneratingBlocks();
+		    
 			placementWriter.write(placementFilePath);
 		   
 			if(diagnoseDataFlag) {
@@ -373,11 +382,16 @@ public class Placer {
 		List<IOBlock> iOBlocksTemp= new LinkedList<IOBlock>();
 		List<LogicBlock> logicBlocksTemp= new LinkedList<LogicBlock>();
 		for(NetlistBlock b : structureManager.getBlockMap().values()) {
-			if(b instanceof IOBlock) {
-				iOBlocksTemp.add((IOBlock) b);
+			if(b.isNoClockGeneratingBlock()) {
+				if(b instanceof IOBlock) {
+					iOBlocksTemp.add((IOBlock) b);
+				}
+				else if(b instanceof LogicBlock){
+					logicBlocksTemp.add((LogicBlock) b);
+				}
 			}
-			else if(b instanceof LogicBlock){
-				logicBlocksTemp.add((LogicBlock) b);
+			else {
+				clockGeneratingBlocks.add(b);
 			}
 		}
 //		System.out.println(iOBlocksTemp);
@@ -408,7 +422,7 @@ public class Placer {
 //		System.out.println("stepCount as double: "+ stepCountFactor * Math.pow((double) blockCount, ( (double) 4 / (double) 3 )));
 		double lambda= newLambda;
 		
-		NetlistBlock[][][] sBlocks = randomBlockPlacement() ; 
+		sBlocks = randomBlockPlacement() ; 
 		int[] logicBlockSwap = new int[6];
 		double rA= 1;
 		int acceptedTurns= 0;
@@ -441,13 +455,13 @@ public class Placer {
 //				returnVal += currentNet.getWiringCost();
 //			}
 //		}
-		oldWiringCost = totalWiringCost(sBlocks);//returnVal;
+		oldWiringCost = totalWiringCost();//returnVal;
 		analyzeTiming(); 
 		oldTimingCost = TimingCost(critExp) ; 
 //		System.out.println("init timing cost: " + oldTimingCost);
 //		System.out.println("INIT wiring cost: " + oldWiringCost);
 //		
-		double temp = computeInitialTemperature(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda) ; 
+		double temp = computeInitialTemperature(rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
 		//double avgCostPerNet= getAvgCostPerNet();
 		//experimental: use avg timing cost per path instead of complete cost and per net
@@ -481,7 +495,7 @@ public class Placer {
 //					returnVal += currentNet.getWiringCost();
 //				}
 //			}
-			oldWiringCost = totalWiringCost(sBlocks);//returnVal;
+			oldWiringCost = totalWiringCost();//returnVal;
 //			System.out.println("total wiring cost: " + oldWiringCost);
 			oldTimingCost = TimingCost(critExp) ; 
 //			System.out.println("total timing cost: " + oldTimingCost);
@@ -498,20 +512,20 @@ public class Placer {
 				
 				
 				if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
-					swapIOBlocks(sBlocks, rLimit, logicBlockSwap);
+					swapIOBlocks(rLimit, logicBlockSwap);
 					
 //					System.out.println("swap io block");
 //					System.out.println(logicBlockSwap[0]);
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					newTimingCost= newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 //					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
 //					newWiringCost= oldWiringCost + deltaWiringCost;
 					
 					deltaTimingCost = newTimingCost - oldTimingCost ; 
 					//System.out.println("delta timing cost: " + deltaTimingCost);
-					newWiringCost = totalWiringCost(sBlocks);
+					newWiringCost = totalWiringCost();
 					deltaWiringCost = newWiringCost - oldWiringCost;
 //					System.out.println("!delta wiring cost: " + deltaWiringCost);
 					//System.out.println("total timing cost: " + newTimingCost);
@@ -520,7 +534,7 @@ public class Placer {
 					
 					if (deltaCost <= 0) { 
 						//System.out.println("swapped io block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
-						applySwap(sBlocks, logicBlockSwap);
+						applySwap(logicBlockSwap);
 						
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
@@ -529,7 +543,7 @@ public class Placer {
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))) { 
 						//System.out.println("swapped io block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
-						applySwap(sBlocks, logicBlockSwap);
+						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 						acceptedTurns++;
@@ -553,14 +567,14 @@ public class Placer {
 				}
 				else { //swap logic blocks
 
-					swapLogicBlocks(sBlocks, rLimitLogicBlocks, logicBlockSwap);
+					swapLogicBlocks(rLimitLogicBlocks, logicBlockSwap);
 					
 //					System.out.println("swap logic block");
 //					System.out.println(logicBlockSwap[0]);
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					newTimingCost= newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					//
 					//deltaWiringCost = oldWiringCost - totalWiringCost(sBlocks);
 //					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
@@ -569,7 +583,7 @@ public class Placer {
 					deltaTimingCost = newTimingCost - oldTimingCost ; 
 					//
 					//System.out.println("delta timing cost: " + deltaTimingCost);
-					newWiringCost = totalWiringCost(sBlocks);
+					newWiringCost = totalWiringCost();
 					deltaWiringCost = newWiringCost - oldWiringCost;
 //					System.out.println("!delta wiring cost: " + deltaWiringCost);
 					//System.out.println("total timing cost: " + newTimingCost);
@@ -578,7 +592,7 @@ public class Placer {
 					//System.out.println("delta abs cost: " + deltaCost);
 					if (deltaCost <= 0) { 
 //						System.out.println("swapped logic block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
-						applySwap(sBlocks, logicBlockSwap);
+						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 						acceptedTurns++;
@@ -588,7 +602,7 @@ public class Placer {
 //						System.out.println("deltaCost" + deltaCost);
 //						System.out.println("(Math.exp((-1 * deltaCost / temp))): " + (Math.exp((-1 * deltaCost / temp))));
 //						System.out.println("swapped logic block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
-						applySwap(sBlocks, logicBlockSwap);
+						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
 						acceptedTurns++;
@@ -648,7 +662,7 @@ public class Placer {
 	 * @param sBlocks
 	 * @return
 	 */
-	private static double totalWiringCost(NetlistBlock[][][] sBlocks) {
+	private static double totalWiringCost() {
 		Collection<Net> allNets = structureManager.getNetCollection();
 		double returnVal = 0 ;
 		for(Net currentNet: allNets) {
@@ -694,7 +708,7 @@ public class Placer {
 	 * @param sBlocks
 	 * @return delta wiring cost before swap and after swap: oldCost minus newCost: for good swaps, the result is positiv
 	 */
-	private static double calcDeltaTotalWiringCost(int[] logicBlockSwap, NetlistBlock[][][] sBlocks) {
+	private static double calcDeltaTotalWiringCost(int[] logicBlockSwap) {
 		//System.out.println(logicBlockSwap[0] + " ; " + logicBlockSwap[1]);
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
 		//System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
@@ -766,7 +780,7 @@ public class Placer {
 	 * @param oldCost
 	 * @return
 	 */
-	private static double newTimingCostSwapBetter(NetlistBlock[][][] sBlocks, double ce, int[] logicBlockSwap, double oldCost) {
+	private static double newTimingCostSwapBetter(double ce, int[] logicBlockSwap, double oldCost) {
 //		System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
 //		System.out.println(logicBlockSwap[0]);
 //		System.out.println(logicBlockSwap[1]);
@@ -804,7 +818,7 @@ public class Placer {
 	 * @param rLimit distance limit for swap
 	 * @param blockSwap array for storing the computed values: {block1_x, block1_y, block1_subblk (0 for logic blocks), block2_x, block2_y, block2_subblk (0 for logic blocks)}
 	 */
-	private static void swapLogicBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] blockSwap) {
+	private static void swapLogicBlocks(double rLimit, int[] blockSwap) {
 		/*
 		    1
 		   234
@@ -865,7 +879,7 @@ public class Placer {
 	 * @param rLimit distance limit for swap
 	 * @param blockSwap array for storing the computed values: {block1_x, block1_y, block1_subblk, block2_x, block2_y, block2_subblk}
 	 */
-	private static void swapIOBlocks(NetlistBlock[][][] sBlocks, double rLimit, int[] blockSwap) {
+	private static void swapIOBlocks(double rLimit, int[] blockSwap) {
 		int index= rand.nextInt(iOBlocks.length); //get a random IO block for swap (swapping two empty places wouldn't gain anything)
 		IOBlock block1= iOBlocks[index];
 //		System.out.println(block1);
@@ -1004,7 +1018,7 @@ public class Placer {
 	 * @param sBlocks block placement
 	 * @param logicBlockSwap coordinates of the slots to be swapped: {block1_x, block1_y, block1_subblk (0 for logic blocks), block2_x, block2_y, block2_subblk (0 for logic blocks)}
 	 */
-	private static void applySwap(NetlistBlock[][][] sBlocks, int[] logicBlockSwap) {
+	private static void applySwap(int[] logicBlockSwap) {
 		NetlistBlock block1= sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]];
 		NetlistBlock block2= sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]];
 //		System.out.println("swap " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]] + " with " + sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
@@ -1135,7 +1149,7 @@ public class Placer {
 	 * @param lambda2 
 	 * @return initial temperature value
 	 */
-	private static double computeInitialTemperature(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
+	private static double computeInitialTemperature(double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
 		
 		System.out.println("computing initial temperature...");
 		double n= blockCount;
@@ -1144,7 +1158,7 @@ public class Placer {
 		cost= 1;
 		double[] cI= new double[(int) n];
 		for(int i= 0; i < (int) n; i++) {
-			cI[i]= cost + applySwapAndGetCDelta(sBlocks, rLimit, rLimitLogicBlocks, critExp, lambda);
+			cI[i]= cost + applySwapAndGetCDelta(rLimit, rLimitLogicBlocks, critExp, lambda);
 			//System.out.println("cost after swap:" + cost);
 			//cost += cI;
 			//sumCSquare+= cost * cost;
@@ -1174,29 +1188,29 @@ public class Placer {
 	 * @param lambda lambda for weighting wiring and timing cost
 	 * @return cost after the swap
 	 */
-	private static double applySwapAndGetCDelta(NetlistBlock[][][] sBlocks, double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
+	private static double applySwapAndGetCDelta(double rLimit, double rLimitLogicBlocks, double critExp, double lambda) {
 
 		int[] blockSwap= new int[6];
 		if(rand.nextInt(blockCount) < iOBlockCount) { //swap IO blocks
 			//System.out.println("swap io block...");
-			swapIOBlocks(sBlocks, rLimit, blockSwap);
+			swapIOBlocks(rLimit, blockSwap);
 		}
 		else {
 			//System.out.println("swapLogicBlock...");
-			swapLogicBlocks(sBlocks, rLimitLogicBlocks, blockSwap);
+			swapLogicBlocks(rLimitLogicBlocks, blockSwap);
 		}
 		
 		//System.out.println("compute new cost...");
-		double newTimingCost= newTimingCostSwapBetter(sBlocks, critExp, blockSwap, oldTimingCost); //only recompute changed values
+		double newTimingCost= newTimingCostSwapBetter(critExp, blockSwap, oldTimingCost); //only recompute changed values
 		//System.out.println("new timing cost: " + newTimingCost);
 		//System.out.println("delta wiring cost: " + calcDeltaTotalWiringCost(blockSwap, sBlocks));
-		double newWiringCost= totalWiringCost(sBlocks); //oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO 
+		double newWiringCost= totalWiringCost(); //oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO 
 //		System.out.println("new wiring cost: " + newWiringCost);
 		//System.out.println("new cost computed.");
 		
 		//System.out.println(blockSwap[0] + "," + blockSwap[1] + "," +blockSwap[2] + "-" + blockSwap[3] + "," + blockSwap[4] + "," +blockSwap[5]);
 		//System.out.println("deltaWCOST " +calcDeltaTotalWiringCost(blockSwap, sBlocks));
-		applySwap(sBlocks, blockSwap);
+		applySwap(blockSwap);
 
 //		System.out.println("oldWCOST: "+ oldWiringCost);
 //		System.out.println("timingCOST: "+ newTimingCost);
@@ -1219,25 +1233,18 @@ public class Placer {
 		biasY= (parameterManager.Y_GRID_SIZE - placingAreaSize) / 2 + 1;
 		NetlistBlock[][][] output= new NetlistBlock[parameterManager.X_GRID_SIZE + 2][parameterManager.Y_GRID_SIZE + 2][2];
 		for(LogicBlock b : logicBlocks) {
-			int index= rand.nextInt(numberOfSlotsLeft); //get random free slot
-			for(int i= 0; i < index; i++) {
-				if(output[biasX + (i / placingAreaSize)][biasY + (i % placingAreaSize)][0] != null) {
-					index++; //skip slots already in use
-				}
-			}
-			while(output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0] != null) {
-				index++; //skip slots already in use
-			}
-			output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0]= b; 
-			b.setCoordinates(biasX + (index / placingAreaSize), biasY + (index % placingAreaSize));
-			numberOfSlotsLeft--;
+			
+			placeSingleLogicBlock(b, numberOfSlotsLeft, output);
 //			System.out.println("set initial coordinates: placed " + "LogicBlock" + " [" + b.getName() + "] at (" + (biasX + (index / placingAreaSize)) + "," + (biasY + (index % placingAreaSize)) + ")" );
 		}
 		
 		numberOfSlotsLeft= (parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2) * 2;
 		for(IOBlock b : iOBlocks) {
 			
-			int index= rand.nextInt(numberOfSlotsLeft); //get random free slot and pad number
+			
+			placeSingleIOBlock(b, numberOfSlotsLeft, output);
+			
+			/*
 			boolean subBlk1= true;
 			int xCoord= 1; //first slot, left of top io
 			int yCoord= 0;
@@ -1330,6 +1337,9 @@ public class Placer {
 			output[xCoord][yCoord][subBlk1 ? 1 : 0]= b;
 			b.setSubblk_1(subBlk1);
 			b.setCoordinates(xCoord, yCoord);
+			
+			*/
+			
 			numberOfSlotsLeft--;
 //			System.out.println("set initial coordinates: placed " + ((b instanceof IOBlock) ? "IOBlock" : "LogicBlock") + " [" + b.getName() + "] at (" + xCoord + "," + yCoord + ")" );
 		}
@@ -1337,6 +1347,99 @@ public class Placer {
 		return output;
 		
 	}
+	
+	private static void placeSingleLogicBlock(LogicBlock b, int numberOfSlotsLeft, NetlistBlock[][][] output) {
+		int index= rand.nextInt(numberOfSlotsLeft); //get random free slot
+		for(int i= 0; i < index; i++) {
+			if(output[biasX + (i / placingAreaSize)][biasY + (i % placingAreaSize)][0] != null) {
+				index++; //skip slots already in use
+			}
+		}
+		while(output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0] != null) {
+			index++; //skip slots already in use
+		}
+		output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0]= b; 
+		b.setCoordinates(biasX + (index / placingAreaSize), biasY + (index % placingAreaSize));
+		numberOfSlotsLeft--;
+	}
+
+	private static void placeSingleIOBlock(IOBlock b, int numberOfSlotsLeft, NetlistBlock[][][] output) {
+		
+		int index= rand.nextInt(numberOfSlotsLeft); //get random free slot and pad number
+		
+		//start at lower side of left IO
+		boolean subBlk1= false;
+		int xCoord= 0;
+		int yCoord= 1;
+		while(index > 0 || output[xCoord][yCoord][subBlk1 ? 1 : 0] != null){
+			
+			if(output[xCoord][yCoord][subBlk1 ? 1 : 0] == null) {
+				index--; //count free slots since starting to walk
+			}
+			
+			if(subBlk1) { //go to next io pad (next coordinate) (clockwise)
+				
+				subBlk1= false;			
+	
+				
+				if(xCoord == 0) { //left IO
+					yCoord++;
+					if(yCoord == parameterManager.Y_GRID_SIZE + 1) { // reached top left corner
+						xCoord= 1; //skip corner
+					}
+				}
+				else if(yCoord == parameterManager.Y_GRID_SIZE + 1) { //top IO
+					xCoord++;
+					if(xCoord == parameterManager.X_GRID_SIZE + 1) { // reached top right corner
+						yCoord= parameterManager.Y_GRID_SIZE; //skip corner
+					}
+				}
+				else if(xCoord == parameterManager.X_GRID_SIZE + 1) { //right IO
+					yCoord--;
+					if(yCoord == 0) { // reached bottom right corner
+						xCoord= parameterManager.X_GRID_SIZE; //skip corner
+					}
+				}
+				else if(yCoord == 0) { //bottom IO
+					xCoord--;
+					if(xCoord == 0) { // reached top left corner
+						yCoord= 1; //skip corner
+					}
+				}
+				
+			}
+			else { //go to next io pad (same coordinates)
+				
+				subBlk1= true;
+				
+			}
+			
+		}
+		
+		output[xCoord][yCoord][subBlk1 ? 1 : 0]= b;
+		b.setSubblk_1(subBlk1);
+		b.setCoordinates(xCoord, yCoord);
+	}
+
+
+	private static void placeClockGeneratingBlocks() {
+		int numberOfSlotsLeft;
+		for(NetlistBlock b : clockGeneratingBlocks) {
+			if(b instanceof LogicBlock) {
+				numberOfSlotsLeft= placingAreaSize * placingAreaSize;
+				numberOfSlotsLeft-= logicBlocks.length;
+				
+				placeSingleLogicBlock(((LogicBlock) b), numberOfSlotsLeft, sBlocks);
+			}
+			else {
+				numberOfSlotsLeft= (parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2) * 2;
+				numberOfSlotsLeft-= iOBlocks.length;
+				
+				placeSingleIOBlock(((IOBlock) b), numberOfSlotsLeft, sBlocks);
+			}
+		}
+	}
+
 
 	/**
 	 * prints total wiring cost, acceptance rate, rLimit and rLimit logic block into files (as lines of 'x,y' pairs where x = datapoint, y= value
