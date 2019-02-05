@@ -90,6 +90,8 @@ public class Router {
 
 	private static int pFak;
 
+	private static Collection<NodeOfResource> finalRouting;
+
 	public static void main(String[] args) {
 		
 		
@@ -111,7 +113,7 @@ public class Router {
 			placementParser = new PlacementParser(placementFilePath);
 			placementParser.parseAll();
 			
-			routingWriter= new RoutingWriter(routingFilePath);
+			routingWriter= new RoutingWriter();
 			
 			structureManager= StructureManager.getInstance();
 			parameterManager= ParameterManager.getInstance();			
@@ -128,14 +130,39 @@ public class Router {
 			//pFak halved every time it is used to be able to use int and shifting, instead of double and multiplication
 			pFak= 1;
 			
+			int upperBoundInitial= 32;
+			int globalIterationCounter= 0;
 			
-			//TODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter, if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
+			int upperBound;
+			int lowerBound;
+			currentChannelWidth = 16;
+			
+			while(finalRouting == null) {
+				//TODO check if all possible ChannelWidths are tested...
+				lowerBound= ( upperBoundInitial * globalIterationCounter ) - globalIterationCounter;
+				upperBound= ( upperBoundInitial * (globalIterationCounter + 1) ) - globalIterationCounter;
+				while(lowerBound <= upperBound -1) {
+					if(globalRouter()) {
+						upperBound = currentChannelWidth;
+						finalRouting = currentRouting;
+					}
+					else {
+						lowerBound = currentChannelWidth;
+					}
+					currentChannelWidth = (upperBound + lowerBound)/2;
+	
+					pFak= pFak<<1;
+				}
+				globalIterationCounter++;
+			}
+			//TODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter,
+			//if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
 			//parameterManager.setChannelWidth(...); //set new channel width before execution of global router
 			globalRouter();
 			pFak= pFak<<1;
 
 			
-			routingWriter.write(currentRouting);
+			routingWriter.write(routingFilePath);//also give the method currentRouting?
 
 			
 		} catch (FileNotFoundException e) {

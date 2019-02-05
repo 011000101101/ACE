@@ -71,7 +71,7 @@ public abstract class AbstractWriter {
 	/**
 	 * writes the complete file, block by block until end of file (indicated by null)
 	 */
-	private void writeAll() {
+	protected void writeAll() {
 		
 		try {
 			writeHeader();
