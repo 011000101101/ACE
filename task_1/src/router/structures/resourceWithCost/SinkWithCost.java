@@ -53,7 +53,7 @@ public class SinkWithCost extends ResourceWithCost {
 
 
 	@Override
-	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) { // + 1 - 1 = 0
+	public double computeCost(int pFak, int currentChannelWidth, int innerIterationCounter, int globalIterationCounter) { // + 1 - 1 = 0
 		double pv = (double) 1 + /*(double) Math.max(0,*/ (double) (getUsedCounter(globalIterationCounter) /* + 1 - 1 */) * (double) 50 * (double) pFak /*)*/;
 //		if(sinkCost instanceof LogicBlockPinCost && getUsedCounter(iterationCounter) != 0) System.err.println("flag 014");
 		return hv * pv * 0.95; //bv = 0.95, input pin...

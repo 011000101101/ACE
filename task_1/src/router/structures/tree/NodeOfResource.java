@@ -80,14 +80,14 @@ public class NodeOfResource {
 		else sibling.addSibling(additionalSibling);
 	}
 
-	public void addAllChannelsToPriorityQueue(PriorityQueue<ResourceWithCost> pQ) {
-		
-		
-		data.addChannelToPriorityQueue(pQ);
-		data.setAlreadyAdded(true);
-		if(sibling != null) sibling.addAllChannelsToPriorityQueue(pQ);
-		if(child != null) child.addAllChannelsToPriorityQueue(pQ);
-	}
+//	public void addAllChannelsToPriorityQueue(PriorityQueue<ResourceWithCost> pQ) {
+//		
+//		
+//		data.addChannelToPriorityQueue(pQ);
+//		data.setAlreadyAdded(true, innerIterationCounter, iterationCounter);
+//		if(sibling != null) sibling.addAllChannelsToPriorityQueue(pQ);
+//		if(child != null) child.addAllChannelsToPriorityQueue(pQ);
+//	}
 	
 	public NodeOfResource getSibling() {
 		return sibling;

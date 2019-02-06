@@ -17,12 +17,21 @@ public abstract class ResourceWithCost {
 	protected int usedCounterValidityDate;
 
 	private boolean alreadyAdded;
+
+	private int costValidityDate2;
+
+	private int alreadyAddedDate;
+
+	private int alreadyAddedDate1;
 	
 	public ResourceWithCost(ChannelWithCost newPrevious) {
 		cost= 0;
 		previous= newPrevious;
 		costValidityDate= -1;
+		costValidityDate2= -1;
 		usedCounterValidityDate= -1;
+		alreadyAddedDate= -1;
+		alreadyAddedDate1= -1;
 		alreadyAdded= false;
 		hv= 1;
 	}
@@ -35,7 +44,7 @@ public abstract class ResourceWithCost {
 	
 	public abstract int getY();
 	
-	public abstract double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter);
+	public abstract double computeCost(int pFak, int currentChannelWidth, int innerIterationCounter, int globalIterationCounter);
 	
 	public double getCost() {
 		return cost;
@@ -45,16 +54,17 @@ public abstract class ResourceWithCost {
 		return previous;
 	}
 
-	public void setUsed(int globalIterationCounter) {
+	public void setUsed(int iterationCounter) {
 		//TODO check
 		costValidityDate= -1;
+		costValidityDate2= -1;
 		
-		if(usedCounterValidityDate == globalIterationCounter) {
+		if(usedCounterValidityDate == iterationCounter) {
 			incUsedCounter();
 		}
 		else {
 			setUsedCounterToOne();
-			usedCounterValidityDate= globalIterationCounter;
+			usedCounterValidityDate= iterationCounter;
 		}
 	}
 	
@@ -64,15 +74,16 @@ public abstract class ResourceWithCost {
 	
 	public abstract int getUsedCounter(int globalIterationCounter);
 	
-	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost newPrevious, int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) {
-		if(costValidityDate == iterationCounter) {
+	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost newPrevious, int pFak, int currentChannelWidth, int innerIterationCounter, int iterationCounter, int globalIterationCounter) {
+		if(costValidityDate == innerIterationCounter && costValidityDate2 == iterationCounter) {
 //			System.out.println("cost: " + cost);
 			return;
 		}
 		else {
 			previous= newPrevious;
-			cost= previous.getCost() + computeCost(pFak, currentChannelWidth, iterationCounter, globalIterationCounter);
-			costValidityDate= iterationCounter;
+			cost= previous.getCost() + computeCost(pFak, currentChannelWidth, innerIterationCounter, globalIterationCounter);
+			costValidityDate= innerIterationCounter;
+			costValidityDate2= iterationCounter;
 //			System.out.println("cost: " + cost);
 		}
 	}
@@ -80,12 +91,15 @@ public abstract class ResourceWithCost {
 	public abstract void addChannelToPriorityQueue(PriorityQueue<ResourceWithCost> pQ);
 	
 
-	public boolean alreadyAdded() {
-		return alreadyAdded;
+	public boolean alreadyAdded(int innerIterationCounter, int iterationCounter) {
+		if(alreadyAdded && alreadyAddedDate == innerIterationCounter && alreadyAddedDate1 == iterationCounter) return true;
+		else return false;
 	}
 	
-	public void setAlreadyAdded(boolean newAlreadyAdded) {
+	public void setAlreadyAdded(boolean newAlreadyAdded, int innerIterationCounter, int iterationCounter) {
 		alreadyAdded = newAlreadyAdded ;
+		alreadyAddedDate= innerIterationCounter;
+		alreadyAddedDate1= iterationCounter;
 	}
 
 	public abstract boolean neighbours(ResourceWithCost branchingPoint);
@@ -95,11 +109,13 @@ public abstract class ResourceWithCost {
 
 	public void invalidateCaches() {
 		costValidityDate= -1;
+		costValidityDate2= -1;
 		resetCounters();
 	}
 
 
 	public void invalidateCostCache() {
 		costValidityDate= -1;
+		costValidityDate2= -1;
 	}
 }
