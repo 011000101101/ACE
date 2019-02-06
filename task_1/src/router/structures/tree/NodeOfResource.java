@@ -96,4 +96,11 @@ public class NodeOfResource {
 	public ResourceWithCost getData() {
 		return data;
 	}
+	
+	public NodeOfResource clone() {
+		NodeOfResource tmp= new NodeOfResource(data);
+		if(sibling != null) tmp.addSibling(sibling.clone());
+		if(child != null) tmp.addChild(child.clone());
+		return tmp;
+	}
 }

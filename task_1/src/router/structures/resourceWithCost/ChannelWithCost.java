@@ -108,8 +108,8 @@ public class ChannelWithCost extends ResourceWithCost{
 	}
 
 	@Override
-	public int getUsedCounter(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) {
+	public int getUsedCounter(int iterationCounter) {
+		if(usedCounterValidityDate == iterationCounter) {
 			return usedCounter;
 		}
 		else {

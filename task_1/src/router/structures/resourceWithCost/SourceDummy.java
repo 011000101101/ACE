@@ -9,12 +9,27 @@ import designAnalyzer.ParameterManager;
 public class SourceDummy extends ResourceWithCost {
 
 	NetlistBlock source;
+	
+	String innerIterationCounter;
+	String iterationCounter;
+	String globalIterationCounter;
+	String currentChannelWidth;
 
 	public SourceDummy(NetlistBlock newSource) {
 		super(null);
 		source= newSource;
 	}
 	
+	public SourceDummy(NetlistBlock newSource, String innerIterationCounter, String iterationCounter,
+			String globalIterationCounter, String currentChannelWidth) {
+		super(null);
+		source= newSource;
+		this.innerIterationCounter= innerIterationCounter;
+		this.iterationCounter= iterationCounter;
+		this.globalIterationCounter= globalIterationCounter;
+		this.currentChannelWidth= currentChannelWidth;
+	}
+
 	@Override
 	public int getX() {
 		return source.getX();
@@ -89,4 +104,8 @@ public class SourceDummy extends ResourceWithCost {
 		
 	}
 
+	@Override
+	public String toString() {
+		return "values were: innerIterationCounter: [" + innerIterationCounter + "], iterationCounter: [" + iterationCounter + "], globalIterationCounter: [" + globalIterationCounter + "], currentChannelWidth: [" + currentChannelWidth + "]";
+	}
 }

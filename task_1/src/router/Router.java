@@ -146,6 +146,7 @@ public class Router {
 			//TODO
 			limit= 60;
 			globalIterationCounter= 0;
+			finalRouting= new HashMap<Net, NodeOfResource>(structureManager.getNetCollection().size());
 			
 			currentRouting= new HashMap<Net, NodeOfResource>(structureManager.getNetCollection().size());
 			
@@ -157,14 +158,14 @@ public class Router {
 			//pFak halved every time it is used to be able to use int and shifting, instead of double and multiplication
 			pFak= 1;
 			
-			int upperBoundInitial= 32;
+			int upperBoundInitial= 64;
 			
 			int upperBound;
 			int lowerBound;
 			currentChannelWidth = 16;
 			int binarySearchCounter= 0;
 			
-			while(finalRouting == null) {
+			while(finalRouting.size() == 0) {
 				//TODO check if all possible ChannelWidths are tested...
 				lowerBound= ( upperBoundInitial * binarySearchCounter ) - binarySearchCounter;
 				upperBound= ( upperBoundInitial * (binarySearchCounter + 1) ) - binarySearchCounter;
@@ -172,7 +173,9 @@ public class Router {
 					currentChannelWidth = (upperBound + lowerBound)/2;
 					if(globalRouter()) {
 						upperBound = currentChannelWidth;
-						finalRouting = currentRouting;
+						for(Net n : currentRouting.keySet()) {
+							finalRouting.put(n, currentRouting.get(n));
+						}
 					}
 					else {
 						lowerBound = currentChannelWidth;
@@ -302,7 +305,7 @@ public class Router {
 			//TODO remove
 //			nukeAllResources(true, false);
 			for( Net n : nets) { 
-				currentRouting.put(n, signalRouter(n).getChild() /*discard sourceDummy*/); 
+				currentRouting.put(n, signalRouter(n)); 
 				innerIterationCounter++;
 			} 
 			//foreach r in RRG.Edges do TODO implement this
@@ -311,7 +314,7 @@ public class Router {
 			
 			// no history for input pins, because there is no need (no blocking by 3rd party possible) 
 			for(ChannelWithCost c : usedChannels) {
-				c.updateHistoryCongestion(globalIterationCounter);
+				c.updateHistoryCongestion(iterationCounter);
 			}
 			sharedResources= sharedressources();
 			iterationCounter++ ;
@@ -320,7 +323,7 @@ public class Router {
 			return false ;
 		}
 		else {
-			System.err.println("successfully routed");
+			System.err.println("successfully routed, iterationCounter:" + iterationCounter );
 			return true; //results of routing stored in global variable
 		}
 	}
@@ -332,14 +335,14 @@ public class Router {
 	private static boolean sharedressources() {
 		boolean violated= false;
 		for(ChannelWithCost c : usedChannels) {
-			if(c.getUsedCounter(globalIterationCounter) > /*currentChannelWidth*/ 1) {
+			if(c.getUsedCounter(iterationCounter) > /*currentChannelWidth*/ 1) {
 				System.err.println("violating Channel: " + c.toString() + ", counter: " + c.getUsedCounter(globalIterationCounter) + ", cost: " + c.getCost());
 				violated= true;
 			}
 			c.resetCounters();
 		}
 		for(BlockPinCost p : usedSinkPins) {
-			if(p.limitExceeded(globalIterationCounter)) {
+			if(p.limitExceeded(iterationCounter)) {
 				System.err.println("violating IPin: " + p.getBlock().toString() + ", counter: " + p.getUsedCounters(globalIterationCounter));
 				violated= true;
 			}
@@ -377,7 +380,7 @@ public class Router {
 		); 
 		
 		NetlistBlock source= currentNet.getSource(); 
-		SourceDummy sourceDummy= new SourceDummy(source);
+		SourceDummy sourceDummy= new SourceDummy(source, "" + innerIterationCounter, "" + iterationCounter, "" + globalIterationCounter, "" + currentChannelWidth);
 		NodeOfResource routingTreeRoot= new NodeOfResource(sourceDummy); 
 		
 		initializeSourceCosts(source, sourceDummy, pQ);
@@ -471,6 +474,8 @@ public class Router {
 			
 			NodeOfResource currentBranch= new NodeOfResource(currentChannel); //create new branch
 			
+			//TODO remove
+			System.err.println(currentChannelWidth + ": " + iterationCounter + ": used Pin: " + currentChannel.toString() + ", counter is: " + currentChannel.getUsedCounter(iterationCounter));
 			currentChannel.setUsed(iterationCounter); //set IPIN as used
 			usedSinkPins.add(sinkPins);
 			
@@ -482,6 +487,8 @@ public class Router {
 			tmpChannel= currentChannel.getPrevious();
 			branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel); //not null if tmpChannel is already part of routingTree (already used by different path of same net)
 			currentBranch= new NodeOfResource(tmpChannel, currentBranch); //append tmpChannel to front of current branch
+			//TODO remove
+			System.err.println(currentChannelWidth + ": " + iterationCounter + ": used channel: " + tmpChannel.toString() + ", counter is: " + tmpChannel.getUsedCounter(iterationCounter));
 			if(branchingPoint == null) { //branching point reached, tmpChannel holds branching point which is already used by this net, do not iterate usedCounter, while will be skipped
 				tmpChannel.setUsed(iterationCounter);
 				if(tmpChannel instanceof ChannelWithCost) {
@@ -499,6 +506,8 @@ public class Router {
 
 				branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel); //not null if tmpChannel is already part of routingTree (already used by different path of same net)
 				currentBranch= new NodeOfResource(tmpChannel, currentBranch); //append tmpChannel to front of current branch
+				//TODO remove
+				System.err.println(currentChannelWidth + ": " + iterationCounter + ": used channel: " + tmpChannel.toString() + ", counter is: " + tmpChannel.getUsedCounter(iterationCounter));
 				if(branchingPoint == null) { //branching point reached, tmpChannel holds branching point which is already used by this net, do not iterate usedCounter, while will be exited
 					tmpChannel.setUsed(iterationCounter);
 					if(tmpChannel instanceof ChannelWithCost) {

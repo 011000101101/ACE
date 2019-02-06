@@ -36,8 +36,8 @@ public abstract class ResourceWithCost {
 		hv= 1;
 	}
 	
-	public void updateHistoryCongestion(int globalIterationCounter) {
-		hv = hv + (double) Math.max(0, getUsedCounter(globalIterationCounter) - 1);
+	public void updateHistoryCongestion(int iterationCounter) {
+		hv = hv + (double) Math.max(0, getUsedCounter(iterationCounter) - 1);
 	}
 	
 	public abstract int getX();
@@ -72,7 +72,7 @@ public abstract class ResourceWithCost {
 
 	public abstract void incUsedCounter();
 	
-	public abstract int getUsedCounter(int globalIterationCounter);
+	public abstract int getUsedCounter(int iterationCounter);
 	
 	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost newPrevious, int pFak, int currentChannelWidth, int innerIterationCounter, int iterationCounter, int globalIterationCounter) {
 		if(costValidityDate == innerIterationCounter && costValidityDate2 == iterationCounter) {
@@ -81,7 +81,7 @@ public abstract class ResourceWithCost {
 		}
 		else {
 			previous= newPrevious;
-			cost= previous.getCost() + computeCost(pFak, currentChannelWidth, innerIterationCounter, globalIterationCounter);
+			cost= previous.getCost() + computeCost(pFak, currentChannelWidth, innerIterationCounter, iterationCounter);
 			costValidityDate= innerIterationCounter;
 			costValidityDate2= iterationCounter;
 //			System.out.println("cost: " + cost);

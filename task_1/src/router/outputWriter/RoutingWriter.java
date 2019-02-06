@@ -122,6 +122,9 @@ public class RoutingWriter{
 
 	private void writeOneBlock(Net n, NodeOfResource nodeOfResource) throws IOException {
 		
+		System.out.println(nodeOfResource.getData().toString());
+		nodeOfResource= nodeOfResource.getChild();
+		
 		/*List<Object[]>*/ List<NodeOfResource> branchingPoint = new LinkedList<NodeOfResource>(); //new LinkedList<Object[]>(); //list, which contains arrays of String and NodeOfResource
 		
 		outputFileWriter.write("SOURCE (" + n.getSource().getX() + "," + n.getSource().getY() + ") "); 

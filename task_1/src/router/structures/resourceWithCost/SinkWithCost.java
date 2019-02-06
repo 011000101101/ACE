@@ -53,8 +53,8 @@ public class SinkWithCost extends ResourceWithCost {
 
 
 	@Override
-	public double computeCost(int pFak, int currentChannelWidth, int innerIterationCounter, int globalIterationCounter) { // + 1 - 1 = 0
-		double pv = (double) 1 + /*(double) Math.max(0,*/ (double) (getUsedCounter(globalIterationCounter) /* + 1 - 1 */) * (double) 50 * (double) pFak /*)*/;
+	public double computeCost(int pFak, int currentChannelWidth, int innerIterationCounter, int iterationCounter) { // + 1 - 1 = 0
+		double pv = (double) 1 + /*(double) Math.max(0,*/ (double) (getUsedCounter(iterationCounter) /* + 1 - 1 */) * (double) 50 * (double) pFak /*)*/;
 //		if(sinkCost instanceof LogicBlockPinCost && getUsedCounter(iterationCounter) != 0) System.err.println("flag 014");
 		return hv * pv * 0.95; //bv = 0.95, input pin...
 	}
@@ -93,16 +93,16 @@ public class SinkWithCost extends ResourceWithCost {
 
 
 	@Override
-	public int getUsedCounter(int globalIterationCounter) {
-		if(sinkCost instanceof IOBlockPinCost) return ((IOBlockPinCost) sinkCost).getInPinUsedCounter(globalIterationCounter);
+	public int getUsedCounter(int iterationCounter) {
+		if(sinkCost instanceof IOBlockPinCost) return ((IOBlockPinCost) sinkCost).getInPinUsedCounter(iterationCounter);
 		else {
 			if(leftOrRight) { //is left or right
-				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getLeftInPinUsedCounter(globalIterationCounter);
-				else return ((LogicBlockPinCost) sinkCost).getRightInPinUsedCounter(globalIterationCounter);
+				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getLeftInPinUsedCounter(iterationCounter);
+				else return ((LogicBlockPinCost) sinkCost).getRightInPinUsedCounter(iterationCounter);
 			}
 			else { //is top or bottom
-				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getBottomInPinUsedCounter(globalIterationCounter);
-				else return ((LogicBlockPinCost) sinkCost).getTopInPinUsedCounter(globalIterationCounter);
+				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getBottomInPinUsedCounter(iterationCounter);
+				else return ((LogicBlockPinCost) sinkCost).getTopInPinUsedCounter(iterationCounter);
 			}
 		}
 	}
