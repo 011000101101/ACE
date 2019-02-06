@@ -10,11 +10,11 @@ public abstract class ResourceWithCost {
 	double cost;
 
 	protected double hv;
-	private static ParameterManager parameterManager;
 	
 	ResourceWithCost previous; //possible to save space by just saving direction of previous (has to be direct neighbour), but then additional logic needed for backtracking
 	
 	int costValidityDate;
+	protected int usedCounterValidityDate;
 
 	private boolean alreadyAdded;
 	
@@ -22,9 +22,8 @@ public abstract class ResourceWithCost {
 		cost= 0;
 		previous= newPrevious;
 		costValidityDate= -1;
-		parameterManager= ParameterManager.getInstance();
+		usedCounterValidityDate= -1;
 		alreadyAdded= false;
-		//TODO init Hv
 		hv= 1;
 	}
 	
@@ -46,18 +45,33 @@ public abstract class ResourceWithCost {
 		return previous;
 	}
 
-	public abstract void setUsed(int globalIterationCounter);
+	public void setUsed(int globalIterationCounter) {
+		//TODO check
+		costValidityDate= -1;
+		
+		if(usedCounterValidityDate == globalIterationCounter) {
+			incUsedCounter();
+		}
+		else {
+			setUsedCounterToOne();
+			usedCounterValidityDate= globalIterationCounter;
+		}
+	}
+	
+	protected abstract void setUsedCounterToOne();
+
+	public abstract void incUsedCounter();
 	
 	public abstract int getUsedCounter(int globalIterationCounter);
 	
-	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost sourceDummy, int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) {
+	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost newPrevious, int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) {
 		if(costValidityDate == iterationCounter) {
 //			System.out.println("cost: " + cost);
 			return;
 		}
 		else {
-			previous= sourceDummy;
-			cost= computeCost(pFak, currentChannelWidth, iterationCounter, globalIterationCounter);
+			previous= newPrevious;
+			cost= previous.getCost() + computeCost(pFak, currentChannelWidth, iterationCounter, globalIterationCounter);
 			costValidityDate= iterationCounter;
 //			System.out.println("cost: " + cost);
 		}

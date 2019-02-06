@@ -179,50 +179,46 @@ public class RoutingWriter{
 	  * @throws IOException
 	  */
 	private void writeLines(/*List<Object[]>*/ List<NodeOfResource> list, NodeOfResource currentNode) throws IOException {
+		if(currentNode.getSibling() != null) {
+			//addToList(list, currentNode.getSibling());
+			list.add(0, currentNode.getSibling());
+		}
 		if(currentNode.getData() instanceof SourceDummy) {
 			NetlistBlock source= ((SourceDummy) currentNode.getData()).getBlock();
 			if(source instanceof LogicBlock) {
-				duplicateLineCache = ("OPIN: (" + source.getX() + "," + source.getY() + ") " + "Pin: 4" +"\n");
+				duplicateLineCache = ("OPIN (" + source.getX() + "," + source.getY() + ") " + "Pin: 4" +"\n");
 				outputFileWriter.write(duplicateLineCache);
 			}
 			else if(source instanceof IOBlock){
 				if(source.getSubblk_1()) {
-					duplicateLineCache = ("OPIN: (" + source.getX() + "," + source.getY() + ") " + "Pad: 1" +"\n");
+					duplicateLineCache = ("OPIN (" + source.getX() + "," + source.getY() + ") " + "Pad: 1" +"\n");
 					outputFileWriter.write(duplicateLineCache);
 				} else {
-					duplicateLineCache = ("OPIN: (" + source.getX() + "," + source.getY() + ") " + "Pad: 0" +"\n");
+					duplicateLineCache = ("OPIN (" + source.getX() + "," + source.getY() + ") " + "Pad: 0" +"\n");
 					outputFileWriter.write(duplicateLineCache);
 				}
 			}
 		}
 		else if(currentNode.getData() instanceof ChannelWithCost) {//channel
-			if(currentNode.getSibling() != null) {
-				//addToList(list, currentNode.getSibling());
-				list.add(0, currentNode.getSibling());
-			}
 			
 			ChannelWithCost currentChannel = (ChannelWithCost)currentNode.getData();
-			duplicateLineCache = ("CHANNEL" + (currentChannel.getHorizontal() ?"X (" : "Y (") + currentChannel.getX() + "," + currentChannel.getY() + ") Track: " + currentChannel.getTrackNum() + "\n");
+			duplicateLineCache = ("CHAN" + (currentChannel.getHorizontal() ?"X (" : "Y (") + currentChannel.getX() + "," + currentChannel.getY() + ") Track: " + currentChannel.getTrackNum() + "\n");
 			
 			outputFileWriter.write(duplicateLineCache);
 		}
 		else {//instance of sink with cost 
 		
-			if(currentNode.getSibling() != null) {
-				//addToList(list, currentNode.getSibling());
-				list.add(0, currentNode.getSibling());
-			}	
 			SinkWithCost currentSink = (SinkWithCost)currentNode.getData();
 			duplicateLineCache = ("This should not be displayed");
 			outputFileWriter.write("IPIN (" + currentSink.getX() + "," + currentSink.getY() + ") ");
 			NetlistBlock currentBlock = currentSink.getSinkCost().getBlock();
 			if(currentBlock instanceof IOBlock) {
 				outputFileWriter.write("Pad: " + (currentBlock.getSubblk_1()? 1 : 0) + "\n");
-				outputFileWriter.write("SINK: (" + currentSink.getX() + "," + currentSink.getY() + ") Pad: " + (currentBlock.getSubblk_1()? 1 : 0) +"\n");
+				outputFileWriter.write("SINK (" + currentSink.getX() + "," + currentSink.getY() + ") Pad: " + (currentBlock.getSubblk_1()? 1 : 0) +"\n");
 			}
 			else {
 				outputFileWriter.write("Pin: " + currentSink.getPinNum() + "\n");
-				outputFileWriter.write("SINK: (" + currentSink.getX() + "," + currentSink.getY() + ") Class: 0" + "\n");
+				outputFileWriter.write("SINK (" + currentSink.getX() + "," + currentSink.getY() + ") Class: 0" + "\n");
 			}
 		}
 	}

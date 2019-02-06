@@ -53,7 +53,7 @@ public class Router {
 	/**
 	 * reference to instance of routing writer
 	 */
-	private static RoutingWriter routingWriter; //TODO
+	private static RoutingWriter routingWriter;
 	
 	/**
 	 * iteration limit for globalRouter
@@ -103,7 +103,6 @@ public class Router {
 	public static void main(String[] args) {
 		
 		
-		// TODO input parsing and basic datastructure initialization
 		String netlistFilePath= args[0];
 		String architectureFilePath= args[1];
 		String placementFilePath= args[2];
@@ -142,6 +141,9 @@ public class Router {
 			}
 			tmpUsedResources= new LinkedList<ResourceWithCost>();
 			tmpSinks= new LinkedList<SinkWithCost>();
+			//TODO
+			limit= 60;
+			globalIterationCounter= 0;
 			
 			currentRouting= new HashMap<Net, NodeOfResource>(structureManager.getNetCollection().size());
 			
@@ -153,18 +155,17 @@ public class Router {
 			//pFak halved every time it is used to be able to use int and shifting, instead of double and multiplication
 			pFak= 1;
 			
-			int upperBoundInitial= 32;
-			int globalIterationCounter= 0;
+			int upperBoundInitial= 16;
 			
 			int upperBound;
 			int lowerBound;
 			currentChannelWidth = 16;
-			globalIterationCounter= 0;
+			int binarySearchCounter= 0;
 			
 			while(finalRouting == null) {
 				//TODO check if all possible ChannelWidths are tested...
-				lowerBound= ( upperBoundInitial * globalIterationCounter ) - globalIterationCounter;
-				upperBound= ( upperBoundInitial * (globalIterationCounter + 1) ) - globalIterationCounter;
+				lowerBound= ( upperBoundInitial * binarySearchCounter ) - binarySearchCounter;
+				upperBound= ( upperBoundInitial * (binarySearchCounter + 1) ) - binarySearchCounter;
 				while(lowerBound < upperBound -1) {
 					currentChannelWidth = (upperBound + lowerBound)/2;
 					if(globalRouter()) {
@@ -178,13 +179,13 @@ public class Router {
 	
 					pFak= pFak<<1;
 				}
-				globalIterationCounter++;
+				binarySearchCounter++;
 			}
-			//TODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter,
+			//T ODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter,
 			//if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
 			//parameterManager.setChannelWidth(...); //set new channel width before execution of global router
-			globalRouter();
-			pFak= pFak<<1;
+//			globalRouter();
+//			pFak= pFak<<1;
 
 			
 			routingWriter.write(routingFilePath, finalRouting);
@@ -288,10 +289,9 @@ public class Router {
 			}
 		}
 		
-		iterationCounter= -1 ; 
+		iterationCounter= 0 ; 
 		boolean sharedResources= true;
 		while(sharedResources && iterationCounter < limit) {
-			iterationCounter++ ;
 			currentRouting.clear();
 			usedChannels.clear();
 			usedSinkPins.clear();
@@ -309,11 +309,13 @@ public class Router {
 				c.updateHistoryCongestion(globalIterationCounter);
 			}
 			sharedResources= sharedressources();
+			iterationCounter++ ;
 		}
-		if (iterationCounter >= limit) {
+		if (sharedResources) {
 			return false ;
 		}
 		else {
+			System.err.println("successfully routed");
 			return true; //results of routing stored in global variable
 		}
 	}
@@ -326,7 +328,7 @@ public class Router {
 		boolean violated= false;
 		for(ChannelWithCost c : usedChannels) {
 			if(c.getUsedCounter(globalIterationCounter) > /*currentChannelWidth*/ 1) {
-				System.err.println("violating Channel: " + c.toString() + ", counter: " + c.getUsedCounter(globalIterationCounter));
+				System.err.println("violating Channel: " + c.toString() + ", counter: " + c.getUsedCounter(globalIterationCounter) + ", cost: " + c.getCost());
 				violated= true;
 			}
 			c.resetCounters();
@@ -368,12 +370,8 @@ public class Router {
 			
 			}
 		); 
-		//HashMap<RtgRsrc,int> PathCost ; (reuse global cost array(s))
+		
 		NetlistBlock source= currentNet.getSource(); 
-		//RT.add(i, ()) ; 
-		//resetResourceCosts(); //DONE self-invalidating cost storage: e.g. save iteration counter when writing and check if counter == current when reading, else invalid
-
-		//Tree<Point> signalrouter(Net n) begin 
 		SourceDummy sourceDummy= new SourceDummy(source);
 		NodeOfResource routingTreeRoot= new NodeOfResource(sourceDummy); 
 		
@@ -382,33 +380,42 @@ public class Router {
 		ResourceWithCost currentChannel;
 		ChannelWithCost[] neighbouringChannels= new ChannelWithCost[6];
 		
-		for( NetlistBlock sink : currentNet.getSinks() ) {
+		for( NetlistBlock sink : currentNet.getSinks() ) { //loop over sinks
 
+			
+			
+			
+			
+			
+			
 			//TODO remove
-			System.out.println("routing path to sink: " + sink.toString() + ", size of pQ: " + pQ.size());
+			System.out.println("routing path to sink: " + sink.getName() + " in Net: " + currentNet.getName() + ", size of pQ: " + pQ.size());
 			
 			/* route Verbindung zur Senke sink */
-			//BlockPinCost sinkCosts= retrieveFromBlockPinCosts(blockPinCosts, sink);
 			
-			//TODO remove
-			pQ.add(sourceDummy);
-			currentChannel= pullFromPQ(pQ);
-			System.out.println(currentChannel.toString());
 			
 			
 			ChannelWithCost[] inputChannels= getInputChannels(sink, pQ);
-//			System.out.println("new size of pQ: " + pQ.size());
+			
 			BlockPinCost sinkPins= retrieveFromBlockPinCosts(sink);
 			initializeSinkCosts(sink, inputChannels, sinkPins);
+			
 //			if(routingTreeRoot != null) {
 //				routingTreeRoot.addAllChannelsToPriorityQueue(pQ);
 //			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			currentChannel = pullFromPQ(pQ); 
-//			System.err.println("currentChannel: " + currentChannel.toString());
-			//currentChannel.setUsed(iterationCounter);
+			
 			while(currentChannel instanceof ChannelWithCost) {
-				
-//				System.out.println("currentChannel: " + currentChannel.toString());
 				
 				getNeighbouringChannels(((ChannelWithCost) currentChannel), neighbouringChannels);
 				
@@ -416,115 +423,96 @@ public class Router {
 					
 					if(neighbouringChannels[j] == null) break;
 					
-//					if(neighbouringChannels[j].notYetComputed(iterationCounter)) { 
-//						
-//						neighbouringChannels[j].setPathCostAndPrevious(currentChannel, iterationCounter);
-//						pQ.add(neighbouringChannels[j]);
-//					
-//					}
-					
 					//saves one method call...
 					neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, currentChannelWidth, iterationCounter, globalIterationCounter);
 					addToPQ(neighbouringChannels[j], pQ);
-					//System.out.println(neighbouringChannels[j].toString());
-//					System.err.println(j);
 					
 				}
-				//System.err.println(currentChannel.toString());
 				
 				if(containsChannelWithCost(inputChannels, ((ChannelWithCost) currentChannel))) {
-//					System.err.println("adding sinkWithCost");
+				
 					SinkWithCost tmp= new SinkWithCost(sinkPins, (ChannelWithCost) currentChannel);
-					//tmp.invalidateCostCache();
+					
 					tmp.setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, currentChannelWidth, iterationCounter, globalIterationCounter);
 					System.err.println("cost of IPin: " + tmp.getCost());
 					addToPQ(tmp, pQ);
 					tmpSinks.add(tmp);
 				}
 
-//				System.err.println("currentChannel: " + currentChannel.toString());
-				
 				currentChannel = pullFromPQ(pQ); 
-
-				//TODO remove
-//				if(currentChannel == null) System.err.println("err 009: currentChannel == null");
 			}
 
+			//sink reached
 			
 			//currentChannel.setSinkPinUsed(sink, iterationCounter);
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			resetSinkCosts(inputChannels, pQ);
 
 			
 			ResourceWithCost tmpChannel;
 			
-//			if(routingTreeRoot != null) {
-				NodeOfResource currentBranch= new NodeOfResource(currentChannel); //is SinkWithCost per while loop criterion
-				NodeOfResource branchingPoint= routingTreeRoot.findBranchingPoint(currentChannel);
-				currentChannel.setUsed(globalIterationCounter);
-				usedSinkPins.add(sinkPins);
-				
-				System.err.println("IPin :" + currentChannel.toString() + ", cost: " + currentChannel.getCost() + ", currentCHannelWidth: " + currentChannelWidth + ", track: " + ((ChannelWithCost) currentChannel.getPrevious()).getTrackNum() + ", usedCounter: " + currentChannel.getUsedCounter(globalIterationCounter));
-//				System.err.println("previous of IPin :" + currentChannel.getPrevious().toString());
-				
-				tmpChannel= currentChannel.getPrevious();
-				
-				while (branchingPoint == null){
-					currentBranch= new NodeOfResource(tmpChannel, currentBranch);
-	
+			
+			
+			NodeOfResource currentBranch= new NodeOfResource(currentChannel); //is SinkWithCost per while loop criterion
+			NodeOfResource branchingPoint= routingTreeRoot.findBranchingPoint(currentChannel);
+			currentChannel.setUsed(globalIterationCounter);
+			usedSinkPins.add(sinkPins);
+			System.err.println("IPin :" + currentChannel.toString() + ", cost: " + currentChannel.getCost() + ", currentCHannelWidth: " + currentChannelWidth + ", track: " + ((ChannelWithCost) currentChannel.getPrevious()).getTrackNum() + ", usedCounter: " + currentChannel.getUsedCounter(globalIterationCounter));
+			
+			//sink added to branch
+			
+			tmpChannel= currentChannel.getPrevious();
+			branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel);
+			currentBranch= new NodeOfResource(tmpChannel, currentBranch);
+			if(branchingPoint == null) {
+				tmpChannel.setUsed(globalIterationCounter);
+				if(tmpChannel instanceof ChannelWithCost) {
+					usedChannels.add((ChannelWithCost) tmpChannel);
+				}
+			}
+			System.err.println("tmpChannel :" + tmpChannel.toString() + ", usedCounter: " + tmpChannel.getUsedCounter(globalIterationCounter));
+			
+			//first channel before sink added to branch
+			
+			tmpChannel= tmpChannel.getPrevious();
+			
+			while (branchingPoint == null){
+
+				branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel);
+				currentBranch= new NodeOfResource(tmpChannel, currentBranch);
+				if(branchingPoint == null) {
 					tmpChannel.setUsed(globalIterationCounter);
-					
-					//TODO remove
 					if(tmpChannel instanceof ChannelWithCost) {
 						usedChannels.add((ChannelWithCost) tmpChannel);
 					}
-//					else {
-//						System.err.println("ERROR: reached source before striking an existing path...");
-//					}
-					
-					branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel);
-					
-					tmpChannel= tmpChannel.getPrevious();
-					//System.err.println("tmpChannel :" + tmpChannel.toString());
 				}
-				branchingPoint.addChild(currentBranch);
-//			}
-//			else {
-//				NodeOfResource currentBranch= new NodeOfResource(currentChannel);
-//				currentChannel.setUsed(iterationCounter);
-//				usedSinkPins.add(sinkPins);
-//				
-//				System.err.println("IPin :" + currentChannel.toString());
-//				System.err.println("previous of IPin :" + currentChannel.getPrevious().toString());
-//				
-//				tmpChannel= currentChannel.getPrevious();
-//				
-//				while (tmpChannel != null){
-//					System.err.println("added Channel to RoutingTree: " + tmpChannel.toString());
-//					currentBranch= new NodeOfResource(tmpChannel, currentBranch);
-//					
-//					tmpChannel.setUsed(iterationCounter);
-//					usedChannels.add(tmpChannel);
-//					
-//					tmpChannel= tmpChannel.getPrevious();
-//				}
-//				
-//				routingTreeRoot= currentBranch;
-//			}
+				System.err.println("tmpChannel :" + tmpChannel.toString());
+				tmpChannel= tmpChannel.getPrevious();
+				
+			}
 			
-//			for(ResourceWithCost r : pQ) {
-//				r.setAlreadyAdded(false);
-//			}
-//			for(ResourceWithCost r : tmpUsedResources) {
-//				r.setAlreadyAdded(false);
-//			}
-//			tmpUsedResources.clear();
-//			pQ.clear() ; 
+			//branch completed
 			
+			branchingPoint.addChild(currentBranch);
+			
+			//branch added to tree
+		
 			for(SinkWithCost s : tmpSinks) {
 				pQ.remove(s);
 			}
 			tmpSinks.clear();
+			
+			//remaining IPINs removed from pQ
 			
 			
 		}

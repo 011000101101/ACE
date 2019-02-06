@@ -34,9 +34,9 @@ public class IOBlockPinCost extends BlockPinCost {
 	 */
 	private boolean leftOrTop;
 	
-	double inPinCost;
+	private double inPinCost;
 	
-	double outPinCost;
+	private double outPinCost;
 	
 	private int usedCounter= 0;
 	private int usedCounterValidityDate= -1;
@@ -65,12 +65,12 @@ public class IOBlockPinCost extends BlockPinCost {
 		else return false;
 	}
 	
-	public void setInPinUsed(int globalIterationCounter) {
-		if(globalIterationCounter == usedCounterValidityDate) usedCounter++;
-		else{
-			usedCounter= 1;
-			usedCounterValidityDate= globalIterationCounter;
-		}
+	public void incUsedCounter() {
+		usedCounter++;
+	}
+
+	public void setUsedCounterToOne() {
+		usedCounter= 1;
 	}
 	
 	public int getInPinUsedCounter(int globalIterationCounter) {

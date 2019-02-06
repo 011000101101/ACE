@@ -17,8 +17,7 @@ public class ChannelWithCost extends ResourceWithCost{
 	
 	private Boolean horizontal;
 	
-	private static int usedCounter;
-	private int usedCounterValidityDate;
+	private int usedCounter;
 	private boolean lastChannel;
 	
 	//BlockPinCost sinkToReach;
@@ -30,7 +29,6 @@ public class ChannelWithCost extends ResourceWithCost{
 		y= newY;
 		horizontal= newHorizontal;
 		usedCounter= 0;
-		usedCounterValidityDate= -1;
 	}
 	
 	
@@ -101,14 +99,12 @@ public class ChannelWithCost extends ResourceWithCost{
 	}
 
 	@Override
-	public void setUsed(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) {
-			usedCounter++;
-		}
-		else {
-			usedCounterValidityDate= globalIterationCounter;
-			usedCounter= 1;
-		}
+	public void incUsedCounter() {
+		usedCounter++;
+	}
+	
+	protected void setUsedCounterToOne() {
+		usedCounter= 1;
 	}
 
 	@Override

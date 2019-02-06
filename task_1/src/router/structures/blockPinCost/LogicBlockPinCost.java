@@ -57,48 +57,48 @@ public class LogicBlockPinCost extends BlockPinCost {
 		else return 0;
 	}
 
-	public void setLeftInPinUsed(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) leftInPinUsedCounter++;
-		else {
-			leftInPinUsedCounter= 1;
+	public void incLeftUsedCounter() {
+		leftInPinUsedCounter++;
+	}
+
+	public void incTopUsedCounter() {
+		topInPinUsedCounter++;
+	}
+
+	public void incRightUsedCounter() {
+		rightInPinUsedCounter++;
+	}
+
+	public void incBottomUsedCounter() {
+		bottomInPinUsedCounter++;
+	}
+
+	public void setLeftUsedCounterToOne() {
+		leftInPinUsedCounter= 1;
 			topInPinUsedCounter= 0;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 0;
-			usedCounterValidityDate= globalIterationCounter;
-		}
 	}
 
-	public void setTopInPinUsed(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) topInPinUsedCounter++;
-		else {
-			leftInPinUsedCounter= 0;
+	public void setTopUsedCounterToOne() {
+		leftInPinUsedCounter= 0;
 			topInPinUsedCounter= 1;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 0;
-			usedCounterValidityDate= globalIterationCounter;
-		}
 	}
 
-	public void setRightInPinUsed(int globalIterationCounter) {
-		/*if(usedCounterValidityDate == globalIterationCounter)*/ rightInPinUsedCounter++;
-//		else {
-//			leftInPinUsedCounter= 0;
-//			topInPinUsedCounter= 0;
-//			rightInPinUsedCounter= 1;
-//			bottomInPinUsedCounter= 0;
-//			usedCounterValidityDate= globalIterationCounter;
-//		}
+	public void setRightUsedCounterToOne() {
+		leftInPinUsedCounter= 0;
+			topInPinUsedCounter= 0;
+			rightInPinUsedCounter= 1;
+			bottomInPinUsedCounter= 0;
 	}
 
-	public void setBottomInPinUsed(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) bottomInPinUsedCounter++;
-		else {
-			leftInPinUsedCounter= 0;
+	public void setBottomUsedCounterToOne() {
+		leftInPinUsedCounter= 0;
 			topInPinUsedCounter= 0;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 1;
-			usedCounterValidityDate= globalIterationCounter;
-		}
 	}
 
 	@Override
