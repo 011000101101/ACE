@@ -90,23 +90,29 @@ public class SinkWithCost extends ResourceWithCost {
 				else ((LogicBlockPinCost) sinkCost).setTopUsedCounterToOne(iterationCounter, globalIterationCounter);
 			}
 		}
+		usedCounterValidityDate= sinkCost.getUsedCounterValidityDate();
+		usedCounterValidityDate2= sinkCost.getUsedCounterValidityDate2();
 	}
 
 
 
 	@Override
 	public int getUsedCounter(int iterationCounter, int globalIterationCounter) {
-		if(sinkCost instanceof IOBlockPinCost) return ((IOBlockPinCost) sinkCost).getInPinUsedCounter(iterationCounter, globalIterationCounter);
+		int tmp;
+		if(sinkCost instanceof IOBlockPinCost) tmp= ((IOBlockPinCost) sinkCost).getInPinUsedCounter(iterationCounter, globalIterationCounter);
 		else {
 			if(leftOrRight) { //is left or right
-				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getLeftInPinUsedCounter(iterationCounter, globalIterationCounter);
-				else return ((LogicBlockPinCost) sinkCost).getRightInPinUsedCounter(iterationCounter, globalIterationCounter);
+				if(leftOrBottom) tmp= ((LogicBlockPinCost) sinkCost).getLeftInPinUsedCounter(iterationCounter, globalIterationCounter);
+				else tmp= ((LogicBlockPinCost) sinkCost).getRightInPinUsedCounter(iterationCounter, globalIterationCounter);
 			}
 			else { //is top or bottom
-				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getBottomInPinUsedCounter(iterationCounter, globalIterationCounter);
-				else return ((LogicBlockPinCost) sinkCost).getTopInPinUsedCounter(iterationCounter, globalIterationCounter);
+				if(leftOrBottom) tmp= ((LogicBlockPinCost) sinkCost).getBottomInPinUsedCounter(iterationCounter, globalIterationCounter);
+				else tmp= ((LogicBlockPinCost) sinkCost).getTopInPinUsedCounter(iterationCounter, globalIterationCounter);
 			}
 		}
+		usedCounterValidityDate= sinkCost.getUsedCounterValidityDate();
+		usedCounterValidityDate2= sinkCost.getUsedCounterValidityDate2();
+		return tmp;
 	}
 	
 	public BlockPinCost getSinkCost(){
@@ -142,6 +148,8 @@ public class SinkWithCost extends ResourceWithCost {
 	@Override
 	public void resetCounters() {
 		sinkCost.resetCounters();
+		usedCounterValidityDate= -1;
+		usedCounterValidityDate2= -1;
 	}
 
 }

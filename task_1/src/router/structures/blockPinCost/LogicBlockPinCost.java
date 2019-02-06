@@ -29,31 +29,30 @@ public class LogicBlockPinCost extends BlockPinCost {
 	 */
 	private int bottomInPinUsedCounter= 0;
 	
-	private int usedCounterValidityDate= 0;
 
 	@Override
-	public boolean limitExceeded(int globalIterationCounter) {
-		if(globalIterationCounter == usedCounterValidityDate && (leftInPinUsedCounter > 1 || topInPinUsedCounter > 1 || rightInPinUsedCounter > 1 || bottomInPinUsedCounter > 1)) return true;
+	public boolean limitExceeded(int iterationCounter, int globalIterationCounter) {
+		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter && (leftInPinUsedCounter > 1 || topInPinUsedCounter > 1 || rightInPinUsedCounter > 1 || bottomInPinUsedCounter > 1)) return true;
 		else return false;
 	}
 	
-	public int getLeftInPinUsedCounter(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) return leftInPinUsedCounter;
+	public int getLeftInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
+		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return leftInPinUsedCounter;
 		else return 0;
 	}
 	
-	public int getTopInPinUsedCounter(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) return topInPinUsedCounter;
+	public int getTopInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
+		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return topInPinUsedCounter;
 		else return 0;
 	}
 	
-	public int getRightInPinUsedCounter(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) return rightInPinUsedCounter;
+	public int getRightInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
+		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return rightInPinUsedCounter;
 		else return 0;
 	}
 	
-	public int getBottomInPinUsedCounter(int globalIterationCounter) {
-		if(usedCounterValidityDate == globalIterationCounter) return bottomInPinUsedCounter;
+	public int getBottomInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
+		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return bottomInPinUsedCounter;
 		else return 0;
 	}
 
@@ -73,37 +72,46 @@ public class LogicBlockPinCost extends BlockPinCost {
 		bottomInPinUsedCounter++;
 	}
 
-	public void setLeftUsedCounterToOne() {
+	public void setLeftUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		leftInPinUsedCounter= 1;
 			topInPinUsedCounter= 0;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 0;
+			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate2= globalIterationCounter;
 	}
 
-	public void setTopUsedCounterToOne() {
+	public void setTopUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		leftInPinUsedCounter= 0;
 			topInPinUsedCounter= 1;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 0;
+			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate2= globalIterationCounter;
 	}
 
-	public void setRightUsedCounterToOne() {
+	public void setRightUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		leftInPinUsedCounter= 0;
 			topInPinUsedCounter= 0;
 			rightInPinUsedCounter= 1;
 			bottomInPinUsedCounter= 0;
+			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate2= globalIterationCounter;
 	}
 
-	public void setBottomUsedCounterToOne() {
+	public void setBottomUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		leftInPinUsedCounter= 0;
 			topInPinUsedCounter= 0;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 1;
+			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate2= globalIterationCounter;
 	}
 
 	@Override
 	public void resetCounters() {
 		usedCounterValidityDate= -1;
+		usedCounterValidityDate2= -1;
 	}
 
 	@Override

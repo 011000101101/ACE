@@ -214,6 +214,7 @@ public class ChannelWithCost extends ResourceWithCost{
 	@Override
 	public void resetCounters() {
 		usedCounterValidityDate= -1;
+		usedCounterValidityDate2= -1;
 	}
 	
 }
