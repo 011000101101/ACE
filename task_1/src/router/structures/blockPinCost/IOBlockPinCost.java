@@ -14,7 +14,7 @@ public class IOBlockPinCost extends BlockPinCost {
 			leftOrRight= false;
 			leftOrTop= false;
 		}
-		else if(newBlock.getX() == X_GRID_SIZE) {
+		else if(newBlock.getX() == X_GRID_SIZE + 1) {
 			leftOrRight= true;
 			leftOrTop= false;
 		}
