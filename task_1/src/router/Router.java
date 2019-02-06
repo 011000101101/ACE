@@ -647,9 +647,9 @@ public class Router {
 
 
 	/**
-	 * returns one BlockPinCost
-	 * @param block
-	 * @return
+	 * returns one BlockPinCost from the hashmap blockPinCosts with a given key block
+	 * @param 
+	 * @return 
 	 */
 	private static BlockPinCost retrieveFromBlockPinCosts(NetlistBlock block) {
 		BlockPinCost tmp= blockPinCosts.get(block);
@@ -666,7 +666,11 @@ public class Router {
 	}
 
 
-
+	/**
+	 * saves neighbouring channels (up to 6) into neighbouringChannels with given current channel
+	 * @param currentChannel
+	 * @param neighbouringChannels
+	 */
 	private static void getNeighbouringChannels(ChannelWithCost currentChannel, ChannelWithCost[] neighbouringChannels) {
 		int channelsAdded= 0;
 		int trackNum= currentChannel.getTrackNum();
@@ -736,7 +740,13 @@ public class Router {
 	}
 
 
-
+	/**
+	 * returns an array with ChannelWithCost, where channels possible to be used for a given sink-block is stored. 
+	 * This function also adds those channels to pQ
+	 * @param sink
+	 * @param pQ
+	 * @return
+	 */
 	private static ChannelWithCost[] getInputChannels(NetlistBlock sink, PriorityQueue<ResourceWithCost> pQ) {
 		
 		BlockPinCost tmp= retrieveFromBlockPinCosts(sink);
@@ -785,6 +795,12 @@ public class Router {
 		return outputChannels;
 	}
 
+	/**
+	 * returns boolean: true if currentChannel is element of inputChannels
+	 * @param inputChannels
+	 * @param currentChannel
+	 * @return
+	 */
 	private static boolean containsChannelWithCost(ChannelWithCost[] inputChannels, ChannelWithCost currentChannel) {
 		for(int j= 0; j < inputChannels.length; j++) {
 			if(currentChannel.equals(inputChannels[j])) return true;
@@ -793,13 +809,24 @@ public class Router {
 	}
 
 
-
+	/**
+	 * calculates the channel with the least costs from inputChannels with given sinkPins and stores sinkPin as end point of it
+	 * @param sink
+	 * @param inputChannels
+	 * @param sinkPins
+	 */
 	private static void initializeSinkCosts(NetlistBlock sink, ChannelWithCost[] inputChannels, BlockPinCost sinkPins) {
 		for(int j= 0; j < inputChannels.length; j++) {
 			inputChannels[j].setLastChannel(sinkPins);
 		}
 	}
-
+	
+	/**
+	 * add all output channels from a given source(block) to pq and updates class variables of those channels
+	 * @param source
+	 * @param sourceDummy
+	 * @param pQ
+	 */
 	private static void initializeSourceCosts(NetlistBlock source, SourceDummy sourceDummy, PriorityQueue<ResourceWithCost> pQ) {
 		ChannelWithCost[] outputChannels= getOutputChannels(source);
 		
@@ -809,6 +836,11 @@ public class Router {
 		}
 	}
 
+	/**
+	 * used, when sink's cost should be reset. Changes adjacent channel accordingly
+	 * @param inputChannels
+	 * @param pQ
+	 */
 	private static void resetSinkCosts(ChannelWithCost[] inputChannels, PriorityQueue<ResourceWithCost> pQ) {
 		for(int j= 0; j < inputChannels.length; j++) {
 			//no need for guard: remove(...) is optional operation
@@ -819,6 +851,11 @@ public class Router {
 		}
 	}
 
+	/**
+	 * returns an array of ChannelWithCost with given source block
+	 * @param source
+	 * @return
+	 */
 	private static ChannelWithCost[] getOutputChannels(NetlistBlock source) {
 		BlockPinCost tmp= retrieveFromBlockPinCosts(source);
 		if(tmp instanceof IOBlockPinCost) { //IO Block
@@ -869,6 +906,11 @@ public class Router {
 		channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0]= channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0] + 1;
 	}
 	
+	/**
+	 * add to pQ only if resource not already added according to the iteration counts
+	 * @param resource
+	 * @param pQ
+	 */
 	private static void addToPQ(ResourceWithCost resource, PriorityQueue<ResourceWithCost> pQ) {
 		if(!resource.alreadyAdded(innerIterationCounter, iterationCounter)) {
 			resource.setAlreadyAdded(true, innerIterationCounter, iterationCounter);
@@ -877,6 +919,11 @@ public class Router {
 //		else System.err.println("err 011: channel already added: " + resource.toString());
 	}
 
+	/**
+	 * poll first item form pQ and add ResourceWithCost(return) to tmpUsedResources
+	 * @param pQ
+	 * @return
+	 */
 	private static ResourceWithCost pullFromPQ(PriorityQueue<ResourceWithCost> pQ) {
 		ResourceWithCost tmp= pQ.poll();
 		tmpUsedResources.add(tmp);
