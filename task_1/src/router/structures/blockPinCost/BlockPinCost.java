@@ -7,6 +7,8 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 public abstract class BlockPinCost {
 	
 	private NetlistBlock block;
+	int usedCounterValidityDate= -1;
+	int usedCounterValidityDate2= -1;
 
 	public abstract boolean limitExceeded(int iterationCounter, int globalIterationCounter);
 	
@@ -32,8 +34,11 @@ public abstract class BlockPinCost {
 	public abstract String getUsedCounters(int globalIterationCounter);
 
 	public int getUsedCounterValidityDate() {
-		// TODO Auto-generated method stub
-		return 0;
+		return usedCounterValidityDate;
 	}
-	
+
+
+	public int getUsedCounterValidityDate2() {
+		return usedCounterValidityDate2;
+	}
 }

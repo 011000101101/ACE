@@ -50,10 +50,11 @@ public abstract class ResourceWithCost {
 	
 	public void updateHistoryCongestion(int iterationCounter, int globalIterationCounter) {
 		if(hvValidityDate == globalIterationCounter) {
-			hv = hv + (double) Math.max(0, getUsedCounter(iterationCounter, globalIterationCounter) - 1);
+			hv = hv + (double) Math.max(0, getUsedCounter(iterationCounter, globalIterationCounter) - 1) * 1.25;
 		}
 		else {
-			hv = 1 + (double) Math.max(0, getUsedCounter(iterationCounter, globalIterationCounter) - 1);
+			hvValidityDate= globalIterationCounter;
+			hv = 1 + (double) Math.max(0, getUsedCounter(iterationCounter, globalIterationCounter) - 1) * 1.25;
 		}
 	}
 	
