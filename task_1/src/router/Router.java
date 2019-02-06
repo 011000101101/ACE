@@ -158,34 +158,60 @@ public class Router {
 			//pFak halved every time it is used to be able to use int and shifting, instead of double and multiplication
 			pFak= 1;
 			
-			int upperBoundInitial= 64;
+			int upperBoundInitial= 10;
 			
-			int upperBound;
-			int lowerBound;
-			currentChannelWidth = 16;
+			int upperBound= upperBoundInitial;
+			int lowerBound= 0;
+			currentChannelWidth = upperBound;
 			int binarySearchCounter= 0;
 			
-			while(finalRouting.size() == 0) {
-				//TODO check if all possible ChannelWidths are tested...
-				lowerBound= ( upperBoundInitial * binarySearchCounter ) - binarySearchCounter;
-				upperBound= ( upperBoundInitial * (binarySearchCounter + 1) ) - binarySearchCounter;
-				while(lowerBound < upperBound -1) {
-					currentChannelWidth = (upperBound + lowerBound)/2;
-					if(globalRouter()) {
-						upperBound = currentChannelWidth;
-						for(Net n : currentRouting.keySet()) {
-							finalRouting.put(n, currentRouting.get(n));
-						}
-					}
-					else {
-						lowerBound = currentChannelWidth;
-					}
-					globalIterationCounter++;
-	
-					pFak= pFak<<1;
-				}
-				binarySearchCounter++;
+			
+			while(!globalRouter()) {
+				lowerBound= upperBound;
+				upperBound= 2 * upperBound;
+				currentChannelWidth = upperBound;
 			}
+			
+			while(lowerBound < upperBound -1) {
+				currentChannelWidth = ((upperBound) + lowerBound)/2;
+				if(globalRouter()) {
+					upperBound = currentChannelWidth;
+					for(Net n : currentRouting.keySet()) {
+						finalRouting.put(n, currentRouting.get(n));
+					}
+				}
+				else {
+					lowerBound = currentChannelWidth;
+				}
+				globalIterationCounter++;
+
+				pFak= pFak<<1;
+			}
+			
+			
+			
+			
+//			while(finalRouting.size() == 0) {
+//				//TODO check if all possible ChannelWidths are tested...
+//				lowerBound= ( upperBoundInitial * binarySearchCounter ) - binarySearchCounter;
+//				upperBound= ( upperBoundInitial * (binarySearchCounter + 1) ) - binarySearchCounter;
+//				while(lowerBound < upperBound -1) {
+//					currentChannelWidth = (upperBound + lowerBound)/2;
+//					if(globalRouter()) {
+//						upperBound = currentChannelWidth;
+//						for(Net n : currentRouting.keySet()) {
+//							finalRouting.put(n, currentRouting.get(n));
+//						}
+//					}
+//					else {
+//						lowerBound = currentChannelWidth;
+//					}
+//					globalIterationCounter++;
+//	
+//					pFak= pFak<<1;
+//				}
+//				binarySearchCounter++;
+//			}
 			//T ODO binary search for minimal channel width, set global variable channelWidth to new value and execute globalRouter,
 			//if returns false -> vergrößere channelWidth, else verkleinere, bis wert eindeutig festgelegt (upper and lower bound lokal speichern und in jeder iteration aufeinander zu bewegen...)
 			//parameterManager.setChannelWidth(...); //set new channel width before execution of global router
@@ -314,7 +340,7 @@ public class Router {
 			
 			// no history for input pins, because there is no need (no blocking by 3rd party possible) 
 			for(ChannelWithCost c : usedChannels) {
-				c.updateHistoryCongestion(iterationCounter);
+				c.updateHistoryCongestion(iterationCounter, globalIterationCounter);
 			}
 			sharedResources= sharedressources();
 			iterationCounter++ ;
@@ -336,14 +362,14 @@ public class Router {
 		boolean violated= false;
 		for(ChannelWithCost c : usedChannels) {
 			if(c.getUsedCounter(iterationCounter) > /*currentChannelWidth*/ 1) {
-				System.err.println("violating Channel: " + c.toString() + ", counter: " + c.getUsedCounter(globalIterationCounter) + ", cost: " + c.getCost());
+				System.err.println("violating Channel: " + c.toString() + ", counter: " + c.getUsedCounter(iterationCounter) + ", cost: " + c.getCost());
 				violated= true;
 			}
 			c.resetCounters();
 		}
 		for(BlockPinCost p : usedSinkPins) {
 			if(p.limitExceeded(iterationCounter)) {
-				System.err.println("violating IPin: " + p.getBlock().toString() + ", counter: " + p.getUsedCounters(globalIterationCounter));
+				System.err.println("violating IPin: " + p.getBlock().toString() + ", counter: " + p.getUsedCounters(iterationCounter));
 				violated= true;
 			}
 			p.resetCounters();
