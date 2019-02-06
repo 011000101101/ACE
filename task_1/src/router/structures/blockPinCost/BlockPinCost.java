@@ -6,10 +6,27 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public abstract class BlockPinCost {
 	
+	/**
+	 * block belonging to this object
+	 */
 	private NetlistBlock block;
+	
+	/**
+	 * validity date for used count
+	 */
 	int usedCounterValidityDate= -1;
+	
+	/**
+	 * validity date for used count
+	 */
 	int usedCounterValidityDate2= -1;
 
+	/**
+	 * check if limit is exceeded
+	 * @param iterationCounter
+	 * @param globalIterationCounter
+	 * @return
+	 */
 	public abstract boolean limitExceeded(int iterationCounter, int globalIterationCounter);
 	
 	public BlockPinCost(NetlistBlock newBlock) {
@@ -29,6 +46,9 @@ public abstract class BlockPinCost {
 		return block;
 	}
 
+	/**
+	 * reset counters
+	 */
 	public abstract void resetCounters();
 
 	public abstract String getUsedCounters(int globalIterationCounter);

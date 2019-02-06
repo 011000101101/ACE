@@ -500,7 +500,7 @@ public class Router {
 			ChannelWithCost[] inputChannels= getInputChannels(sink, pQ);
 			
 			BlockPinCost sinkPins= retrieveFromBlockPinCosts(sink);
-			initializeSinkCosts(sink, inputChannels, sinkPins);
+//			initializeSinkCosts(sink, inputChannels, sinkPins);
 			
 //			if(routingTreeRoot != null) {
 //				routingTreeRoot.addAllChannelsToPriorityQueue(pQ);
@@ -825,11 +825,11 @@ public class Router {
 	 * @param inputChannels
 	 * @param sinkPins
 	 */
-	private static void initializeSinkCosts(NetlistBlock sink, ChannelWithCost[] inputChannels, BlockPinCost sinkPins) {
-		for(int j= 0; j < inputChannels.length; j++) {
-			inputChannels[j].setLastChannel(sinkPins);
-		}
-	}
+//	private static void initializeSinkCosts(NetlistBlock sink, ChannelWithCost[] inputChannels, BlockPinCost sinkPins) {
+//		for(int j= 0; j < inputChannels.length; j++) {
+//			inputChannels[j].setLastChannel(sinkPins);
+//		}
+//	}
 	
 	/**
 	 * add all output channels from a given source(block) to pq and updates class variables of those channels
@@ -912,9 +912,9 @@ public class Router {
 	 * updates the resource use counter to include currentChannel
 	 * @param currentChannel the newly selected Channel
 	 */
-	private static void setChannelUsed(ChannelWithCost currentChannel) {
-		channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0]= channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0] + 1;
-	}
+//	private static void setChannelUsed(ChannelWithCost currentChannel) {
+//		channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0]= channelUsedCount[currentChannel.getX()][currentChannel.getY()][currentChannel.getHorizontal() ? 1 : 0] + 1;
+//	}
 	
 	/**
 	 * add to pQ only if resource not already added according to the iteration counts

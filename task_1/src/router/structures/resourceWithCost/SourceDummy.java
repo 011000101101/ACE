@@ -8,6 +8,7 @@ import designAnalyzer.ParameterManager;
 
 public class SourceDummy extends ResourceWithCost {
 
+	//a dummy representing source block. used as NodeOfResource(root) of a tree structure
 	NetlistBlock source;
 	
 	String innerIterationCounter;

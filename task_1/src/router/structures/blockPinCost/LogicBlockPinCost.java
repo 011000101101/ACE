@@ -36,21 +36,45 @@ public class LogicBlockPinCost extends BlockPinCost {
 		else return false;
 	}
 	
+	/**
+	 * only returns left IPin used counter if validity date is correct
+	 * @param iterationCounter
+	 * @param globalIterationCounter
+	 * @return
+	 */
 	public int getLeftInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
 		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return leftInPinUsedCounter;
 		else return 0;
 	}
 	
+	/**
+	 * only returns top IPin used counter if validity date is correct
+	 * @param iterationCounter
+	 * @param globalIterationCounter
+	 * @return
+	 */
 	public int getTopInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
 		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return topInPinUsedCounter;
 		else return 0;
 	}
 	
+	/**
+	 * only returns right IPin used counter if validity date is correct
+	 * @param iterationCounter
+	 * @param globalIterationCounter
+	 * @return
+	 */
 	public int getRightInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
 		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return rightInPinUsedCounter;
 		else return 0;
 	}
 	
+	/**
+	 * only returns bottom IPin used counter if validity date is correct
+	 * @param iterationCounter
+	 * @param globalIterationCounter
+	 * @return
+	 */
 	public int getBottomInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
 		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) return bottomInPinUsedCounter;
 		else return 0;

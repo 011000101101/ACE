@@ -78,6 +78,9 @@ public class SinkWithCost extends ResourceWithCost {
 		}
 	}
 	
+	/**
+	 * calls IOBlockPinCost.setUsedCounterToOne or LogicBlockPinCost.setUsedCounterToOne and sets validity date of used counter
+	 */
 	protected void setUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		if(sinkCost instanceof IOBlockPinCost) ((IOBlockPinCost) sinkCost).setUsedCounterToOne(iterationCounter, globalIterationCounter);
 		else {

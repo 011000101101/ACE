@@ -7,6 +7,9 @@ import router.structures.resourceWithCost.ResourceWithCost;
 
 public class NodeOfResource {
 
+	
+	//tree structure with maximum one child and maximum one sibling. Additional siblings added to first sibling and so on
+	
 //	/**
 //	 * data contained in this node: x coordinate of this channel
 //	 */
@@ -70,11 +73,19 @@ public class NodeOfResource {
 		return child;
 	}
 	
+	/**
+	 * appends parameter as child when possible, else appends parameter as sibling to existing child
+	 * @param additionalChild
+	 */
 	public void addChild(NodeOfResource additionalChild) {
 		if(child == null) child= additionalChild;
 		else child.addSibling(additionalChild);
 	}
-
+  
+	/**
+	 * appends parameter as sibling when possible, else append parameter as sibling to existing sibling
+	 * @param additionalSibling
+	 */
 	private void addSibling(NodeOfResource additionalSibling) {
 		if(sibling == null) sibling= additionalSibling;
 		else sibling.addSibling(additionalSibling);
@@ -93,10 +104,17 @@ public class NodeOfResource {
 		return sibling;
 	}
 	
+	/**
+	 * retrieves ResorceWithCost
+	 * @return
+	 */
 	public ResourceWithCost getData() {
 		return data;
 	}
 	
+	/**
+	 * function for cloning
+	 */
 	public NodeOfResource clone() {
 		NodeOfResource tmp= new NodeOfResource(data);
 		if(sibling != null) tmp.addSibling(sibling.clone());
