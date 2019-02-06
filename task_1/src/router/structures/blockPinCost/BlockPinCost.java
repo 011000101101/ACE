@@ -8,7 +8,7 @@ public abstract class BlockPinCost {
 	
 	private NetlistBlock block;
 
-	public abstract boolean limitExceeded(int globalIterationCounter);
+	public abstract boolean limitExceeded(int iterationCounter, int globalIterationCounter);
 	
 	public BlockPinCost(NetlistBlock newBlock) {
 		block= newBlock;
@@ -30,5 +30,10 @@ public abstract class BlockPinCost {
 	public abstract void resetCounters();
 
 	public abstract String getUsedCounters(int globalIterationCounter);
+
+	public int getUsedCounterValidityDate() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

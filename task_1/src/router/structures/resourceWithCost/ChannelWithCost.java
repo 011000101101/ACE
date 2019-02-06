@@ -45,7 +45,7 @@ public class ChannelWithCost extends ResourceWithCost{
 	 */
 	@Override
 	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) { //not - currentChannelWidth, but -1, because only one track, therefore + 1 - 1 = 0
-		double pv = (double) 1 + /*(double) Math.max(0, */(double) (getUsedCounter(iterationCounter) /* + 1 - currentChannelWidth */ ) * (double) 0.5 * (double) pFak /*)*/;
+		double pv = (double) 1 + /*(double) Math.max(0, */(double) (getUsedCounter(iterationCounter, globalIterationCounter) /* + 1 - currentChannelWidth */ ) * (double) 0.5 * (double) pFak /*)*/;
 		//if(sinkToReach == null) {
 			return getHv(globalIterationCounter) * pv; //bv = 1
 //		}
@@ -100,17 +100,17 @@ public class ChannelWithCost extends ResourceWithCost{
 	}
 
 	@Override
-	public void incUsedCounter() {
+	public void incUsedCounter(int iterationCounter, int globalIterationCounter) {
 		usedCounter++;
 	}
 	
-	protected void setUsedCounterToOne() {
+	protected void setUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		usedCounter= 1;
 	}
 
 	@Override
-	public int getUsedCounter(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) {
+	public int getUsedCounter(int iterationCounter, int globalIterationCounter) {
+		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) {
 			return usedCounter;
 		}
 		else {

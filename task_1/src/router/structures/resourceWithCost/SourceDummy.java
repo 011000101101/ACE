@@ -46,12 +46,12 @@ public class SourceDummy extends ResourceWithCost {
 	}
 
 	@Override
-	public void incUsedCounter() {
+	public void incUsedCounter(int iterationCounter, int globalIterationCounter) {
 		// nothing to do here
 	}
 
 	@Override
-	public int getUsedCounter(int globalIterationCounter) {
+	public int getUsedCounter(int iterationCounter, int globalIterationCounter) {
 		return -1; //no used counter
 	}
 
@@ -99,7 +99,7 @@ public class SourceDummy extends ResourceWithCost {
 	}
 
 	@Override
-	protected void setUsedCounterToOne() {
+	protected void setUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		// nothing to do here...
 		
 	}
