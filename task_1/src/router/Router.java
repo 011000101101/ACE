@@ -53,7 +53,7 @@ public class Router {
 	/**
 	 * reference to instance of routing writer
 	 */
-	private static RoutingWriter routingWriter;
+	private static RoutingWriter routingWriter; //TODO
 	
 	/**
 	 * iteration limit for globalRouter
@@ -65,16 +65,30 @@ public class Router {
 	 */
 	private static List<Net> nets;
 	
+	/**
+	 * object managing all structural parameters 
+	 */
 	private static ParameterManager parameterManager;
+	
+	/**
+	 * object managing all datastructure instances 
+	 * -handling insertion, retrieval and others
+	 */
 	private static StructureManager structureManager;
 	
-	
+	/**
+	 * stores for each channel an int, which tells us how many tracks are in use. The third Coordinate can only be 1 for ChannelX or 0 for ChannelY 
+	 */
 	private static int[][][] channelUsedCount;
-	private static double[][][] channelCostIndex;
-	private static boolean[][][] channelCostNotYetComputedFlagIndex;
 	
+	/**
+	 * stores for every track of the fpga with the width currentChannelWidth a ChannelWithCost Object
+	 */
 	private static ChannelWithCost[][][][] channelIndex;
 	
+	/**
+	 * Hashmap with a NetlistBlock as key and a BlockPinCost as value
+	 */
 	private static Map<NetlistBlock, BlockPinCost> blockPinCosts;
 
 	/**
@@ -82,24 +96,48 @@ public class Router {
 	 */
 	private static int iterationCounter;
 
+	/**
+	 * list storing Channels already in use
+	 */
 	private static Collection<ChannelWithCost> usedChannels;
 
+	/**
+	 * list storing pins alongside a NetlistBlock
+	 */
 	private static Collection<BlockPinCost> usedSinkPins;
-
+	
+	/**
+	 * variable storing current channel width, which depending on the current global router iteration
+	 */
 	private static int currentChannelWidth;
 
+	/**
+	 * current routing is stored in a hashmap with a net as key and the root node as value
+	 */
 	private static Map<Net, NodeOfResource> currentRouting;
 
+	/**
+	 * p factor depending on global router iteration. used for cost calculation
+	 */
 	private static int pFak;
 
+	/**
+	 * final routing is stored in a hashmap with a net as key and the root node as value. used for RoutingFileWriter
+	 */
 	private static Map<Net, NodeOfResource> finalRouting;
-
+	
 	private static Collection<ResourceWithCost> tmpUsedResources;
 
 	private static Collection<SinkWithCost> tmpSinks;
 
+	/**
+	 * count increases every time global iteration is called
+	 */
 	private static int globalIterationCounter;
 
+	/**
+	 * increases whenever signal router run through. reset when every net used by signal router.
+	 */
 	private static int innerIterationCounter;
 
 	public static void main(String[] args) {
@@ -128,8 +166,6 @@ public class Router {
 			parameterManager= ParameterManager.getInstance();			
 			
 			channelUsedCount= new int[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
-			channelCostIndex= new double[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
-			channelCostNotYetComputedFlagIndex= new boolean[parameterManager.X_GRID_SIZE + 1][parameterManager.Y_GRID_SIZE + 1][2];
 			
 			channelIndex= new ChannelWithCost[1][1][1][0];
 			
@@ -158,36 +194,58 @@ public class Router {
 			//pFak halved every time it is used to be able to use int and shifting, instead of double and multiplication
 			pFak= 1;
 			
-			int upperBoundInitial= 10;
+			if(commandLineInput[2] == -1) {//-w not set
+				int upperBoundInitial= 10;
 			
-			int upperBound= upperBoundInitial;
-			int lowerBound= 0;
-			currentChannelWidth = upperBound;
-			int binarySearchCounter= 0;
-			
-			
-			while(!globalRouter()) {
-				lowerBound= upperBound;
-				upperBound= 2 * upperBound;
+				int upperBound= upperBoundInitial;
+				int lowerBound= 0;
 				currentChannelWidth = upperBound;
+				int binarySearchCounter= 0;
+				
+				
+				while(!globalRouter()) {
+					lowerBound= upperBound;
+					upperBound= 2 * upperBound;
+					currentChannelWidth = upperBound;
+				}
+				
+				while(lowerBound < upperBound -1) {
+					currentChannelWidth = ((upperBound) + lowerBound)/2;
+					if(globalRouter()) {
+						upperBound = currentChannelWidth;
+						for(Net n : currentRouting.keySet()) {
+							finalRouting.put(n, currentRouting.get(n));
+						}
+					}
+					else {
+						lowerBound = currentChannelWidth;
+					}
+					globalIterationCounter++;
+	
+					pFak= pFak<<1;
+					
+					
+				}
+				
+				routingWriter.write(routingFilePath, finalRouting);
+				
 			}
-			
-			while(lowerBound < upperBound -1) {
-				currentChannelWidth = ((upperBound) + lowerBound)/2;
-				if(globalRouter()) {
-					upperBound = currentChannelWidth;
+			else {//-w set manually
+				currentChannelWidth = commandLineInput[2];
+				if(globalRouter()) { //successfully routed
 					for(Net n : currentRouting.keySet()) {
 						finalRouting.put(n, currentRouting.get(n));
 					}
+
+					routingWriter.write(routingFilePath, finalRouting);
+					
 				}
 				else {
-					lowerBound = currentChannelWidth;
+					System.out.println("Set channel width [" +  commandLineInput[2] + "] is too small");
 				}
-				globalIterationCounter++;
-
-				pFak= pFak<<1;
+				
+				
 			}
-			
 			
 			
 			
@@ -568,28 +626,31 @@ public class Router {
 	}
 
 
-
-	private static void nukeAllResources(boolean wipeUsage, boolean wipeHistory) {
-		for(int j= 0; j < channelIndex.length; j++) {
-			for(int k= 0; k < channelIndex[0].length; k++) {
-				for(int l= 0; l < channelIndex[0][0].length; l++) {
-					for(int m= 0; m < channelIndex[0][0][0].length; m++) {
-						channelIndex[j][k][l][m].setAlreadyAdded(false, innerIterationCounter, iterationCounter);
-						if(wipeUsage) {
-							channelIndex[j][k][l][m].invalidateCaches();
-						}
-						else channelIndex[j][k][l][m].invalidateCostCache();
-						if(wipeHistory) {
-							channelIndex[j][k][l][m].resetHistory();
-						}
-					}
-				}
-			}
-		}
-	}
-
+//	private static void nukeAllResources(boolean wipeUsage, boolean wipeHistory) {
+//		for(int j= 0; j < channelIndex.length; j++) {
+//			for(int k= 0; k < channelIndex[0].length; k++) {
+//				for(int l= 0; l < channelIndex[0][0].length; l++) {
+//					for(int m= 0; m < channelIndex[0][0][0].length; m++) {
+//						channelIndex[j][k][l][m].setAlreadyAdded(false, innerIterationCounter, iterationCounter);
+//						if(wipeUsage) {
+//							channelIndex[j][k][l][m].invalidateCaches();
+//						}
+//						else channelIndex[j][k][l][m].invalidateCostCache();
+//						if(wipeHistory) {
+//							channelIndex[j][k][l][m].resetHistory();
+//						}
+//					}
+//				}
+//			}
+//		}
+//	}
 
 
+	/**
+	 * returns one BlockPinCost
+	 * @param block
+	 * @return
+	 */
 	private static BlockPinCost retrieveFromBlockPinCosts(NetlistBlock block) {
 		BlockPinCost tmp= blockPinCosts.get(block);
 		if(tmp == null) {
