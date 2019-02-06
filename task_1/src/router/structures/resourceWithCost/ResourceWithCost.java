@@ -12,8 +12,7 @@ public abstract class ResourceWithCost {
 	protected double hv;
 	private static ParameterManager parameterManager;
 	
-	//previous can only be channel, as source is not explicitly saved.
-	ChannelWithCost previous; //possible to save space by just saving direction of previous (has to be direct neighbour), but then additional logic needed for backtracking
+	ResourceWithCost previous; //possible to save space by just saving direction of previous (has to be direct neighbour), but then additional logic needed for backtracking
 	
 	int costValidityDate;
 
@@ -26,36 +25,41 @@ public abstract class ResourceWithCost {
 		parameterManager= ParameterManager.getInstance();
 		alreadyAdded= false;
 		//TODO init Hv
+		hv= 1;
 	}
 	
-	public void updateHistoryCongestion(int iterationCounter) {
-		hv = hv + (double) Math.max(0, getUsedCounter(iterationCounter) - parameterManager.CHANNEL_WIDTH);
+	public void updateHistoryCongestion(int globalIterationCounter) {
+		hv = hv + (double) Math.max(0, getUsedCounter(globalIterationCounter) - 1);
 	}
 	
 	public abstract int getX();
 	
 	public abstract int getY();
 	
-	public abstract double computeCost(int pFak, int currentChannelWidth, int iterationCounter);
+	public abstract double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter);
 	
 	public double getCost() {
 		return cost;
 	}
 	
-	public ChannelWithCost getPrevious() {
+	public ResourceWithCost getPrevious() {
 		return previous;
 	}
 
-	public abstract void setUsed(int iterationCounter);
+	public abstract void setUsed(int globalIterationCounter);
 	
-	public abstract int getUsedCounter(int iterationCounter);
+	public abstract int getUsedCounter(int globalIterationCounter);
 	
-	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ChannelWithCost newPrevious, int pFak, int currentChannelWidth, int iterationCounter) {
-		if(costValidityDate == iterationCounter) return;
+	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost sourceDummy, int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) {
+		if(costValidityDate == iterationCounter) {
+//			System.out.println("cost: " + cost);
+			return;
+		}
 		else {
-			previous= newPrevious;
-			cost= computeCost(pFak, currentChannelWidth, iterationCounter);
+			previous= sourceDummy;
+			cost= computeCost(pFak, currentChannelWidth, iterationCounter, globalIterationCounter);
 			costValidityDate= iterationCounter;
+//			System.out.println("cost: " + cost);
 		}
 	}
 	
@@ -72,4 +76,16 @@ public abstract class ResourceWithCost {
 
 	public abstract boolean neighbours(ResourceWithCost branchingPoint);
 	
+	public abstract void resetCounters();
+
+
+	public void invalidateCaches() {
+		costValidityDate= -1;
+		resetCounters();
+	}
+
+
+	public void invalidateCostCache() {
+		costValidityDate= -1;
+	}
 }

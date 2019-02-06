@@ -50,7 +50,8 @@ public class NodeOfResource {
 	 * @return the NodeOfPoint that contains a point equal to branchingPoint, or null if none such NodeOfPoint exists in the subtree
 	 */
 	public NodeOfResource findBranchingPoint(ResourceWithCost branchingPoint) {
-		if(data.neighbours(branchingPoint)) return this;
+		//if(data.neighbours(branchingPoint)) return this;
+		if(data.equals(branchingPoint)) return this;
 		NodeOfResource tmp= null;
 		if(child != null) tmp= child.findBranchingPoint(branchingPoint);
 		if(tmp == null && sibling != null) tmp= sibling.findBranchingPoint(branchingPoint);

@@ -30,7 +30,7 @@ public class ChannelWithCost extends ResourceWithCost{
 		y= newY;
 		horizontal= newHorizontal;
 		usedCounter= 0;
-		
+		usedCounterValidityDate= -1;
 	}
 	
 	
@@ -46,8 +46,8 @@ public class ChannelWithCost extends ResourceWithCost{
 	 * @return
 	 */
 	@Override
-	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter) { //not - currentChannelWidth, but -1, because only one track, therefore + 1 - 1 = 0
-		double pv = (double) 1 + (double) Math.max(0, (double) (usedCounter /* + 1 - currentChannelWidth */ ) * 0.5 * (double) pFak );
+	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) { //not - currentChannelWidth, but -1, because only one track, therefore + 1 - 1 = 0
+		double pv = (double) 1 + /*(double) Math.max(0, */(double) (usedCounter /* + 1 - currentChannelWidth */ ) * (double) 0.5 * (double) pFak /*)*/;
 		//if(sinkToReach == null) {
 			return hv * pv; //bv = 1
 //		}
@@ -101,19 +101,19 @@ public class ChannelWithCost extends ResourceWithCost{
 	}
 
 	@Override
-	public void setUsed(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) {
+	public void setUsed(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) {
 			usedCounter++;
 		}
 		else {
-			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate= globalIterationCounter;
 			usedCounter= 1;
 		}
 	}
 
 	@Override
-	public int getUsedCounter(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) {
+	public int getUsedCounter(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) {
 			return usedCounter;
 		}
 		else {
@@ -159,6 +159,22 @@ public class ChannelWithCost extends ResourceWithCost{
 				if(x == branchingPoint.getX() + 1 && y == branchingPoint.getY() - 1 && ((ChannelWithCost) branchingPoint).getHorizontal()) return true;
 			}
 		}
+		else {
+			switch(((SinkWithCost) branchingPoint).getPinNum()) {
+				case 0: //bottom pin
+					if(x == branchingPoint.getX() && y == branchingPoint.getY() - 1 && horizontal) return true;
+					break;
+				case 1: //left pin
+					if(x == branchingPoint.getX() - 1 && y == branchingPoint.getY() && !horizontal) return true;
+					break;
+				case 2: //top pin
+					if(x == branchingPoint.getX() && y == branchingPoint.getY() && horizontal) return true;
+					break;
+				case 3: //right pin
+					if(x == branchingPoint.getX() && y == branchingPoint.getY() && !horizontal) return true;
+					break;
+			}
+		}
 		return false;
 	}
 
@@ -186,5 +202,21 @@ public class ChannelWithCost extends ResourceWithCost{
 //		}
 //		// else : nothing, no need for a counter at io block, because only one path can be connected to the whole block anyways
 //	}
+	
+	@Override
+	public String toString() {
+		return "Channel @ (" + x + "," + y + ") [" + ( horizontal ? "h" : "v" ) + "] (track " + trackNum + ")";
+	}
+
+
+	public void resetHistory() {
+		hv= 1;
+	}
+
+
+	@Override
+	public void resetCounters() {
+		usedCounterValidityDate= -1;
+	}
 	
 }

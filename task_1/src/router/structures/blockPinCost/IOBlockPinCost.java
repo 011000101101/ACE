@@ -39,7 +39,7 @@ public class IOBlockPinCost extends BlockPinCost {
 	double outPinCost;
 	
 	private int usedCounter= 0;
-	private int usedCounterValidityDate= 0;
+	private int usedCounterValidityDate= -1;
 	
 //	public double getInPinCost() {
 //		//T ODO return static value? IO pins can only be used once in routing, or placement is invalid
@@ -60,19 +60,32 @@ public class IOBlockPinCost extends BlockPinCost {
 	}
 
 	@Override
-	public boolean limitExceeded(int iterationCounter) {
-		if(iterationCounter == usedCounterValidityDate && usedCounter > 1) return true;
+	public boolean limitExceeded(int globalIterationCounter) {
+		if(globalIterationCounter == usedCounterValidityDate && usedCounter > 1) return true;
 		else return false;
 	}
 	
-	public void setInPinUsed(int iterationCounter) {
-		if(iterationCounter == usedCounterValidityDate) usedCounter++;
-		else usedCounter= 1;
+	public void setInPinUsed(int globalIterationCounter) {
+		if(globalIterationCounter == usedCounterValidityDate) usedCounter++;
+		else{
+			usedCounter= 1;
+			usedCounterValidityDate= globalIterationCounter;
+		}
 	}
 	
-	public int getInPinUsedCounter(int iterationCounter) {
-		if(iterationCounter == usedCounterValidityDate) return usedCounter;
+	public int getInPinUsedCounter(int globalIterationCounter) {
+		if(globalIterationCounter == usedCounterValidityDate) return usedCounter;
 		else return 0;
+	}
+
+	@Override
+	public void resetCounters() {
+		usedCounterValidityDate= -1;
+	}
+
+	@Override
+	public String getUsedCounters(int globalIterationCounter) {
+		return "[" + usedCounter + "]";
 	}
 	
 }

@@ -53,24 +53,25 @@ public class SinkWithCost extends ResourceWithCost {
 
 
 	@Override
-	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter) { // + 1 - 1 = 0
-		double pv = (double) 1 + (double) Math.max(0, (double) (getUsedCounter(iterationCounter) /* + 1 - 1 */) * 0.5 * (double) pFak );
-		return hv * pv * 0.95; //bv = 0.95, input pin...
+	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) { // + 1 - 1 = 0
+		double pv = (double) 1 + /*(double) Math.max(0,*/ (double) (getUsedCounter(globalIterationCounter) /* + 1 - 1 */) * (double) 50 * (double) pFak /*)*/;
+//		if(sinkCost instanceof LogicBlockPinCost && getUsedCounter(iterationCounter) != 0) System.err.println("flag 014");
+		return hv * pv * 0.5; //bv = 0.95, input pin...
 	}
 
 
 
 	@Override
-	public void setUsed(int iterationCounter) {
-		if(sinkCost instanceof IOBlockPinCost) ((IOBlockPinCost) sinkCost).setInPinUsed(iterationCounter);
+	public void setUsed(int globalIterationCounter) {
+		if(sinkCost instanceof IOBlockPinCost) ((IOBlockPinCost) sinkCost).setInPinUsed(globalIterationCounter);
 		else {
 			if(leftOrRight) { //is left or right
-				if(leftOrBottom) ((LogicBlockPinCost) sinkCost).setLeftInPinUsed(iterationCounter);
-				else ((LogicBlockPinCost) sinkCost).setRightInPinUsed(iterationCounter);
+				if(leftOrBottom) ((LogicBlockPinCost) sinkCost).setLeftInPinUsed(globalIterationCounter);
+				else ((LogicBlockPinCost) sinkCost).setRightInPinUsed(globalIterationCounter);
 			}
 			else { //is top or bottom
-				if(leftOrBottom) ((LogicBlockPinCost) sinkCost).setBottomInPinUsed(iterationCounter);
-				else ((LogicBlockPinCost) sinkCost).setTopInPinUsed(iterationCounter);
+				if(leftOrBottom) ((LogicBlockPinCost) sinkCost).setBottomInPinUsed(globalIterationCounter);
+				else ((LogicBlockPinCost) sinkCost).setTopInPinUsed(globalIterationCounter);
 			}
 		}
 	}
@@ -78,16 +79,16 @@ public class SinkWithCost extends ResourceWithCost {
 
 
 	@Override
-	public int getUsedCounter(int iterationCounter) {
-		if(sinkCost instanceof IOBlockPinCost) return ((IOBlockPinCost) sinkCost).getInPinUsedCounter(iterationCounter);
+	public int getUsedCounter(int globalIterationCounter) {
+		if(sinkCost instanceof IOBlockPinCost) return ((IOBlockPinCost) sinkCost).getInPinUsedCounter(globalIterationCounter);
 		else {
 			if(leftOrRight) { //is left or right
-				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getLeftInPinUsedCounter(iterationCounter);
-				else return ((LogicBlockPinCost) sinkCost).getRightInPinUsedCounter(iterationCounter);
+				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getLeftInPinUsedCounter(globalIterationCounter);
+				else return ((LogicBlockPinCost) sinkCost).getRightInPinUsedCounter(globalIterationCounter);
 			}
 			else { //is top or bottom
-				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getBottomInPinUsedCounter(iterationCounter);
-				else return ((LogicBlockPinCost) sinkCost).getTopInPinUsedCounter(iterationCounter);
+				if(leftOrBottom) return ((LogicBlockPinCost) sinkCost).getBottomInPinUsedCounter(globalIterationCounter);
+				else return ((LogicBlockPinCost) sinkCost).getTopInPinUsedCounter(globalIterationCounter);
 			}
 		}
 	}
@@ -98,12 +99,12 @@ public class SinkWithCost extends ResourceWithCost {
 	
 	public int getPinNum() {
 		if(leftOrRight) { //is left or right
-			if(leftOrBottom) return 1;
-			else return 3;
+			if(leftOrBottom) return 1; //left
+			else return 3; //right
 		}
 		else { //is top or bottom
-			if(leftOrBottom) return 0;
-			else return 2;
+			if(leftOrBottom) return 0; //bottom
+			else return 2; //top
 		}
 	}
 
@@ -113,6 +114,18 @@ public class SinkWithCost extends ResourceWithCost {
 	public boolean neighbours(ResourceWithCost branchingPoint) {
 		// won't be called...
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return "IPin @ (" + sinkCost.getX() + "," + sinkCost.getY() + "), " + (leftOrRight ? (leftOrBottom ? "left" : "right") : (leftOrBottom ? "bottom" : "right"));
+	}
+
+
+
+	@Override
+	public void resetCounters() {
+		sinkCost.resetCounters();
 	}
 
 }

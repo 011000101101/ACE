@@ -32,73 +32,83 @@ public class LogicBlockPinCost extends BlockPinCost {
 	private int usedCounterValidityDate= 0;
 
 	@Override
-	public boolean limitExceeded(int iterationCounter) {
-		if(iterationCounter == usedCounterValidityDate && (leftInPinUsedCounter > 1 || topInPinUsedCounter > 1 || rightInPinUsedCounter > 1 || bottomInPinUsedCounter > 1)) return true;
+	public boolean limitExceeded(int globalIterationCounter) {
+		if(globalIterationCounter == usedCounterValidityDate && (leftInPinUsedCounter > 1 || topInPinUsedCounter > 1 || rightInPinUsedCounter > 1 || bottomInPinUsedCounter > 1)) return true;
 		else return false;
 	}
 	
-	public int getLeftInPinUsedCounter(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) return leftInPinUsedCounter;
+	public int getLeftInPinUsedCounter(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) return leftInPinUsedCounter;
 		else return 0;
 	}
 	
-	public int getTopInPinUsedCounter(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) return topInPinUsedCounter;
+	public int getTopInPinUsedCounter(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) return topInPinUsedCounter;
 		else return 0;
 	}
 	
-	public int getRightInPinUsedCounter(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) return rightInPinUsedCounter;
+	public int getRightInPinUsedCounter(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) return rightInPinUsedCounter;
 		else return 0;
 	}
 	
-	public int getBottomInPinUsedCounter(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) return bottomInPinUsedCounter;
+	public int getBottomInPinUsedCounter(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) return bottomInPinUsedCounter;
 		else return 0;
 	}
 
-	public void setLeftInPinUsed(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) leftInPinUsedCounter++;
+	public void setLeftInPinUsed(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) leftInPinUsedCounter++;
 		else {
 			leftInPinUsedCounter= 1;
 			topInPinUsedCounter= 0;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 0;
-			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate= globalIterationCounter;
 		}
 	}
 
-	public void setTopInPinUsed(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) topInPinUsedCounter++;
+	public void setTopInPinUsed(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) topInPinUsedCounter++;
 		else {
 			leftInPinUsedCounter= 0;
 			topInPinUsedCounter= 1;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 0;
-			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate= globalIterationCounter;
 		}
 	}
 
-	public void setRightInPinUsed(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) rightInPinUsedCounter++;
-		else {
-			leftInPinUsedCounter= 0;
-			topInPinUsedCounter= 0;
-			rightInPinUsedCounter= 1;
-			bottomInPinUsedCounter= 0;
-			usedCounterValidityDate= iterationCounter;
-		}
+	public void setRightInPinUsed(int globalIterationCounter) {
+		/*if(usedCounterValidityDate == globalIterationCounter)*/ rightInPinUsedCounter++;
+//		else {
+//			leftInPinUsedCounter= 0;
+//			topInPinUsedCounter= 0;
+//			rightInPinUsedCounter= 1;
+//			bottomInPinUsedCounter= 0;
+//			usedCounterValidityDate= globalIterationCounter;
+//		}
 	}
 
-	public void setBottomInPinUsed(int iterationCounter) {
-		if(usedCounterValidityDate == iterationCounter) bottomInPinUsedCounter++;
+	public void setBottomInPinUsed(int globalIterationCounter) {
+		if(usedCounterValidityDate == globalIterationCounter) bottomInPinUsedCounter++;
 		else {
 			leftInPinUsedCounter= 0;
 			topInPinUsedCounter= 0;
 			rightInPinUsedCounter= 0;
 			bottomInPinUsedCounter= 1;
-			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate= globalIterationCounter;
 		}
+	}
+
+	@Override
+	public void resetCounters() {
+		usedCounterValidityDate= -1;
+	}
+
+	@Override
+	public String getUsedCounters(int globalIterationCounter) {
+		return "[" + leftInPinUsedCounter + "][" + topInPinUsedCounter + "][" + rightInPinUsedCounter + "][" + bottomInPinUsedCounter + "]";
 	}
 	
 	//... can a Block have 2 nets attached to output? maybe add outPinXY, but why should it?

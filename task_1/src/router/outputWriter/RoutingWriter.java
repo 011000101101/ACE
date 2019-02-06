@@ -20,6 +20,7 @@ import designAnalyzer.structures.pathElements.pins.OPin;
 import router.structures.resourceWithCost.ChannelWithCost;
 import router.structures.resourceWithCost.ResourceWithCost;
 import router.structures.resourceWithCost.SinkWithCost;
+import router.structures.resourceWithCost.SourceDummy;
 import router.structures.tree.NodeOfResource;
 
 public class RoutingWriter{
@@ -103,9 +104,8 @@ public class RoutingWriter{
 	
 	protected void writeHeader() throws IOException {
 
-		outputFileWriter.write("Array size: " + parameterManager.X_GRID_SIZE + " x " + parameterManager.Y_GRID_SIZE + " logic blocks");
-		outputFileWriter.write("\n");
-		outputFileWriter.write("\n" + "Routing: " + "\n");
+		outputFileWriter.write("Array size: " + parameterManager.X_GRID_SIZE + " x " + parameterManager.Y_GRID_SIZE + " logic blocks\n\n");
+		outputFileWriter.write("Routing: \n\n");
 		
 	}
 
@@ -113,7 +113,7 @@ public class RoutingWriter{
 		
 		int netNumber = 0;
 		for(Net n : finalRouting.keySet()) {
-			outputFileWriter.write("Net " + netNumber + " (" + n.getName() + ")");
+			outputFileWriter.write("\nNet " + netNumber + " (" + n.getName() + ")\n\n");
 			writeOneBlock(n, finalRouting.get(n));
 			netNumber++;
 		}
@@ -122,25 +122,25 @@ public class RoutingWriter{
 
 	private void writeOneBlock(Net n, NodeOfResource nodeOfResource) throws IOException {
 		
-		List<Object[]> branchingPoint = new LinkedList<Object[]>(); //list, which contains arrays of String and NodeOfResource
+		/*List<Object[]>*/ List<NodeOfResource> branchingPoint = new LinkedList<NodeOfResource>(); //new LinkedList<Object[]>(); //list, which contains arrays of String and NodeOfResource
 		
 		outputFileWriter.write("SOURCE (" + n.getSource().getX() + "," + n.getSource().getY() + ") "); 
 		if(n.getSource() instanceof LogicBlock) {
 			outputFileWriter.write("Class: 1" + "\n");
-			duplicateLineCache = ("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pin: 4" +"\n");
-			outputFileWriter.write(duplicateLineCache);
+//			duplicateLineCache = ("OPIN: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pin: 4" +"\n");
+//			outputFileWriter.write(duplicateLineCache);
 		}
 		else if(n.getSource() instanceof IOBlock){
 			outputFileWriter.write("Pad: ");
 			
 			if(n.getSource().getSubblk_1()) {
 				outputFileWriter.write("1" + "\n");
-				duplicateLineCache = ("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 1" +"\n");
-				outputFileWriter.write(duplicateLineCache);
+//				duplicateLineCache = ("OPIN: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 1" +"\n");
+//				outputFileWriter.write(duplicateLineCache);
 			} else {
 				outputFileWriter.write("0" + "\n");
-				duplicateLineCache = ("OPIn: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 0" +"\n");
-				outputFileWriter.write(duplicateLineCache);
+//				duplicateLineCache = ("OPIN: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 0" +"\n");
+//				outputFileWriter.write(duplicateLineCache);
 			}
 		}
 		
@@ -153,13 +153,15 @@ public class RoutingWriter{
 				nodeOfResource= nodeOfResource.getChild();
 			}
 			
-			Object[] tmp = branchingPoint.get(0);
-			branchingPoint.remove(0);
-			if(tmp != null) {
-				duplicateLineCache = (String) tmp[0];
-				nodeOfResource= (NodeOfResource)tmp[1];	
+			if(branchingPoint.size() > 0) {
+				//Object[] tmp = branchingPoint.get(0);
+				//branchingPoint.remove(0);
 				
-				outputFileWriter.write(duplicateLineCache);
+				//duplicateLineCache = (String) tmp[0];
+				//nodeOfResource= (NodeOfResource)tmp[1];	
+				nodeOfResource= branchingPoint.remove(0);
+				
+				//outputFileWriter.write(duplicateLineCache);
 			
 			}
 			else nodeOfResource = null;
@@ -176,10 +178,27 @@ public class RoutingWriter{
 	  * @param currentNode
 	  * @throws IOException
 	  */
-	private void writeLines(List<Object[]> list, NodeOfResource currentNode) throws IOException {
-		if(currentNode.getData() instanceof ChannelWithCost) {//channel
+	private void writeLines(/*List<Object[]>*/ List<NodeOfResource> list, NodeOfResource currentNode) throws IOException {
+		if(currentNode.getData() instanceof SourceDummy) {
+			NetlistBlock source= ((SourceDummy) currentNode.getData()).getBlock();
+			if(source instanceof LogicBlock) {
+				duplicateLineCache = ("OPIN: (" + source.getX() + "," + source.getY() + ") " + "Pin: 4" +"\n");
+				outputFileWriter.write(duplicateLineCache);
+			}
+			else if(source instanceof IOBlock){
+				if(source.getSubblk_1()) {
+					duplicateLineCache = ("OPIN: (" + source.getX() + "," + source.getY() + ") " + "Pad: 1" +"\n");
+					outputFileWriter.write(duplicateLineCache);
+				} else {
+					duplicateLineCache = ("OPIN: (" + source.getX() + "," + source.getY() + ") " + "Pad: 0" +"\n");
+					outputFileWriter.write(duplicateLineCache);
+				}
+			}
+		}
+		else if(currentNode.getData() instanceof ChannelWithCost) {//channel
 			if(currentNode.getSibling() != null) {
-				addToList(list, currentNode.getSibling());
+				//addToList(list, currentNode.getSibling());
+				list.add(0, currentNode.getSibling());
 			}
 			
 			ChannelWithCost currentChannel = (ChannelWithCost)currentNode.getData();
@@ -190,7 +209,8 @@ public class RoutingWriter{
 		else {//instance of sink with cost 
 		
 			if(currentNode.getSibling() != null) {
-				addToList(list, currentNode.getSibling());
+				//addToList(list, currentNode.getSibling());
+				list.add(0, currentNode.getSibling());
 			}	
 			SinkWithCost currentSink = (SinkWithCost)currentNode.getData();
 			duplicateLineCache = ("This should not be displayed");
@@ -198,11 +218,11 @@ public class RoutingWriter{
 			NetlistBlock currentBlock = currentSink.getSinkCost().getBlock();
 			if(currentBlock instanceof IOBlock) {
 				outputFileWriter.write("Pad: " + (currentBlock.getSubblk_1()? 1 : 0) + "\n");
-				outputFileWriter.write("Sink: (" + currentSink.getX() + "," + currentSink.getY() + ") Pad: " + (currentBlock.getSubblk_1()? 1 : 0) +"\n");
+				outputFileWriter.write("SINK: (" + currentSink.getX() + "," + currentSink.getY() + ") Pad: " + (currentBlock.getSubblk_1()? 1 : 0) +"\n");
 			}
 			else {
 				outputFileWriter.write("Pin: " + currentSink.getPinNum() + "\n");
-				outputFileWriter.write("Sink: (" + currentSink.getX() + "," + currentSink.getY() + ") Class: 0" + "\n");
+				outputFileWriter.write("SINK: (" + currentSink.getX() + "," + currentSink.getY() + ") Class: 0" + "\n");
 			}
 		}
 	}

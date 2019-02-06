@@ -233,6 +233,11 @@ public abstract class NetlistBlock extends PathElement{
 		}
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return ((this instanceof IOBlock) ? "IOBlock" : "LogicBlock") + " @ (" + xCoordinate + "," + yCoordinate + ")";
+	}
 
 	
 }
