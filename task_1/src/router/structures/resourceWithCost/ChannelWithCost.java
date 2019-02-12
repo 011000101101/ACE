@@ -45,7 +45,7 @@ public class ChannelWithCost extends ResourceWithCost{
 	 */
 	@Override
 	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) { //not - currentChannelWidth, but -1, because only one track, therefore + 1 - 1 = 0
-		double pv = (double) 1 + /*(double) Math.max(0, */(double) (getUsedCounter(iterationCounter, globalIterationCounter) /* + 1 - currentChannelWidth */ ) * (double) 5 * (double) pFak /*)*/;
+		double pv = (double) 1 + /*(double) Math.max(0, */(double) (getUsedCounter(iterationCounter, globalIterationCounter) /* + 1 - currentChannelWidth */ ) * (double)5 * (double) pFak /*)*/;
 		//if(sinkToReach == null) {
 			return getHv(globalIterationCounter) * pv; //bv = 1
 //		}

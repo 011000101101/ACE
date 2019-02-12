@@ -1,0 +1,25 @@
+s27: 95ms (3 chan)
+tcon: 166ms (3 chan)
+bbara: 526ms (6 chan)
+inc: 1344ms (8 chan)
+bw: 3593ms (13 chan)
+C2670: 24250ms (12 chan)
+mm30a: 42059 (25 chan)
+tseng: 143951ms (33 chan)
+starting Global Router,                         currentChannelWidth: 16
+starting Global Router,                         currentChannelWidth: 32
+starting Global Router,                         currentChannelWidth: 64
+successfully routed, iterationCounter:1
+starting Global Router,                         currentChannelWidth: 48
+successfully routed, iterationCounter:2
+starting Global Router,                         currentChannelWidth: 40
+successfully routed, iterationCounter:1
+starting Global Router,                         currentChannelWidth: 36
+successfully routed, iterationCounter:2
+starting Global Router,                         currentChannelWidth: 34
+successfully routed, iterationCounter:1
+starting Global Router,                         currentChannelWidth: 33
+successfully routed, iterationCounter:2
+weird...
+s298: 2983828ms (2983s = 50min) (66 chan)
+pdc: still running...

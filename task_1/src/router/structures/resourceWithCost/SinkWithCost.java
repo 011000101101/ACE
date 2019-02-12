@@ -60,6 +60,26 @@ public class SinkWithCost extends ResourceWithCost {
 //		if(sinkCost instanceof LogicBlockPinCost && getUsedCounter(iterationCounter) != 0) System.err.println("flag 014");
 		return getHv(globalIterationCounter) * pv * 0.95; //bv = 0.95, input pin...
 	}
+	
+	@Override
+	public void setUsed(int iterationCounter, int globalIterationCounter) {
+		//TODO check
+		costValidityDate= -1;
+		costValidityDate2= -1;
+		costValidityDate3= -1;
+
+		usedCounterValidityDate= sinkCost.getUsedCounterValidityDate();
+		usedCounterValidityDate2= sinkCost.getUsedCounterValidityDate2();
+		
+		if(usedCounterValidityDate == iterationCounter && usedCounterValidityDate2 == globalIterationCounter) {
+			incUsedCounter(iterationCounter, globalIterationCounter);
+		}
+		else {
+			setUsedCounterToOne(iterationCounter, globalIterationCounter);
+			usedCounterValidityDate= iterationCounter;
+			usedCounterValidityDate2= globalIterationCounter;
+		}
+	}
 
 
 
@@ -90,8 +110,8 @@ public class SinkWithCost extends ResourceWithCost {
 				else ((LogicBlockPinCost) sinkCost).setTopUsedCounterToOne(iterationCounter, globalIterationCounter);
 			}
 		}
-		usedCounterValidityDate= sinkCost.getUsedCounterValidityDate();
-		usedCounterValidityDate2= sinkCost.getUsedCounterValidityDate2();
+		//usedCounterValidityDate= sinkCost.getUsedCounterValidityDate();
+		//usedCounterValidityDate2= sinkCost.getUsedCounterValidityDate2();
 	}
 
 

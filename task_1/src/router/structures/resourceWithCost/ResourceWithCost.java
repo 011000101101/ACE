@@ -18,9 +18,9 @@ public abstract class ResourceWithCost {
 
 	private boolean alreadyAdded;
 
-	private int costValidityDate2;
+	protected int costValidityDate2;
 
-	private int costValidityDate3;
+	protected int costValidityDate3;
 
 	private int alreadyAddedDate;
 

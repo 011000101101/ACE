@@ -143,6 +143,8 @@ public class Router {
 	public static void main(String[] args) {
 		
 		
+		long startTime = System.currentTimeMillis();
+		
 		String netlistFilePath= args[0];
 		String architectureFilePath= args[1];
 		String placementFilePath= args[2];
@@ -249,6 +251,11 @@ public class Router {
 				
 				
 			}
+			
+			long stopTime = System.currentTimeMillis();
+		    long elapsedTime = stopTime - startTime;
+		    System.out.println("Execution time (without File IO) in s: "+elapsedTime/1000);
+		    System.out.println("Execution time (without File IO) in ms: "+elapsedTime);
 
 //			int upperBoundInitial= 16;
 //		
@@ -889,7 +896,7 @@ public class Router {
 
 	private static ResourceWithCost pullFromPQ(PriorityQueue<ResourceWithCost> pQ) {
 		ResourceWithCost tmp= pQ.poll();
-		tmpUsedResources.add(tmp);
+		//tmpUsedResources.add(tmp);
 		return tmp;
 	}
 
