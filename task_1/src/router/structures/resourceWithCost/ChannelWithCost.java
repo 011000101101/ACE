@@ -15,10 +15,13 @@ public class ChannelWithCost extends ResourceWithCost{
 	private int y;
 	private int trackNum;
 	
+	/**
+	 * flag for horizontal or vertical channels
+	 */
 	private Boolean horizontal;
 	
 	private int usedCounter;
-	private boolean lastChannel;
+//	private boolean lastChannel;
 	
 	//BlockPinCost sinkToReach;
 	
@@ -118,16 +121,16 @@ public class ChannelWithCost extends ResourceWithCost{
 		}
 	}
 
-	public void setLastChannel(BlockPinCost sinkPins) {
-		lastChannel= true;
-		//sinkToReach= sinkPins;
-	}
-
-	public void resetLastChannel() {
-		lastChannel= false;
-		//sinkToReach= null;
-		//costValidityDate= -1; //invalidate cost, which was specific to this sink
-	}
+//	public void setLastChannel(BlockPinCost sinkPins) {
+//		lastChannel= true;
+//		//sinkToReach= sinkPins;
+//	}
+//
+//	public void resetLastChannel() {
+//		lastChannel= false;
+//		//sinkToReach= null;
+//		//costValidityDate= -1; //invalidate cost, which was specific to this sink
+//	}
 
 
 	public int getTrackNum() {
@@ -205,7 +208,9 @@ public class ChannelWithCost extends ResourceWithCost{
 		return "Channel @ (" + x + "," + y + ") [" + ( horizontal ? "h" : "v" ) + "] (track " + trackNum + ")";
 	}
 
-
+	/**
+	 * reset hv to 1
+	 */
 	public void resetHistory() {
 		hv= 1;
 	}

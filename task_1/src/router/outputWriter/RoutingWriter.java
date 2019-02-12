@@ -102,6 +102,10 @@ public class RoutingWriter{
 		
 	}
 	
+	/**
+	 * writes routing file til "Net:"
+	 * @throws IOException
+	 */
 	protected void writeHeader() throws IOException {
 
 		outputFileWriter.write("Array size: " + parameterManager.X_GRID_SIZE + " x " + parameterManager.Y_GRID_SIZE + " logic blocks\n\n");
@@ -109,6 +113,11 @@ public class RoutingWriter{
 		
 	}
 
+	/**
+	 * writes every net 
+	 * @param finalRouting
+	 * @throws IOException
+	 */
 	protected void writeAllBlocks(Map<Net, NodeOfResource> finalRouting) throws IOException {
 		
 		int netNumber = 0;
@@ -120,6 +129,12 @@ public class RoutingWriter{
 		
 	}
 
+	/**
+	 * writes only one net
+	 * @param n
+	 * @param nodeOfResource
+	 * @throws IOException
+	 */
 	private void writeOneBlock(Net n, NodeOfResource nodeOfResource) throws IOException {
 		
 		System.out.println(nodeOfResource.getData().toString());
@@ -226,11 +241,6 @@ public class RoutingWriter{
 		}
 	}
 
-	private void addToList(List<Object[]> list, NodeOfResource entryNode) {//TODO more fitting names
-		
-		list.add(0, new Object[] {duplicateLineCache, entryNode});
-		
-	}
 
 
 

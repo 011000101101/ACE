@@ -1,3 +1,4 @@
+
 package router.structures.resourceWithCost;
 
 import java.util.PriorityQueue;
@@ -98,6 +99,9 @@ public class SinkWithCost extends ResourceWithCost {
 		}
 	}
 	
+	/**
+	 * calls IOBlockPinCost.setUsedCounterToOne or LogicBlockPinCost.setUsedCounterToOne and sets validity date of used counter
+	 */
 	protected void setUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		if(sinkCost instanceof IOBlockPinCost) ((IOBlockPinCost) sinkCost).setUsedCounterToOne(iterationCounter, globalIterationCounter);
 		else {
@@ -110,8 +114,8 @@ public class SinkWithCost extends ResourceWithCost {
 				else ((LogicBlockPinCost) sinkCost).setTopUsedCounterToOne(iterationCounter, globalIterationCounter);
 			}
 		}
-		//usedCounterValidityDate= sinkCost.getUsedCounterValidityDate();
-		//usedCounterValidityDate2= sinkCost.getUsedCounterValidityDate2();
+		usedCounterValidityDate= sinkCost.getUsedCounterValidityDate();
+		usedCounterValidityDate2= sinkCost.getUsedCounterValidityDate2();
 	}
 
 

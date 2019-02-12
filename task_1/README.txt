@@ -4,422 +4,381 @@ Vincenz Mechler 2817217
 
 Rollen der Gruppenmitglied:
 	Vincenz:
-		-erstellen der Grundstruktur 
-		-Timing Cost 
-		-place Funktion
-		-SimplePath
-		-gelegentlich dokumentation
+		-implementieren des algorithmus mit Unterklassen
+		-teilweise kostenfunktion
+		-bug suche
+		-testen
+		
 		
 	Rumei und Dennis:
-		-WiringCost
-		-main- und IO-Funktionen
+		-RouterFileWriter
+		-main
+		-teilweise kostenfunktion
 		-Dokumentation vervollständigt
 		-Testen
 
 Die Leistungsdaten des verwendeten Testrechners: Prozessor: Intel Core i3-8130U Takt: 3.1GHz Speicher: DDR3 4GB Betriebssystem: Windows 10 64-bit 
 
 Ausführen des Programms:
-	java -jar placer.jar [absoluter pfad netlist file] [absoluter pfad arch file] [absoluter pfad destination von .p file] -X 8 -Y 8
-	Flags:
-		-diagnoseData: print and plot data
-		-lambda [value(float)]: custom wert für lambda, default 0,5
-		-stepCountFactor [value(int)]: custom wert für Schrittzahl Multiplikator, default 10
+	java -jar router.jar [absoluter pfad netlist file] [absoluter pfad arch file] [absoluter pfad placement file] [absoluter pfad destination von .r-file] -X 8 -Y 8
+
 		
-Commithistory aus git:
-
-commit e3fa84e530e4136607e4738045e745cfc98203d8 (HEAD -> task_2)
-Merge: 9d0b6e6 bcb43d3
+commit 6a1623adac0365179c672f7acd87f5052760e537 (HEAD -> task_3)
+Merge: 6258cc2 342fc65
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 21:28:21 2019 +0100
+Date:   Wed Feb 6 22:20:20 2019 +0100
 
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
 
-commit 9d0b6e633aaa2b0f7cb1989d67ee0ca8faedc792
+commit 6258cc22213c8daabbc71917aa008a77cd0a7e21
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 21:27:34 2019 +0100
+Date:   Wed Feb 6 22:19:59 2019 +0100
 
-    added documentation
+    comments
 
-commit bcb43d37030acfa685b06577166c353b2c23e2bd (origin/task_2)
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Jan 16 21:07:30 2019 +0100
+commit 342fc65ec062e064442ac02f545e699c558e4423 (origin/task_3)
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Wed Feb 6 22:19:15 2019 +0100
 
-    added raw diagnostic data printing method (output to files)
+    adjusted cost function and fixed bugs
 
-commit 1ec74a756cac3ab6a188ce99b8833c085f317eb6
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 20:53:44 2019 +0100
-
+commit c9a59edcdaf70fa76b7f540373973f3f4c905d5b
+Merge: e01514a 3a3a260
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Wed Feb 6 21:16:49 2019 +0100
 :...skipping...
-commit e3fa84e530e4136607e4738045e745cfc98203d8 (HEAD -> task_2)
-Merge: 9d0b6e6 bcb43d3
+commit 6a1623adac0365179c672f7acd87f5052760e537 (HEAD -> task_3)
+Merge: 6258cc2 342fc65
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 21:28:21 2019 +0100
+Date:   Wed Feb 6 22:20:20 2019 +0100
 
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
 
-commit 9d0b6e633aaa2b0f7cb1989d67ee0ca8faedc792
+commit 6258cc22213c8daabbc71917aa008a77cd0a7e21
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 21:27:34 2019 +0100
+Date:   Wed Feb 6 22:19:59 2019 +0100
 
-    added documentation
+    comments
 
-commit bcb43d37030acfa685b06577166c353b2c23e2bd (origin/task_2)
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Jan 16 21:07:30 2019 +0100
-
-    added raw diagnostic data printing method (output to files)
-
-commit 1ec74a756cac3ab6a188ce99b8833c085f317eb6
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 20:53:44 2019 +0100
-
-    final phase
-
-commit 6fd25311e5dd2b35fee42ee61d2d495b27b60693
-Merge: ab45248 90d2f55
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 20:12:10 2019 +0100
-
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit ab4524831de7806a6973c8a666e47f7396ad1df2
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 20:12:04 2019 +0100
-
-    nothing changed much
-
-commit 90d2f558e3e9fb8b2df72604585ebb82d8145ff5
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Jan 16 20:05:44 2019 +0100
-
-    fixed initial temperature computation and outer loop creterion
-
-commit f4535fbca2b64c07fdb78fc7d5f5c812ef2c33a2
-Merge: 9efe849 434bc91
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 19:37:03 2019 +0100
-
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit 9efe8498efd9f7258ecaa3a2888989c2af4cd3cd
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 19:36:57 2019 +0100
-
-    output
-
-commit 434bc9154a72cbe2342afcdcdf823dfe9303e22d
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Jan 16 19:35:58 2019 +0100
-
-    fixed rLimit update bug
-
-    fixed wiringCostDelta NaN bug
-
-commit e71d6a4560b2936cf561f1c9a2a517d7ab023986
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 17:35:01 2019 +0100
-
-    added test files in bibliothek
-
-commit c91f2ba677ab270164d480fb9712a595ac5b3806
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 17:30:47 2019 +0100
-
-    fixed bug in random io block placement
-
-commit 286033a77573343d356e1f05178eef56750dc6f6
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 17:29:04 2019 +0100
-
-    added library file
-
-commit e4a48247100475ccae3e601d43eeba48dacc11a2
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 17:25:27 2019 +0100
-
-    still bugged
-
-commit 82bf909397dc434906e2f5d1dee0ac162216a584 (refs/stash)
-Merge: cdd4d62 4d5b249
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 16:02:22 2019 +0100
-
-    WIP on (no branch): cdd4d62 fixed remaining obvious buggs
-
-commit 4d5b2494114d736ddd6339b900af343f38ba573f
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 16:02:21 2019 +0100
-
-    index on (no branch): cdd4d62 fixed remaining obvious buggs
-
-commit 03caa4474b51df4e614b9105e076a156879ccef6
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 15:57:27 2019 +0100
-
-    need to reverse, NAN
-
-commit da21b1aa360397cf20a952eb9bdb56a099fb27d7
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 15:28:21 2019 +0100
-
-    series for plotting added
-
-commit 39fcea6978d7177eaf2222ad78d300636e872c99
-Merge: 2ff19d3 4c22757
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 14:33:40 2019 +0100
-
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit 2ff19d3b26fb00871f2bbfee4b22f1a185dd9229
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 14:33:19 2019 +0100
-
-    added diagnoseData
-
-commit 4c22757e9a9010af49edabdc52045441716613ca
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Jan 16 14:32:37 2019 +0100
-
-    fixed initial temperature computation and introduced global timing and total cost buffers
-
-commit cdd4d62ad339596f6f3da57fd70dd80120a52910
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Wed Jan 16 13:06:06 2019 +0100
-
-    fixed remaining obvious buggs
-
-commit 122ba51ff4114b773ef06c60f49ca1693c63c20a
-Author: Vincenz Mechler <011000101101@gmx.de>
-Date:   Wed Jan 16 11:44:33 2019 +0100
-
-    fixed ioBlockSwap bug and added support for double command line arguments, started reworking the initial temperature function
-
-commit 8e99b09a3a38bedafecceaa08667fa3207b300c2
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Jan 15 21:31:20 2019 +0100
-
-    die hoffnung stirbt zu letzt
-
-commit cdddd0ff0d39273112b54a12b14867fe4938559e
-Merge: 8cac5d4 135ad63
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Jan 15 20:56:55 2019 +0100
-
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit 8cac5d4358c6ea5b10affcfa4030e9aa540fffb6
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Jan 15 20:56:47 2019 +0100
-
-    debuggen -rumei
-
-commit 135ad637389d02c17c8f2df8058052078d07d146
+commit 342fc65ec062e064442ac02f545e699c558e4423 (origin/task_3)
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Jan 15 20:56:15 2019 +0100
+Date:   Wed Feb 6 22:19:15 2019 +0100
 
-    fixed timing cost bug
+    adjusted cost function and fixed bugs
 
-commit 1dc27fa487f95154ab76b9f3702aca0915925223
+commit c9a59edcdaf70fa76b7f540373973f3f4c905d5b
+Merge: e01514a 3a3a260
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Jan 15 20:30:31 2019 +0100
+Date:   Wed Feb 6 21:16:49 2019 +0100
 
-    fixed various bugs
+    merge...
 
-commit aad8adc8c6a65f9a50276b4f498f8e5a31229914
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
+
+commit e01514a6ac7d591406632bebbbfe8cbc1eb55469
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Jan 15 19:26:28 2019 +0100
+Date:   Wed Feb 6 21:16:03 2019 +0100
 
-    created cache for wiring cost
+    fixed usedCounters
 
-commit edc2d95f79b6f69035fa18fd3137b98367574a5f
-Merge: 72f76fe e2bcd7a
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Jan 15 19:22:03 2019 +0100
-
-    merge
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit e2bcd7a07dcf8c777bfce34e546df0835838bdea
+commit 3a3a260a49258402fd24dd2752c509ea0c4a00af
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Jan 15 19:21:53 2019 +0100
+Date:   Wed Feb 6 21:15:06 2019 +0100
 
-    moved wiring cost to Net(class)
+    added comments
 
-commit 72f76feb6eeda396f41a74c33d77a184f7eebc22
+commit c01560438f1d49c6f2f0ef8e7668e9cdba9406ab
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Jan 15 19:20:48 2019 +0100
+Date:   Wed Feb 6 20:47:12 2019 +0100
 
-    fixed initial block placement method and applySwap method
+    fixing validityDates...
 
-commit 510eedc4da5ad7bd9bdc2d86ed7132c9c93b12aa
-Merge: 7e7c59f 076304c
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Jan 15 18:14:59 2019 +0100
-
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit 7e7c59f31c15d290b4be6207d146d6dfc01d73a6
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Tue Jan 15 18:12:00 2019 +0100
-
-    nothing changed?
-
-commit 076304c241d9709653f4d9d8d751c73ff2b22793
+commit 2bc3632fbc00455f87cdda52c5e908a7ac734992
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Tue Jan 15 00:32:05 2019 +0100
+Date:   Wed Feb 6 20:22:26 2019 +0100
 
-    finished first implementation and started debugging
+    fixed Hv bug
 
-commit bd50649a9e40b7cf218324405a49770329c44124
-Merge: 8cf4bd7 0a8a62c
+commit 71680cad1e50bf9621035ddce9f126b996a8f760
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 16:42:36 2019 +0100
+Date:   Wed Feb 6 19:45:40 2019 +0100
 
-    merge
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
+    fixed invalid routing file error
 
-commit 0a8a62c82643a0bbbe9b025195d5e87f30a5332b
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Mon Jan 14 16:38:47 2019 +0100
-
-    parseCommandlineArgument updated
-
-commit 8cf4bd7e2057382ada9af7bc49e83297ca790302 (origin/task_2_vincenz)
+commit d121d946fe81ac408c4a13c5afc3d84aad7a1441
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 16:38:18 2019 +0100
+Date:   Wed Feb 6 18:29:05 2019 +0100
 
-    implemented some TODOs and removed unnecessary methods
+    replaced nukes with self invalidating caches
 
-commit b21f958b04893d235966e049c78f77c3b3b37eec
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Mon Jan 14 15:57:11 2019 +0100
-
-    getBlocks() in class Net and getNet() in class NetlistBlock implemented
-
-commit 9c370e1ebef98dd43df92513d40b00c8d73d69ec
+commit 4ca52b236c45d3f7957cce0aa7e6e7e0aa346a0b
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 15:30:31 2019 +0100
+Date:   Wed Feb 6 16:52:53 2019 +0100
 
-    removed fullfilled TODOs and fixed bug in simplePath generation in Placer.place()
+    fixed bugs
 
-commit 0603da4645eccdc64aee3dcef9858d393a22a8ca
-Merge: f0d773d 5283291
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Mon Jan 14 15:25:52 2019 +0100
-
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit f0d773d29c77859cc82b6132cdb8055695b2b8e9
-Author: Rumei <rumei.ma@gmail.com>
-Date:   Mon Jan 14 15:16:36 2019 +0100
-
-    commit before pull required
-
-commit 5283291ff0e38da9199142a2be3a6e3e37e6512e
-Merge: c62f6dc 0c7526c
+commit 0bd98d3061c7cc64b3c3a9c32a4dfa380dc3a2ba
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 15:04:56 2019 +0100
+Date:   Wed Feb 6 13:35:53 2019 +0100
+
+    added SourceDummy
+
+commit b67fcc996f9c9b0d8d571fd02962b357eeef1fff
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Wed Feb 6 13:32:39 2019 +0100
+
+    fixed bugs
+
+commit 10e30e3bffcf23abf5fd9477d469db1f2bc94d12
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Feb 5 20:34:38 2019 +0100
+
+    fixed a few bugs
+
+commit e8aa844229fc81d7cb844b4e7fae81936a2f9f75
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Tue Feb 5 18:25:44 2019 +0100
 
     merged
 
-commit c62f6dc54081f15c9c46eb55c1a1ef89f6deca73
+commit dc896b282e4811172474aaec1ac56c9a74cef7a0
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 15:02:21 2019 +0100
+Date:   Tue Feb 5 18:23:35 2019 +0100
 
-    cleaned up TODOs
+    added TODO for noralizing IO Block placement to pad0 first
 
-commit 0c7526c335a16438453ba7a0d52ef8fa3c471daa
+commit d99e8308d77feeb298b4573a041bad347ebf2ce0
+Merge: 18f4b64 03fd43d
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Mon Jan 14 14:47:09 2019 +0100
+Date:   Tue Feb 5 18:20:49 2019 +0100
 
-    wiring cost and delta wiring cost kinda finished, needs to be checked by
-    Lord Vincenz
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
 
-commit db355a3b63e120b444ddd652e4dc2ecc740dd52d
-Merge: 99a1523 a15b6a0
+commit 03fd43d0d7fd97bf836aa1fdc4bb10c8c8b4ddc7
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Feb 5 18:20:17 2019 +0100
+
+    added placement for clock generating blocks after placer has finished its work
+
+commit 03c69fdc10b0438723bd6c91dd5251fd68ca271a
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Feb 5 17:51:41 2019 +0100
+
+    reworked initial IO Block placement in Placer
+
+commit 1d74ce8d806eadc66d0c2d6850a7c4d2bdff0fd3
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Tue Feb 5 17:14:52 2019 +0100
+
+    fixed exact wiring length bug resulting in lines of zeroes in output...
+
+commit 18f4b641942ef1df439c5d74f05d68f3c2772a3c
+Merge: a4a9a7e 71639ef
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Mon Jan 14 13:43:50 2019 +0100
+Date:   Tue Feb 5 16:42:17 2019 +0100
 
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
 
-commit 99a1523b58256dce7b7d14d1c3fe780d7f9b8aab
+commit a4a9a7e08d9287131332b5975af70f560676aa4d
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Mon Jan 14 13:43:37 2019 +0100
+Date:   Tue Feb 5 16:41:11 2019 +0100
 
-    few minor changes
+    further implemented routingFileWriter
 
-commit a15b6a03c1cbdff61c6c88aa739e3fb851cc6648
+commit 71639ef7fdc1243ec6415f7e5246490f07da9304
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 13:35:44 2019 +0100
+Date:   Tue Feb 5 16:40:32 2019 +0100
 
-    implemented PlacementWriter and AbstractWriter and staged new files for commit...
+    fixed designAnalyzer
 
-commit 2dc44e6f3d9598e2d9d323dc72051401e8d9b810
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 13:34:35 2019 +0100
-
-    implemented PlacementWriter and AbstractWriter
-
-commit 570ed2640acbca5aa26ed0aad4aa5328483fb2e0
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 14 01:52:19 2019 +0100
-
-    finished implementation of timing cost
-
-commit d2c66f0a6f09967af62695429ea24783a0652a83
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Sun Jan 13 22:10:57 2019 +0100
-
-    implemented timing analysis (ta and slack annotation)
-
-commit 2315faa04cb528614dffeff654931b3d3f88f173
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Sun Jan 13 18:00:59 2019 +0100
-
-    merged and fixed compilation errors
-
-commit 4b83a0b5725d332a7aada31cd8b9f9eb4c69c715
-Merge: aa2ff5d bc413ab
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Sun Jan 13 17:57:30 2019 +0100
-
-    merge
-    Merge branch 'task_2' of https://github.com/011000101101/ACE into task_2
-
-commit aa2ff5d8622d6b77c8dd9da17606572b95526464
-Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Sun Jan 13 17:57:24 2019 +0100
-
-    completed swapping methods
-
-commit bc413ab93af60b9ae638efea7e62e2c1d0e7f249
+commit 845e9f8325adc3dc0737397f960f69074c4d1611
+Merge: c34465a 6c2da17
 Author: Rumei <rumei.ma@gmail.com>
-Date:   Sun Jan 13 16:16:58 2019 +0100
+Date:   Tue Feb 5 15:36:30 2019 +0100
 
-    WiringCost started to implement
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
 
-commit b15732a6eac07f2d15b619b7a29cb438927137b6
+commit c34465a347cf596a7d72ef8d31dadfd4c8b38576
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Tue Feb 5 15:36:21 2019 +0100
+
+    minor changes
+
+commit 6c2da1759162c52eb5022b433f72011734e86702
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Sun Jan 13 13:41:49 2019 +0100
+Date:   Tue Feb 5 15:35:56 2019 +0100
 
-    changed placement structure and began with block swap implementation
+    edited currentRouting datastructure
 
-commit 294e7f80014cd9074f954bc434bf221c0756dbde
+commit 9d28f821b6733a8a3c0159b4a428e05909bed2ea
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Mon Jan 7 23:11:39 2019 +0100
+Date:   Tue Feb 5 15:24:55 2019 +0100
 
-    implemented logic of inner loop and changed cost computation structure
+    merged
 
-commit 2331cf8aef0e0321fdf12999cbe052273dd44545
+commit ffea533c8945359a031f9753470952bca8d266e5
+Merge: e57b49d d8e29c7
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Thu Jan 3 05:05:49 2019 +0100
+Date:   Tue Feb 5 15:18:23 2019 +0100
 
-    changed iOBlocks ańd logicBlocks from lists to Arays for efficient access
+    asdf
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
 
-commit ca89f6eafbec5c5a41e4b3f5e843ac7100dbe847
+commit d8e29c74915e99e5511be449c5c26215a8ebc8b7
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Tue Feb 5 15:18:07 2019 +0100
+
+    routingWriter not implementing AbstractWriter naymore
+
+commit e57b49dd1f1351e7b8d4ab59100d9310034d389b
 Author: Vincenz Mechler <vincenz.mechler@gmx.de>
-Date:   Thu Jan 3 03:35:27 2019 +0100
+Date:   Tue Feb 5 15:18:02 2019 +0100
 
-    begun implementation of Placer.java, implemented main method, algorithm control flow and initial placement generator methods
+    restructured routing to sink by adding sink pins to priority queue
+
+commit 7f3b2f2b984d9ea0bd4dd5aef18ffd62736f0252
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Tue Feb 5 13:37:54 2019 +0100
+
+    including outputWriter/RoutingWriter
+
+commit 6a75c79175843c2b84835cefa535133450a11ed6
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Mon Feb 4 20:41:47 2019 +0100
+
+    started implementing routingFileWriter. at least i tried
+
+commit 60943b55f8e379897b02e582056d39eb3d0036bb
+Merge: 045dcd5 eef5ec0
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Mon Feb 4 19:06:43 2019 +0100
+
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
+
+commit 045dcd5d26c849eeaf5fe2556227af783de263a3
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Mon Feb 4 19:06:26 2019 +0100
+
+    minor changes
+
+commit eef5ec057bd4cf86b96879a81cef8e7ab49d5e0a
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Feb 4 14:24:42 2019 +0100
+
+    implemented wire segment counting and output in designAnalyzer, discovered bug in critical path computation when routing file provided: many paths not evaluated at all
+
+commit 7ecc24c2510f524be8e7d76cc9e691021957f794
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Feb 4 02:06:25 2019 +0100
+
+    removed already processed TODOs and fixed ChannelWidth bug in computeCost method
+
+commit 78d1942bfa998f5d1655d717aa9f9078cad3acb8
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Feb 4 02:00:51 2019 +0100
+
+    finished implementation of everithing except main method
+
+commit 5aca2ab459d0d08b567f12e10f8316ce68459eea
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Mon Feb 4 01:11:11 2019 +0100
+
+    implemented missing methods
+
+commit b71efa4cf8cae02e237c525ea3e2fe5793055d5a
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Sun Feb 3 18:58:27 2019 +0100
+
+    added parsing into main method
+
+commit 38c5b23c0e119f77d4c0e575e2fc10cbcc56bb65
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Sun Feb 3 18:29:02 2019 +0100
+
+    added comment in main method
+
+commit 79586bd92e8d88a015bdbd3a960056e0dd1dda8b
+Merge: 1bac8d8 4f3d271
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Sun Feb 3 18:26:11 2019 +0100
+
+    ...
+
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
+
+commit 1bac8d826ca5883d51ad154dbf270f754130cab0
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Sun Feb 3 18:26:08 2019 +0100
+
+    begun implementation of getInputChannels
+
+commit 4f3d271829aaf3a4c6efd245a8a792fb91334efe
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Sun Feb 3 18:23:47 2019 +0100
+
+    moved computeCost to ChannelWithCost and added Method
+    updateHistoryCongestion
+
+commit 7210b83086f0c9a2e8e6fc4b476c27ff4a4bf7bb
+Merge: b665c81 acacb76
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Sun Feb 3 18:12:28 2019 +0100
+
+    Merge branch 'task_3' of https://github.com/011000101101/ACE into task_3
+
+commit b665c81bdef02a125a6e8d2bd8383580a6c09607
+Author: Rumei Ma <rumei.ma@gmail.com>
+Date:   Sun Feb 3 18:12:05 2019 +0100
+
+    changed description of compute cost
+
+commit acacb76425a7f0fb57a32d6f63670038de42647f
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Sun Feb 3 18:10:05 2019 +0100
+
+    added usedCounter and update function to ChannelWithCost...
+
+commit 191c9130fae581542d27c66f4f89c078bfe3f493
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Sun Feb 3 18:09:47 2019 +0100
+
+    added usedCounter and update function to ChannelWithCost
+
+commit 8964ff74a657d22501a50a256a948f8826e4b51d
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Sun Feb 3 17:55:54 2019 +0100
+
+    changed cost holding data structure to matrix of ChannelWithCost and implemented some mising methods
+
+commit a80512a9558adfa59da56d5bb509a047e99eb695
+Author: Rumei <rumei.ma@gmail.com>
+Date:   Thu Jan 31 20:41:55 2019 +0100
+
+    started implementing cost function
+
+commit 560880711c0ae87afff74f3900cb9869309568ea
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Thu Jan 31 11:27:44 2019 +0100
+
+    revised tree structure and added resource management infrastructure for Pins
+
+    implemented backtracking of found path
+
+commit 5e4e7475cc75c384ae48ac4261111016cdb4a865
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Thu Jan 31 00:33:49 2019 +0100
+
+    finished pseudocode translation and started implementation of datastructures
+
+commit 7084fd452f0c2ff77cc1448a029f14a5a001aa05
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Wed Jan 30 13:52:36 2019 +0100
+
+    created Router.java, inserted and reformatted pseudocode from slides and translated globalrouter method to java
+
+commit 525679e8687651e029a913f592cb83c0a56bbd85 (task_2)
+Author: Vincenz Mechler <vincenz.mechler@gmx.de>
+Date:   Wed Jan 30 13:19:53 2019 +0100
+
+    system.out.println and comments...
+

@@ -30,14 +30,13 @@ public class IOBlockPinCost extends BlockPinCost {
 	private boolean leftOrRight;
 	
 	/**
-	 * flag if it is (left or Top) IO block
+	 * flag if it is (left or top) IO block
 	 */
 	private boolean leftOrTop;
 	
-	private double inPinCost;
-	
-	private double outPinCost;
-	
+	/**
+	 * counter for how many times this IOBlockPin is used
+	 */
 	private int usedCounter= 0;
 	
 //	public double getInPinCost() {
@@ -50,10 +49,18 @@ public class IOBlockPinCost extends BlockPinCost {
 //		return 0;
 //	}
 	
+	/**
+	 * check if it is a (left or right) IO block
+	 * @return
+	 */
 	public boolean getLeftOrRight() {
 		return leftOrRight;
 	}
 	
+	/**
+	 * check if it is a (left or Top) IO block
+	 * @return
+	 */
 	public boolean getLeftOrTop() {
 		return leftOrTop;
 	}
@@ -68,12 +75,23 @@ public class IOBlockPinCost extends BlockPinCost {
 		usedCounter++;
 	}
 
+	/**
+	 * set used counter to one and also set used counter validity date
+	 * @param iterationCounter
+	 * @param globalIterationCounter
+	 */
 	public void setUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
 		usedCounter= 1;
 		usedCounterValidityDate= iterationCounter;
 		usedCounterValidityDate2= globalIterationCounter;
 	}
 	
+	/**
+	 * only returns IPin used counter if validity date is correct
+	 * @param iterationCounter
+	 * @param globalIterationCounter
+	 * @return
+	 */
 	public int getInPinUsedCounter(int iterationCounter, int globalIterationCounter) {
 		if(iterationCounter == usedCounterValidityDate && globalIterationCounter == usedCounterValidityDate2) return usedCounter;
 		else return 0;
