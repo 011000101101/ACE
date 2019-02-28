@@ -184,7 +184,7 @@ public class Router {
 			tmpUsedResources= new LinkedList<ResourceWithCost>();
 			tmpSinks= new LinkedList<SinkWithCost>();
 			//TODO
-			limit= 50;
+			limit= 45;
 			globalIterationCounter= 0;
 			finalRouting= new HashMap<Net, NodeOfResource>(structureManager.getNetCollection().size());
 			
@@ -196,7 +196,7 @@ public class Router {
 			
 			//TODO check if possible to start algorithm with real pFak of 1 instead of 0.5, would eliminate need to multiply every time
 			//pFak halved every time it is used to be able to use int and shifting, instead of double and multiplication
-			pFak= 1;
+//			pFak= 1;
 			
 			if(w == -1) {//-w not set
 				int upperBoundInitial= 16;
@@ -227,7 +227,7 @@ public class Router {
 					}
 					globalIterationCounter++;
 	
-					pFak= pFak<<1;
+//					pFak= pFak<<1;
 					
 					
 				}

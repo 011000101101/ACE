@@ -458,7 +458,7 @@ public class Net {
 	 * @param logicBlockSwap
 	 * @return
 	 */
-	public double update (NetlistBlock block1, NetlistBlock block2, int[] logicBlockSwap) {
+	public double update (NetlistBlock block1, NetlistBlock block2, int[] logicBlockSwap) { //TODO vorzeichenfehler bei deltaWiringCost!!11elf
 		if(!updated) {
 			
 			double deltaUix;
