@@ -527,13 +527,13 @@ public class Placer {
 //					System.out.println(logicBlockSwap[2]);
 					
 					newTimingCost= newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
-//					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
-//					newWiringCost= oldWiringCost + deltaWiringCost;
+					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap);//calculates delta wiring cost with hashmap and logicBlockSwap
+					newWiringCost= oldWiringCost + deltaWiringCost;
 					
 					deltaTimingCost = newTimingCost - oldTimingCost ; 
 					//System.out.println("delta timing cost: " + deltaTimingCost);
-					newWiringCost = totalWiringCost();
-					deltaWiringCost = newWiringCost - oldWiringCost;
+//					newWiringCost = totalWiringCost();
+//					deltaWiringCost = newWiringCost - oldWiringCost;
 //					System.out.println("!delta wiring cost: " + deltaWiringCost);
 					//System.out.println("total timing cost: " + newTimingCost);
 					deltaCost = lambda * (deltaTimingCost/oldTimingCost) + (1 - lambda) * (deltaWiringCost/oldWiringCost); 
@@ -584,14 +584,15 @@ public class Placer {
 					newTimingCost= newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					//
 					//deltaWiringCost = oldWiringCost - totalWiringCost(sBlocks);
-//					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap, sBlocks);//calculates delta wiring cost with hashmap and logicBlockSwap
-//					newWiringCost= oldWiringCost + deltaWiringCost;
+					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap);//calculates delta wiring cost with hashmap and logicBlockSwap
+
+					newWiringCost= oldWiringCost + deltaWiringCost;
 					//double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
 					deltaTimingCost = newTimingCost - oldTimingCost ; 
 					//
 					//System.out.println("delta timing cost: " + deltaTimingCost);
-					newWiringCost = totalWiringCost();
-					deltaWiringCost = newWiringCost - oldWiringCost;
+//					newWiringCost = totalWiringCost();
+//					deltaWiringCost = newWiringCost - oldWiringCost;
 //					System.out.println("!delta wiring cost: " + deltaWiringCost);
 					//System.out.println("total timing cost: " + newTimingCost);
 					//double deltaWiringCost = oldWiringCost - newWiringCost ; 

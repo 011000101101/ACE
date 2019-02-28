@@ -495,7 +495,7 @@ public class Net {
 //				System.out.println("wiringCostX " +wiringCostX);
 //				System.out.println("wiringCostY "+wiringCostY);
 				wiringCost = wiringCostX + wiringCostY;
-				deltaWiringCost+= (oldWiringCost - wiringCost);
+				deltaWiringCost+= (wiringCost - oldWiringCost);
 			}
 			
 			if(block2 instanceof NetlistBlock && (source.equals(block2) || sinks.containsKey(block2))) {
@@ -519,7 +519,7 @@ public class Net {
 				wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
 				oldWiringCost = wiringCost;
 				wiringCost = wiringCostX + wiringCostY;
-				deltaWiringCost+= (oldWiringCost - wiringCost);
+				deltaWiringCost+= (wiringCost - oldWiringCost);
 			}
 			
 			updated= true;
