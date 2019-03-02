@@ -4,6 +4,7 @@ import java.util.PriorityQueue;
 
 import router.structures.resourceWithCost.ChannelWithCost;
 import router.structures.resourceWithCost.ResourceWithCost;
+import router.structures.resourceWithCost.SinkWithCost;
 
 public class NodeOfResource {
 
@@ -61,14 +62,20 @@ public class NodeOfResource {
 		return tmp;
 	}
 
-	/*
 	public void addAllToPriorityQueue(PriorityQueue<ResourceWithCost> pQ) {
-		pQ.add(data);
-		sibling.addAllToPriorityQueue(pQ);
-		child.addAllToPriorityQueue(pQ);
+		if(data instanceof ChannelWithCost) {
+			data.setCostToZero();
+			pQ.add(data);
+		}
+		if(sibling != null) sibling.addAllToPriorityQueueButSkipThisNode(pQ); //sibling is always a duplicate of parent which has already been processed
+		if(child != null) child.addAllToPriorityQueue(pQ); //first child is never a duplicate
 	}
-	*/
 	
+	private void addAllToPriorityQueueButSkipThisNode(PriorityQueue<ResourceWithCost> pQ) {
+		if(sibling != null) sibling.addAllToPriorityQueueButSkipThisNode(pQ); //sibling is always a duplicate of parent which has already been processed
+		if(child != null) child.addAllToPriorityQueue(pQ); //first child is never a duplicate
+	}
+
 	public NodeOfResource getChild() {
 		return child;
 	}
@@ -120,5 +127,65 @@ public class NodeOfResource {
 		if(sibling != null) tmp.addSibling(sibling.clone());
 		if(child != null) tmp.addChild(child.clone());
 		return tmp;
+	}
+
+	/**
+	 * effectively unroute the net
+	 * recursively reduce the used counter of each ResourceWithCost contained in this tree exactly once (assumes correct structure for tree (branching point duplicates are repeated as sibling of first child of original))
+	 */
+	public void decUsedCounters() {
+		data.decUsedCounter();
+		if(child != null) child.decUsedCounters(); //first child is never a duplicate
+		if(sibling != null) sibling.decUsedCountersButSkipThisNode(); //sibling is always a duplicate of parent which has already been processed
+	}
+
+	/**
+	 * like decUsedCounters, but don't dec the counter of data, 
+	 * this method is only called on siblings
+	 */
+	private void decUsedCountersButSkipThisNode() {
+		//don't dec used counter of data
+		if(child != null) child.decUsedCounters(); //first child is never a duplicate
+		if(sibling != null) sibling.decUsedCountersButSkipThisNode(); //sibling is always a duplicate of parent which has already been processed
+	}
+
+	/**
+	 * recursively update hv of each ResourceWithCost contained in this tree exactly once (assumes correct structure for tree (branching point duplicates are repeated as sibling of first child of original))
+	 */
+	public void updateHistoryCongestions() {
+		data.updateHistoryCongestion();
+		if(child != null) child.updateHistoryCongestions(); //first child is never a duplicate
+		if(sibling != null) sibling.updateHistoryCongestionsButSkipThisNode(); //sibling is always a duplicate of parent which has already been processed
+	}
+
+	/**
+	 * like updateHistoryCongestions, but don't update hv of data, 
+	 * this method is only called on siblings
+	 */
+	private void updateHistoryCongestionsButSkipThisNode() {
+		//don't dec used counter of data
+		if(child != null) child.updateHistoryCongestions(); //first child is never a duplicate
+		if(sibling != null) sibling.updateHistoryCongestionsButSkipThisNode(); //sibling is always a duplicate of parent which has already been processed
+	}
+
+	/**
+	 * recursively checks for violations of resource limits
+	 * multiple execution on same instance of ResourceWithCost does no harm, and won't cause performance hit
+	 * may print information about violating resource for debugging
+	 * @return
+	 */
+	public boolean checkForResourceLimitViolations() {
+		boolean violated= false;
+		violated= data.getUsedCounter() > 1;
+		
+		//TODO remove / deactivate
+//		if(violated) {
+//			if(data instanceof ChannelWithCost) System.err.println("violating Channel: " + data.toString() + ", counter: " + data.getUsedCounter() + ", cost: " + data.getCost());
+//			else System.err.println("violating IPin: " + ((SinkWithCost) data).getSinkingBlock().toString() + ", counter: " + data.getUsedCounter());
+//		}
+		
+		if(child != null) if(child.checkForResourceLimitViolations()) violated= true;
+		if(sibling != null) if(sibling.checkForResourceLimitViolations()) violated= true;
+		return violated;
 	}
 }

@@ -103,6 +103,7 @@ public class DesignAnalyzer {
 			ErrorReporter.reportFileNotFoundError(e.toString());
 		} catch (Exception e) {
 			System.err.println("Execution aborted as a result of previously detected errors.");
+			e.printStackTrace();
 		}
 	}
 	

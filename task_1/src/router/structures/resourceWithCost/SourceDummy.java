@@ -42,17 +42,22 @@ public class SourceDummy extends ResourceWithCost {
 	}
 
 	@Override
-	public double computeCost(int pFak, int currentChannelWidth, int iterationCounter, int globalIterationCounter) {
+	public double computeCost(double pFak, int currentChannelWidth) {
 		return 0; //cost= 0
 	}
 
 	@Override
-	public void incUsedCounter(int iterationCounter, int globalIterationCounter) {
+	public void incUsedCounter() {
 		// nothing to do here
 	}
 
 	@Override
-	public int getUsedCounter(int iterationCounter, int globalIterationCounter) {
+	public void decUsedCounter() {
+		// nothing to do here
+	}
+
+	@Override
+	public int getUsedCounter() {
 		return -1; //no used counter
 	}
 
@@ -94,16 +99,16 @@ public class SourceDummy extends ResourceWithCost {
 		return source;
 	}
 
-	@Override
-	public void resetCounters() {
-		// nothing to do
-	}
+//	@Override
+//	public void resetCounters() {
+//		// nothing to do
+//	}
 
-	@Override
-	protected void setUsedCounterToOne(int iterationCounter, int globalIterationCounter) {
-		// nothing to do here...
-		
-	}
+//	@Override
+//	protected void setUsedCounterToOne() {
+//		// nothing to do here...
+//		
+//	}
 
 	@Override
 	public String toString() {

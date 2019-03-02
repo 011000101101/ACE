@@ -229,13 +229,13 @@ public class RoutingWriter{
 			SinkWithCost currentSink = (SinkWithCost)currentNode.getData();
 			duplicateLineCache = ("This should not be displayed");
 			outputFileWriter.write("IPIN (" + currentSink.getX() + "," + currentSink.getY() + ") ");
-			NetlistBlock currentBlock = currentSink.getSinkCost().getBlock();
+			NetlistBlock currentBlock = currentSink.getSinkingBlock();
 			if(currentBlock instanceof IOBlock) {
 				outputFileWriter.write("Pad: " + (currentBlock.getSubblk_1()? 1 : 0) + "\n");
 				outputFileWriter.write("SINK (" + currentSink.getX() + "," + currentSink.getY() + ") Pad: " + (currentBlock.getSubblk_1()? 1 : 0) +"\n");
 			}
 			else {
-				outputFileWriter.write("Pin: " + currentSink.getPinNum() + "\n");
+				outputFileWriter.write("Pin: " + currentSink.getPin() + "\n");
 				outputFileWriter.write("SINK (" + currentSink.getX() + "," + currentSink.getY() + ") Class: 0" + "\n");
 			}
 		}
