@@ -196,9 +196,9 @@ public class Router {
 				
 				
 				while(!globalRouter()) {
-					//T ODO reactivate once algorithm converges
+					//TODO better strategy for initial values
 					lowerBound= upperBound;
-					upperBound+= 8;
+					upperBound+= 4;
 					currentChannelWidth = upperBound;
 				}
 				
@@ -384,7 +384,6 @@ public class Router {
 			//update hv
 			for(NodeOfResource n : currentRouting.values()) {
 				n.updateHistoryCongestions();
-				//r.updateWith(pv) ; //TODO check
 			}
 			
 			//check for resource limit violations
