@@ -39,7 +39,7 @@ public class ChannelWithCost extends ResourceWithCost{
 	 * @return
 	 */
 	@Override
-	public double computeCost(double pFak, int currentChannelWidth) { //not - currentChannelWidth, but -1, because only one track, therefore + 1 - 1 = 0
+	public double computeCost(double pFak) { //not - currentChannelWidth, but -1, because only one track, therefore + 1 - 1 = 0
 		double pv = (double) 1 + /*(double) Math.max(0, */(double) (getUsedCounter() /* + 1 - currentChannelWidth */ ) * pFak /*)*/;
 		return hv * pv; //bv = 1
 	}
@@ -113,6 +113,27 @@ public class ChannelWithCost extends ResourceWithCost{
 	@Override
 	public String toString() {
 		return "Channel @ (" + x + "," + y + ") [" + ( horizontal ? "h" : "v" ) + "] (track " + trackNum + ")";
+	}
+
+
+	@Override
+	protected double computeCostDistEst(int sinkX, int sinkY) {
+		if(horizontal) {
+			if(y > sinkY) {
+				return Math.abs(sinkX - x) + y - sinkY + 1;
+			}
+			else {
+				return Math.abs(sinkX - x) + sinkY - y;
+			}
+		}
+		else {
+			if(x > sinkX) {
+				return x - sinkX + Math.abs(sinkY - y) + 1;
+			}
+			else {
+				return sinkX - x + Math.abs(sinkY - y);
+			}
+		}
 	}
 	
 }

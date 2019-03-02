@@ -462,10 +462,6 @@ public class Router {
 		
 		//initialize source: set cost of adjacent channels and add to pQ
 		ChannelWithCost[] outputChannels= getOutputChannels(source);
-		for(int j= 0; j < outputChannels.length; j++) {
-			outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(sourceDummy, pFak, currentChannelWidth); //initialize cost as first channel of path
-			pQ.add(outputChannels[j]); //add to priority queue
-		}
 		
 		ResourceWithCost currentChannel;
 		ChannelWithCost[] neighbouringChannels= new ChannelWithCost[6];
@@ -480,12 +476,12 @@ public class Router {
 //			System.out.println("routing path to sink: " + sink.getName() + "@ (" + sink.getX() + "," + sink.getY() + ")" + " in Net: " + currentNet.getName() + ", size of pQ: " + pQ.size());
 			
 			if(routingTreeRoot != null) {
-				routingTreeRoot.addAllToPriorityQueue(pQ);
+				routingTreeRoot.addAllToPriorityQueue(pQ, sink.getX(), sink.getY());
 			}
 			//reenter all not yet used output channels to pQ (only those which have not been added / recomputed with the command above...)
 			for(int j= 0; j < outputChannels.length; j++) {
 				if(outputChannels[j].getCost() < 0) {
-					outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(sourceDummy, pFak, currentChannelWidth); //initialize cost as first channel of path
+					outputChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(sourceDummy, pFak, sink.getX(), sink.getY()); //initialize cost as first channel of path
 					pQ.add(outputChannels[j]); //add to priority queue
 				}
 			}
@@ -514,7 +510,7 @@ public class Router {
 					if(neighbouringChannels[j] == null) break;
 					
 					if(neighbouringChannels[j].getCost() < 0) { //no valid values for cost and previous present
-						neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, currentChannelWidth);
+						neighbouringChannels[j].setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, sink.getX(), sink.getY());
 						pQ.add(neighbouringChannels[j]);
 					}
 					
@@ -529,7 +525,7 @@ public class Router {
 						
 						SinkWithCost tmp= sinkWithCostMaps[inputPin].get(sink);
 					
-						tmp.setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, currentChannelWidth);
+						tmp.setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, sink.getX(), sink.getY());
 	//					System.err.println("cost of IPin: " + tmp.getCost());
 						pQ.add(tmp);
 					}
@@ -540,7 +536,7 @@ public class Router {
 						
 						SinkWithCost tmp= sinkWithCostMaps[4].get(sink);
 					
-						tmp.setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, currentChannelWidth);
+						tmp.setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, sink.getX(), sink.getY());
 	//					System.err.println("cost of IPin: " + tmp.getCost());
 						pQ.add(tmp);
 					}

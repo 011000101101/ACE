@@ -42,7 +42,7 @@ public class SourceDummy extends ResourceWithCost {
 	}
 
 	@Override
-	public double computeCost(double pFak, int currentChannelWidth) {
+	public double computeCost(double pFak) {
 		return 0; //cost= 0
 	}
 
@@ -113,5 +113,11 @@ public class SourceDummy extends ResourceWithCost {
 	@Override
 	public String toString() {
 		return "values were: innerIterationCounter: [" + innerIterationCounter + "], iterationCounter: [" + iterationCounter + "], globalIterationCounter: [" + globalIterationCounter + "], currentChannelWidth: [" + currentChannelWidth + "]";
+	}
+
+	@Override
+	protected double computeCostDistEst(int sinkX, int sinkY) {
+		//do nothing
+		return -1;
 	}
 }

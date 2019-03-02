@@ -62,18 +62,18 @@ public class NodeOfResource {
 		return tmp;
 	}
 
-	public void addAllToPriorityQueue(PriorityQueue<ResourceWithCost> pQ) {
+	public void addAllToPriorityQueue(PriorityQueue<ResourceWithCost> pQ, int sinkX, int sinkY) {
 		if(data instanceof ChannelWithCost) {
-			data.setCostToZero();
+			data.setCostToZero(sinkX, sinkY);
 			pQ.add(data);
 		}
-		if(sibling != null) sibling.addAllToPriorityQueueButSkipThisNode(pQ); //sibling is always a duplicate of parent which has already been processed
-		if(child != null) child.addAllToPriorityQueue(pQ); //first child is never a duplicate
+		if(sibling != null) sibling.addAllToPriorityQueueButSkipThisNode(pQ, sinkX, sinkY); //sibling is always a duplicate of parent which has already been processed
+		if(child != null) child.addAllToPriorityQueue(pQ, sinkX, sinkY); //first child is never a duplicate
 	}
 	
-	private void addAllToPriorityQueueButSkipThisNode(PriorityQueue<ResourceWithCost> pQ) {
-		if(sibling != null) sibling.addAllToPriorityQueueButSkipThisNode(pQ); //sibling is always a duplicate of parent which has already been processed
-		if(child != null) child.addAllToPriorityQueue(pQ); //first child is never a duplicate
+	private void addAllToPriorityQueueButSkipThisNode(PriorityQueue<ResourceWithCost> pQ, int sinkX, int sinkY) {
+		if(sibling != null) sibling.addAllToPriorityQueueButSkipThisNode(pQ, sinkX, sinkY); //sibling is always a duplicate of parent which has already been processed
+		if(child != null) child.addAllToPriorityQueue(pQ, sinkX, sinkY); //first child is never a duplicate
 	}
 
 	public NodeOfResource getChild() {

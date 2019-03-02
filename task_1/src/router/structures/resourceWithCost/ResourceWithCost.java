@@ -8,7 +8,8 @@ import designAnalyzer.ParameterManager;
 
 public abstract class ResourceWithCost {
 
-	double cost;
+	double costSum;
+	double costDistEst;
 
 	protected double hv;
 	
@@ -17,7 +18,7 @@ public abstract class ResourceWithCost {
 	protected int usedCounter;
 	
 	public ResourceWithCost(ChannelWithCost newPrevious) {
-		cost= -1;
+		costSum= -1;
 		previous= newPrevious;
 		hv= 1;
 	}
@@ -39,10 +40,10 @@ public abstract class ResourceWithCost {
 	
 	public abstract int getY();
 	
-	public abstract double computeCost(double pFak, int currentChannelWidth);
+	public abstract double computeCost(double pFak);
 	
 	public double getCost() {
-		return cost;
+		return costSum + costDistEst;
 	}
 	
 	public ResourceWithCost getPrevious() {
@@ -80,19 +81,26 @@ public abstract class ResourceWithCost {
 	 * @param iterationCounter
 	 * @param globalIterationCounter
 	 */
-	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost newPrevious, double pFak, int currentChannelWidth) {
-		if(cost >= 0) {
+	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost newPrevious, double pFak, int sinkX, int sinkY) {
+		if(costSum >= 0) {
 //			System.out.println("cost: " + cost);
 			return;
 		}
 		else {
 			previous= newPrevious;
-			cost= previous.getCost() + computeCost(pFak, currentChannelWidth);
+			costSum= previous.getCostSum() + computeCost(pFak);
+			costDistEst= computeCostDistEst(sinkX, sinkY);
 //			System.out.println("cost: " + cost);
 		}
 	}
 	
 	
+	private double getCostSum() {
+		return costSum;
+	}
+
+	protected abstract double computeCostDistEst(int sinkX, int sinkY);
+
 	public abstract void addChannelToPriorityQueue(PriorityQueue<ResourceWithCost> pQ);
 	
 
@@ -114,14 +122,16 @@ public abstract class ResourceWithCost {
 	 * reset cost to -1 and invalidate 'previous' value
 	 */
 	public void resetCost() {
-		cost= -1;
+		costSum= -1;
+		costDistEst= -1;
 	}
 
 	/**
 	 * set cost to 0 (and revalidate old 'previous' value
 	 */
-	public void setCostToZero() {
-		cost= 0;
+	public void setCostToZero(int sinkX, int sinkY) {
+		costSum= 0;
+		costDistEst= computeCostDistEst(sinkX, sinkY);
 	}
 
 	/**
