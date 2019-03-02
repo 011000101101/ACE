@@ -198,7 +198,7 @@ public class Router {
 				while(!globalRouter()) {
 					//T ODO reactivate once algorithm converges
 					lowerBound= upperBound;
-					upperBound= 2 * upperBound;
+					upperBound+= 8;
 					currentChannelWidth = upperBound;
 				}
 				
