@@ -357,7 +357,7 @@ public class Net {
 	 * updates tR in all simplePaths the sinks of which are part of this net
 	 * @param newTR new value for tR
 	 */
-	public void updateTRAllSinks(int newTR) {
+	public void updateTRAllSinks(long newTR) {
 		for(SimplePath p : sinkingPaths) {
 			p.updateTR(newTR);
 		}

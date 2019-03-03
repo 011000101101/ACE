@@ -43,13 +43,13 @@ public class TimingAnalyzer {
 	 */
 	private int[][][] delayLUT;
 
-	private int[][] delayLUT_LL;
+	private long[][] delayLUT_LL;
 
-	private int[][] delayLUT_LIO;
+	private long[][] delayLUT_LIO;
 
-	private int[][] delayLUT_IOL;
+	private long[][] delayLUT_IOL;
 
-	private int[][] delayLUT_IOIO;
+	private long[][] delayLUT_IOIO;
 	
 	private static TimingAnalyzer singleton;
 	
@@ -93,11 +93,11 @@ public class TimingAnalyzer {
 	private void estimateTiming() {
 		
 		Net criticalNet= null;
-		int criticalPathLength= -1;
+		long criticalPathLength= -1;
 		
 		for(Net n : nets){
 			if(!n.getIsClocknNet()) { // ignore clock nets
-				int temp= estimateSingleNet(n);
+				long temp= estimateSingleNet(n);
 				if(temp > criticalPathLength){
 					criticalPathLength= temp;
 					criticalNet= n;
@@ -115,7 +115,7 @@ public class TimingAnalyzer {
 	 * @param criticalNet
 	 * @param criticalPathLength
 	 */
-	private void printEstimatedCriticalPath(Net criticalNet, int criticalPathLength) {
+	private void printEstimatedCriticalPath(Net criticalNet, long criticalPathLength) {
 
 		StringBuilder output= new StringBuilder();
 		
@@ -178,14 +178,14 @@ public class TimingAnalyzer {
 	 * @param currentNet the net to estimate the critical path length of
 	 * @return estimated length of the estimated critical path of the given net
 	 */
-	private int estimateSingleNet(Net currentNet) {
+	private long estimateSingleNet(Net currentNet) {
 		
 		NetlistBlock source= currentNet.getSource();
 		Collection<NetlistBlock> sinks= currentNet.getSinks();
-		int criticalPathLength= -1;
+		long criticalPathLength= -1;
 		
 		for(NetlistBlock b : sinks){
-			int temp= estimateSinglePath(source, b);
+			long temp= estimateSinglePath(source, b);
 			if(temp > criticalPathLength){
 				criticalPathLength= temp;
 				currentNet.setCriticalSink(b);
@@ -206,7 +206,7 @@ public class TimingAnalyzer {
 	 * <br>
 	 * @return estimated length of the path in the unit of time defined in the parameterManager
 	 */
-	private int estimateSinglePath(NetlistBlock source, NetlistBlock sink) {
+	private long estimateSinglePath(NetlistBlock source, NetlistBlock sink) {
 		
 		
 		
@@ -233,7 +233,7 @@ public class TimingAnalyzer {
 		return tIn + tOut + estimateSinglePathNoEndpoints(source.getX(), source.getY(), sink.getX(), sink.getY());
 	}
 	
-	public int estimateSinglePathNoEndpoints(int xSource, int ySource, int xSink, int ySink) {
+	public long estimateSinglePathNoEndpoints(int xSource, int ySource, int xSink, int ySink) {
 		
 		int horizontalChannelsUsed=-1;
 		int verticalChannelsUsed=-1;
@@ -453,8 +453,8 @@ public class TimingAnalyzer {
 			else return 3; //sink below source
 		}
 		else{ //sink left of source
-			if(ySource < ySink) return 1; //sink above source
-			else return 3; //sink below source
+			if(ySource < ySink) return 7; //sink above source
+			else return 5; //sink below source
 		}
 	}
 
@@ -650,12 +650,12 @@ public class TimingAnalyzer {
 	 * @param sink sink block of the path
 	 * @return the delay of the path, without the input and output delays
 	 */
-	public int lookUpSinglePathNoEndpoints(NetlistBlock source, NetlistBlock sink, int xSource, int ySource, int xSink, int ySink) {
+	public long lookUpSinglePathNoEndpoints(NetlistBlock source, NetlistBlock sink, int xSource, int ySource, int xSink, int ySink) {
 		int x_max= parameterManager.X_GRID_SIZE;
 		int y_max= parameterManager.Y_GRID_SIZE;
 		int deltaX= xSink - xSource;
 		int deltaY= ySink - ySource;
-		int delay;
+		long delay;
 		if(source instanceof IOBlock) {
 			if(sink instanceof IOBlock) {
 				delay= delayLUT_IOIO[deltaX + xMax][deltaY + yMax];
@@ -700,7 +700,7 @@ public class TimingAnalyzer {
 	public void initializeDelayLUT() {
 		int x_max= parameterManager.X_GRID_SIZE;
 		int y_max= parameterManager.Y_GRID_SIZE;
-		delayLUT_LL= new int[2*(x_max - 1) + 1][2*(y_max - 1) + 1];
+		delayLUT_LL= new long[2*(x_max - 1) + 1][2*(y_max - 1) + 1];
 		for(int i= -x_max + 1; i < x_max; i++) {
 			for(int j= -y_max + 1; j < y_max; j++) {
 				delayLUT_LL[i + x_max - 1][j + y_max - 1]= -1;
@@ -724,7 +724,7 @@ public class TimingAnalyzer {
 				*/
 			}
 		}
-		delayLUT_LIO= new int[2*(x_max) + 1][2*(y_max) + 1];
+		delayLUT_LIO= new long[2*(x_max) + 1][2*(y_max) + 1];
 		for(int i= -x_max; i <= x_max; i++) {
 			for(int j= -y_max; j <= y_max; j++) {
 				delayLUT_LIO[i + x_max][j + y_max]= -1;
@@ -748,13 +748,13 @@ public class TimingAnalyzer {
 				*/
 			}
 		}
-		delayLUT_IOL= new int[2*(x_max) + 1][2*(y_max) + 1];
+		delayLUT_IOL= new long[2*(x_max) + 1][2*(y_max) + 1];
 		for(int i= -x_max; i <= x_max; i++) {
 			for(int j= -y_max; j <= y_max; j++) {
 				delayLUT_IOL[i + x_max][j + y_max]= -1;
 			}
 		}
-		delayLUT_IOIO= new int[2*(xMax) + 1][2*(yMax) + 1];
+		delayLUT_IOIO= new long[2*(xMax) + 1][2*(yMax) + 1];
 		for(int i= -xMax; i <= xMax; i++) {
 			for(int j= -yMax; j <= yMax; j++) {
 				delayLUT_IOIO[i + xMax][j + yMax]= -1;

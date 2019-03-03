@@ -5,22 +5,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
 import designAnalyzer.ParameterManager;
-import designAnalyzer.consistencyChecker.ConsistencyChecker;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.ArchitectureParser;
 import designAnalyzer.inputParser.NetlistParser;
-import designAnalyzer.inputParser.PlacementParser;
-import designAnalyzer.inputParser.RoutingParser;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.SimplePath;
 import designAnalyzer.structures.StructureManager;
@@ -35,7 +29,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
 
@@ -123,6 +116,16 @@ public class Placer {
 	 * List of total costs after each step
 	 */
 	private static List<Double> outputTotalCost= new ArrayList<Double>();
+	
+	/**
+	 * List of wiring costs after each step
+	 */
+	private static List<Double> outputTotalWiringCost= new ArrayList<Double>();
+	
+	/**
+	 * List of timing costs after each step
+	 */
+	private static List<Double> outputTotalTimingCost= new ArrayList<Double>();
 
 	/**
 	 * List of acceptance rate after each step
@@ -138,12 +141,6 @@ public class Placer {
 	 * List of r Limit Logic Blocks after each step
 	 */
 	private static List<Double> outputRLimitLogicBlock= new ArrayList<Double>();
-	
-	/**
-	 * HashMap stores Ui and Vi values for each net
-	 * value contains five values: Ui x, Ui y, Vi x, Vi y, wiring cost for this net
-	 */
-	private static HashMap<String, double[]> netWithValues;
 	
 	/**
 	 * for wiring cost
@@ -421,7 +418,6 @@ public class Placer {
 	 */
 	private static void place(int stepCountFactor, double newLambda) {
 		
-		netWithValues = new HashMap<String, double[]>();
 		int stepCount= (int) Math.floor( stepCountFactor * Math.pow((double) blockCount, ( (double) 4 / (double) 3 ) ) );
 //		System.out.println("stepCountfac: "+ stepCountFactor);
 //		System.out.println("stepCountMultiplier: "+ Math.pow((double) blockCount, ( (double) 4 / (double) 3 ))) ;
@@ -503,9 +499,10 @@ public class Placer {
 //				}
 //			}
 			oldWiringCost = totalWiringCost();//returnVal;
-//			System.out.println("total wiring cost: " + oldWiringCost);
+			//TODO
+			System.out.println("total wiring cost: " + oldWiringCost);
 			oldTimingCost = TimingCost(critExp) ; 
-//			System.out.println("total timing cost: " + oldTimingCost);
+			System.out.println("total timing cost: " + oldTimingCost);
 //			System.out.println("ce: " + critExp);
 			for(int j = 0; j < stepCount; j++) {
 				
@@ -641,6 +638,8 @@ public class Placer {
 			//to track totalWiringCost, AcceptanceRate, RLimit and RLimitLogicBlock right after each step#
 			if(diagnoseDataFlag) {
 				outputTotalCost.add(cost);
+				outputTotalWiringCost.add(oldWiringCost);
+				outputTotalTimingCost.add(oldTimingCost);
 				outputAcceptanceRate.add(rA);
 				outputRLimit.add(rLimit);
 				outputRLimitLogicBlock.add(rLimitLogicBlocks);
@@ -817,6 +816,7 @@ public class Placer {
 				p.setUpdated(false); //reset flag
 			}
 		}
+		
 		return oldCost;
 	}
 
@@ -1047,9 +1047,9 @@ public class Placer {
 	 * compute delay (tA) and slack for all paths and annotate it
 	 */
 	private static void analyzeTiming() {
-		int dMax= -1;
+		long dMax= -1;
 		for(SimplePath p : paths) { 
-			int delay= p.computeDelay();
+			long delay= p.computeDelay();
 			if(delay > dMax) {
 				dMax= delay;
 			}
@@ -1243,6 +1243,7 @@ public class Placer {
 		for(LogicBlock b : logicBlocks) {
 			
 			placeSingleLogicBlock(b, numberOfSlotsLeft, output);
+			numberOfSlotsLeft--;
 //			System.out.println("set initial coordinates: placed " + "LogicBlock" + " [" + b.getName() + "] at (" + (biasX + (index / placingAreaSize)) + "," + (biasY + (index % placingAreaSize)) + ")" );
 		}
 		
@@ -1368,7 +1369,6 @@ public class Placer {
 		}
 		output[biasX + (index / placingAreaSize)][biasY + (index % placingAreaSize)][0]= b; 
 		b.setCoordinates(biasX + (index / placingAreaSize), biasY + (index % placingAreaSize));
-		numberOfSlotsLeft--;
 	}
 
 	private static void placeSingleIOBlock(IOBlock b, int numberOfSlotsLeft, NetlistBlock[][][] output) {
@@ -1520,24 +1520,32 @@ public class Placer {
 	 * plots total wiring cost, acceptance rate, rLimit and rLimit logic block
 	 */
 	private static void plotDiagnoseData() {
-		XYSeries totalWiringCostSerie = new XYSeries("Total Cost");	
+		XYSeries totalCostSerie = new XYSeries("Total Cost");	
+		XYSeries totalWiringCostSerie = new XYSeries("Total Wiring Cost");
+		XYSeries totalTimingCostSerie = new XYSeries("Total Timing Cost");
 		XYSeries acceptanceRateSerie = new XYSeries("Acceptance Rate");	
 		XYSeries rLimitSerie = new XYSeries("R Limit");	
 		XYSeries rLimitLogicBlocksSerie = new XYSeries("R Limit Logic Blocks");	 //TODO better fitting name
 		
 //		System.out.println("Number of data points: " + outputTotalCost.size());
 		for(int i = 0; i < outputAcceptanceRate.size()-1; i++) {
-			totalWiringCostSerie.add(i, outputTotalCost.get(i));
+			totalCostSerie.add(i, outputTotalCost.get(i));
+			totalWiringCostSerie.add(i, outputTotalWiringCost.get(i));
+			totalTimingCostSerie.add(i, outputTotalTimingCost.get(i));
 			acceptanceRateSerie.add(i, outputAcceptanceRate.get(i));
 			rLimitSerie.add(i, outputRLimit.get(i));
 			rLimitLogicBlocksSerie.add(i, outputRLimitLogicBlock.get(i));
 		}
+		XYSeriesCollection datasetC = new XYSeriesCollection();
 		XYSeriesCollection datasetWC = new XYSeriesCollection();
+		XYSeriesCollection datasetTC = new XYSeriesCollection();
 		XYSeriesCollection datasetAR = new XYSeriesCollection();
 		XYSeriesCollection datasetRL = new XYSeriesCollection();
 		XYSeriesCollection datasetRLL = new XYSeriesCollection();
 		
+		datasetC.addSeries(totalCostSerie);
 		datasetWC.addSeries(totalWiringCostSerie);
+		datasetTC.addSeries(totalTimingCostSerie);
 		datasetAR.addSeries(acceptanceRateSerie);
 		datasetRL.addSeries(rLimitSerie);
 		datasetRLL.addSeries(rLimitLogicBlocksSerie);
@@ -1549,42 +1557,58 @@ public class Placer {
 		
 		
 		NumberAxis xAchse = new NumberAxis("Steps");
-		NumberAxis yWiring = new NumberAxis("Segments");
-		NumberAxis yRL = new NumberAxis("Segments");
-		NumberAxis yRLL = new NumberAxis("Segments");
-		NumberAxis yAR = new NumberAxis("percent");
+		NumberAxis yCost = new NumberAxis("Cost");
+		NumberAxis yWiringCost = new NumberAxis("Segments");
+		NumberAxis yTimingCost = new NumberAxis("Weighted Sum of Delay over all Paths");
+		NumberAxis yRL = new NumberAxis("Distance (1-Norm");
+		NumberAxis yRLL = new NumberAxis("Distance (Infinity Norm)");
+		NumberAxis yAR = new NumberAxis("Percent");
 		
-		XYPlot plotWC = new XYPlot(datasetWC, xAchse, yWiring, spline);
+		XYPlot plotC = new XYPlot(datasetC, xAchse, yCost, spline);
+		XYPlot plotWC = new XYPlot(datasetWC, xAchse, yWiringCost, spline);
+		XYPlot plotTC = new XYPlot(datasetTC, xAchse, yTimingCost, spline);
 		XYPlot plotAR = new XYPlot(datasetAR, xAchse, yAR, line);
 		XYPlot plotRL = new XYPlot(datasetRL, xAchse, yRL, spline2);
 		XYPlot plotRLL = new XYPlot(datasetRLL, xAchse, yRLL, spline3);
 		
+		JFreeChart chartC = new JFreeChart(plotC);
 		JFreeChart chartWC = new JFreeChart(plotWC);
+		JFreeChart chartTC = new JFreeChart(plotTC);
 		JFreeChart chartAR = new JFreeChart(plotAR);
 		JFreeChart chartRL = new JFreeChart(plotRL);
 		JFreeChart chartRLL = new JFreeChart(plotRLL);
 		
-		ApplicationFrame frameWC = new ApplicationFrame("Total Cost");
+		ApplicationFrame frameC = new ApplicationFrame("Total Cost");
+		ApplicationFrame frameWC = new ApplicationFrame("Wiring Cost");
+		ApplicationFrame frameTC = new ApplicationFrame("Timing Cost");
 		ApplicationFrame frameAR = new ApplicationFrame("Acceptance rate");
 		ApplicationFrame frameRL = new ApplicationFrame("RLimit");
 		ApplicationFrame frameRLL = new ApplicationFrame("RLimit Logic Blocks");
 		
+		ChartPanel chartPanelC = new ChartPanel(chartC);
 		ChartPanel chartPanelWC = new ChartPanel(chartWC);
+		ChartPanel chartPanelTC = new ChartPanel(chartTC);
 		ChartPanel chartPanelAR = new ChartPanel(chartAR);
 		ChartPanel chartPanelRL = new ChartPanel(chartRL);
 		ChartPanel chartPanelRLL = new ChartPanel(chartRLL);
 	
+		frameC.setContentPane(chartPanelC);
 		frameWC.setContentPane(chartPanelWC);
+		frameTC.setContentPane(chartPanelTC);
 		frameAR.setContentPane(chartPanelAR);
 		frameRL.setContentPane(chartPanelRL);
 		frameRLL.setContentPane(chartPanelRLL);
 		
+		frameC.pack();
 		frameWC.pack();
+		frameTC.pack();
 		frameAR.pack();
 		frameRL.pack();
 		frameRLL.pack(); 
 		
+		frameC.setVisible(true);
 		frameWC.setVisible(true);
+		frameTC.setVisible(true);
 		frameAR.setVisible(true);
 		frameRL.setVisible(true);
 		frameRLL.setVisible(true);

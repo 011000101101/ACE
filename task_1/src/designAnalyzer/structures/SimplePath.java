@@ -16,9 +16,9 @@ public class SimplePath {
 	TimingAnalyzer timingAnalyzer;
 	ParameterManager parameterManager;
 	
-	private int delayExact; //tA always 0, as simplePath originated at an external input or the output of a flipflop
-	private int tR;
-	private int slack;
+	private long delayExact; //tA always 0, as simplePath originated at an external input or the output of a flipflop
+	private long tR;
+	private long slack;
 	private double criticality;
 	
 	/**
@@ -77,7 +77,7 @@ public class SimplePath {
 	 * update tR, if the new value is greater than the old one
 	 * @param newTR new tR value
 	 */
-	public void updateTR(int newTR) {
+	public void updateTR(long newTR) {
 		if(newTR > tR) {
 			tR= newTR;
 		}
@@ -87,7 +87,7 @@ public class SimplePath {
 	 * computes the slack of this path, executed after all simplePaths have executed their computeDelay() (and therefore tR and delay are known)
 	 * @param dMax 
 	 */
-	public void computeSlack(int dMax) {
+	public void computeSlack(long dMax) {
 		slack= tR - delayExact;
 		criticality= 1 - ((double) slack / (double) dMax);
 		tR= -1; //reset tR for next cycle
@@ -98,7 +98,7 @@ public class SimplePath {
 	 * estimates the delay of this simplePath by computing the minimum delay possible from source to sink through all intermediate combinatorial blocks
 	 * @return 
 	 */
-	public int computeDelay() {
+	public long computeDelay() {
 		
 		if(intermediate == null) { //only one net
 			delayExact= timingAnalyzer.estimateSinglePathNoEndpoints(source.getX(), source.getY(), sink.getX(), sink.getY());
@@ -135,7 +135,7 @@ public class SimplePath {
 	 * returns the slack of this simplePath
 	 * @return the slack of this simplePath
 	 */
-	public int getSlack() {
+	public long getSlack() {
 		return slack;
 	}
 
@@ -154,8 +154,8 @@ public class SimplePath {
 	 * looks up the new delay value for this path in the LUTs
 	 * @return
 	 */
-	private int lookUpDelay() {
-		int delayTemp= 0;
+	private long lookUpDelay() {
+		long delayTemp= 0;
 		if(intermediate == null) { //only one net
 			delayTemp= timingAnalyzer.lookUpSinglePathNoEndpoints(source, sink, source.getX(), source.getY(), sink.getX(), sink.getY());
 		}
@@ -208,7 +208,7 @@ public class SimplePath {
 	 * @return
 	 */
 	private double lookUpDelaySwap(int[] logicBlockSwap) {
-		int delayTemp= 0;
+		long delayTemp= 0;
 		if(intermediate == null) { //only one net
 			delayTemp= lookUpChanged(source, sink, logicBlockSwap);
 		}
@@ -246,7 +246,7 @@ public class SimplePath {
 	 * @param logicBlockSwap
 	 * @return
 	 */
-	private int lookUpChanged(NetlistBlock from, NetlistBlock to, int[] logicBlockSwap) {
+	private long lookUpChanged(NetlistBlock from, NetlistBlock to, int[] logicBlockSwap) {
 
 		if(unchanged) return timingAnalyzer.lookUpSinglePathNoEndpoints(from, to, from.getX(), from.getY(), to.getX(), to.getY());
 		if(from.getX() == logicBlockSwap[0] && from.getY() == logicBlockSwap[1] && (from instanceof LogicBlock || from.getSubblk_1() == (logicBlockSwap[2] == 1))) {

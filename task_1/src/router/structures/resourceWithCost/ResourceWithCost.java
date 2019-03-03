@@ -29,7 +29,7 @@ public abstract class ResourceWithCost {
 	 * @param globalIterationCounter
 	 */
 	public void updateHistoryCongestion() {
-		hv = hv + (double) Math.max(0, getUsedCounter() - 1) * 1.25;
+		hv = hv + (double) Math.max(0, getUsedCounter() - 1);
 	}
 	
 	protected double getHv() {
