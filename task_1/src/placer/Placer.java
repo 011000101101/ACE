@@ -1047,9 +1047,9 @@ public class Placer {
 	 * compute delay (tA) and slack for all paths and annotate it
 	 */
 	private static void analyzeTiming() {
-		long dMax= -1;
+		int dMax= -1;
 		for(SimplePath p : paths) { 
-			long delay= p.computeDelay();
+			int delay= p.computeDelay();
 			if(delay > dMax) {
 				dMax= delay;
 			}
