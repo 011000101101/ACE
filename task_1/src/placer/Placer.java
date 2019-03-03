@@ -3,8 +3,10 @@ package placer;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -26,6 +28,7 @@ import placer.outputWriter.PlacementWriter;
 import org.jfree.data.xy.*;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -257,7 +260,7 @@ public class Placer {
 		   
 			if(diagnoseDataFlag) {
 				//printDiagnoseData(placementFilePath);
-				plotDiagnoseData();
+				plotDiagnoseData(placementFilePath);
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -1519,10 +1522,10 @@ public class Placer {
 	/**
 	 * plots total wiring cost, acceptance rate, rLimit and rLimit logic block
 	 */
-	private static void plotDiagnoseData() {
+	private static void plotDiagnoseData(String placementFilePath) {
 		XYSeries totalCostSerie = new XYSeries("Total Cost");	
-		XYSeries totalWiringCostSerie = new XYSeries("Total Wiring Cost");
-		XYSeries totalTimingCostSerie = new XYSeries("Total Timing Cost");
+		XYSeries totalWiringCostSerie = new XYSeries("Wiring Cost");
+		XYSeries totalTimingCostSerie = new XYSeries("Timing Cost");
 		XYSeries acceptanceRateSerie = new XYSeries("Acceptance Rate");	
 		XYSeries rLimitSerie = new XYSeries("R Limit");	
 		XYSeries rLimitLogicBlocksSerie = new XYSeries("R Limit Logic Blocks");	 //TODO better fitting name
@@ -1560,7 +1563,7 @@ public class Placer {
 		NumberAxis yCost = new NumberAxis("Cost");
 		NumberAxis yWiringCost = new NumberAxis("Segments");
 		NumberAxis yTimingCost = new NumberAxis("Weighted Sum of Delay over all Paths");
-		NumberAxis yRL = new NumberAxis("Distance (1-Norm");
+		NumberAxis yRL = new NumberAxis("Distance (1-Norm)");
 		NumberAxis yRLL = new NumberAxis("Distance (Infinity Norm)");
 		NumberAxis yAR = new NumberAxis("Percent");
 		
@@ -1578,19 +1581,19 @@ public class Placer {
 		JFreeChart chartRL = new JFreeChart(plotRL);
 		JFreeChart chartRLL = new JFreeChart(plotRLL);
 		
-		ApplicationFrame frameC = new ApplicationFrame("Total Cost");
-		ApplicationFrame frameWC = new ApplicationFrame("Wiring Cost");
-		ApplicationFrame frameTC = new ApplicationFrame("Timing Cost");
-		ApplicationFrame frameAR = new ApplicationFrame("Acceptance rate");
-		ApplicationFrame frameRL = new ApplicationFrame("RLimit");
-		ApplicationFrame frameRLL = new ApplicationFrame("RLimit Logic Blocks");
-		
 		ChartPanel chartPanelC = new ChartPanel(chartC);
 		ChartPanel chartPanelWC = new ChartPanel(chartWC);
 		ChartPanel chartPanelTC = new ChartPanel(chartTC);
 		ChartPanel chartPanelAR = new ChartPanel(chartAR);
 		ChartPanel chartPanelRL = new ChartPanel(chartRL);
 		ChartPanel chartPanelRLL = new ChartPanel(chartRLL);
+		
+		ApplicationFrame frameC = new ApplicationFrame("Total Cost");
+		ApplicationFrame frameWC = new ApplicationFrame("Wiring Cost");
+		ApplicationFrame frameTC = new ApplicationFrame("Timing Cost");
+		ApplicationFrame frameAR = new ApplicationFrame("Acceptance rate");
+		ApplicationFrame frameRL = new ApplicationFrame("RLimit");
+		ApplicationFrame frameRLL = new ApplicationFrame("RLimit Logic Blocks");
 	
 		frameC.setContentPane(chartPanelC);
 		frameWC.setContentPane(chartPanelWC);
@@ -1605,6 +1608,47 @@ public class Placer {
 		frameAR.pack();
 		frameRL.pack();
 		frameRLL.pack(); 
+		
+		try {
+
+			String outputPathBase= placementFilePath.substring(0, placementFilePath.lastIndexOf('.')) + "_diagnose_data";
+			
+			new File(outputPathBase).mkdirs();
+			
+		    OutputStream frameCOut = new FileOutputStream(outputPathBase + "/Total_Cost.png");
+		    OutputStream frameWCOut = new FileOutputStream(outputPathBase + "/Wiring_Cost.png");
+			OutputStream frameTCOut = new FileOutputStream(outputPathBase + "/Timing_Cost.png");
+			OutputStream frameAROut = new FileOutputStream(outputPathBase + "/Acceptance_rate.png");
+			OutputStream frameRLOut = new FileOutputStream(outputPathBase + "/RLimit.png");
+			OutputStream frameRLLOut = new FileOutputStream(outputPathBase + "/RLimit_Logic_Blocks.png");
+		    ChartUtilities.writeChartAsPNG(frameCOut,
+		    		chartC,
+		    		chartPanelC.getWidth(),
+		    		chartPanelC.getHeight());
+		    ChartUtilities.writeChartAsPNG(frameWCOut,
+		    		chartWC,
+		    		chartPanelWC.getWidth(),
+		    		chartPanelWC.getHeight());
+		    ChartUtilities.writeChartAsPNG(frameTCOut,
+		    		chartTC,
+		    		chartPanelTC.getWidth(),
+		    		chartPanelTC.getHeight());
+		    ChartUtilities.writeChartAsPNG(frameAROut,
+		    		chartAR,
+		    		chartPanelAR.getWidth(),
+		    		chartPanelAR.getHeight());
+		    ChartUtilities.writeChartAsPNG(frameRLOut,
+		    		chartRL,
+		    		chartPanelRL.getWidth(),
+		    		chartPanelRL.getHeight());
+		    ChartUtilities.writeChartAsPNG(frameRLLOut,
+		    		chartRLL,
+		    		chartPanelRLL.getWidth(),
+		    		chartPanelRLL.getHeight());
+
+		} catch (IOException ex) {
+		    ex.printStackTrace();
+		}
 		
 		frameC.setVisible(true);
 		frameWC.setVisible(true);
