@@ -5,6 +5,7 @@ package designAnalyzer.structures.pathElements.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
+import designAnalyzer.abstractedTimingGraph.SinkTerminal;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.pins.IPin;
@@ -31,6 +32,8 @@ public class IOBlock extends NetlistBlock {
 	 * slack of connection to next node
 	 */
 	private int slackToNext;
+
+	private SinkTerminal sinkTerminal;
 	 
 	
 	public IOBlock(String newName, int newAssignedIdentifier) {
@@ -246,6 +249,15 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public int getSignalPassDelay() {
 		return -1;
+	}
+
+	@Override
+	public void addSinkTerminal(SinkTerminal newSinkTerminal) {
+		sinkTerminal= newSinkTerminal;
+	}
+	
+	public SinkTerminal getSinkTerminal() {
+		return sinkTerminal;
 	}
 	
 }

@@ -1,7 +1,5 @@
 package designAnalyzer.abstractedTimingGraph;
 
-import java.util.Map;
-
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class SinkTerminal extends AbstractTerminal {
@@ -80,11 +78,6 @@ public class SinkTerminal extends AbstractTerminal {
 	}
 
 	@Override
-	public void updateDelay(AbstractTerminal specificSuccessor) {
-		//do nothing
-	}
-
-	@Override
 	public double computeWeightedSumOfDelays(double temperature, double exponentiatedCriticalityOfSuccessor,
 			AbstractTerminal specificSuccessor) {
 //		double sum= 0;
@@ -103,6 +96,60 @@ public class SinkTerminal extends AbstractTerminal {
 	@Override
 	public void addPredecessor(AbstractTerminal newPredecessor) {
 		predecessor= newPredecessor;
+	}
+
+	@Override
+	public void rollback() {
+		predecessor.rollbackDelay();
+		xCoordBuffer= block.getX();
+		yCoordBuffer= block.getY();
+	}
+
+	@Override
+	public void rollbackDelay() {
+		//do nothing
+	}
+
+	@Override
+	public void confirmSwap() {
+		predecessor.confirmSwapDelay();
+	}
+
+	@Override
+	public void confirmSwapDelay() {
+		//do nothing
+	}
+
+	@Override
+	public double computeDeltaCost(int newX, int newY) {
+		xCoordBuffer= newX;
+		yCoordBuffer= newY;
+		double delta= -1 * predecessor.getWeightedCost(expCrit, this);
+		delta+= predecessor.updateDelayIncoming(expCrit, this, newX, newY);
+		return delta;
+	}
+
+	@Override
+	public double getWeightedCost(double expCrit, AbstractTerminal specificSuccessor) {
+		//do nothing
+		return -1;
+	}
+
+	@Override
+	protected double updateDelayOutgoing(double exponentiatedCriticalityOfSuccessor, AbstractTerminal specificSuccessor,
+			int newX, int newY) {
+		return -1;
+	}
+
+	@Override
+	public double updateDelayIncoming(double exponentiatedCriticalityOfSuccessor, AbstractTerminal specificSuccessor,
+			int newX, int newY) {
+		return -1;
+	}
+
+	@Override
+	public double getExpCrit(AbstractTerminal specificPredecessor) {
+		return expCrit;
 	}
 
 }

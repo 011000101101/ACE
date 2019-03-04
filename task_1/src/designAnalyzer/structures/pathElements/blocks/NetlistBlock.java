@@ -1,19 +1,11 @@
 package designAnalyzer.structures.pathElements.blocks;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import designAnalyzer.abstractedTimingGraph.SinkTerminal;
 import designAnalyzer.abstractedTimingGraph.SourceTerminal;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
-import designAnalyzer.structures.SimplePath;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
-import designAnalyzer.structures.pathElements.channels.ChannelX;
-import designAnalyzer.structures.pathElements.channels.ChannelY;
 import designAnalyzer.structures.pathElements.pins.IPin;
 import designAnalyzer.structures.pathElements.pins.OPin;
 
@@ -64,7 +56,7 @@ public abstract class NetlistBlock extends PathElement{
 	/**
 	 * list holding all connected paths
 	 */
-	private List<SimplePath> connectedPaths= new LinkedList<SimplePath>();
+//	private List<SimplePath> connectedPaths= new LinkedList<SimplePath>();
 
 	private SourceTerminal sourceTerminal; 
 	
@@ -198,29 +190,29 @@ public abstract class NetlistBlock extends PathElement{
 	/**
 	 * marks all connected paths as changed
 	 */
-	public void setChanged() {
-		
-		for(SimplePath p : connectedPaths) {
-			p.setChanged();
-		}
-		
-	}
+//	public void setChanged() {
+//		
+//		for(SimplePath p : connectedPaths) {
+//			p.setChanged();
+//		}
+//		
+//	}
 	
 	/**
 	 * adds a path to the list of connected paths
 	 * @param p the path to add
 	 */
-	public void addPath(SimplePath p) {
-		connectedPaths.add(p);
-	}
+//	public void addPath(SimplePath p) {
+//		connectedPaths.add(p);
+//	}
 	
 	/**
 	 * standard getter
 	 * @return
 	 */
-	public List<SimplePath> getConnectedPaths(){
-		return connectedPaths;
-	}
+//	public List<SimplePath> getConnectedPaths(){
+//		return connectedPaths;
+//	}
 
 	/**
 	 * returns an array of connected nets without clock net
@@ -251,6 +243,10 @@ public abstract class NetlistBlock extends PathElement{
 
 	public void setSourceTerminal(SourceTerminal newSourceTerminal) {
 		sourceTerminal= newSourceTerminal;
+	}
+	
+	public SourceTerminal getSourceTerminal() {
+		return sourceTerminal;
 	}
 
 	public abstract void addSinkTerminal(SinkTerminal newSinkTerminal);
