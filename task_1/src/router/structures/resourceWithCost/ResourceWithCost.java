@@ -4,8 +4,6 @@ package router.structures.resourceWithCost;
 
 import java.util.PriorityQueue;
 
-import designAnalyzer.ParameterManager;
-
 public abstract class ResourceWithCost {
 
 	double costSum;

@@ -1,6 +1,7 @@
 package designAnalyzer.abstractedTimingGraph;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
@@ -43,7 +44,7 @@ public class PassTerminal extends AbstractTerminal {
 				}
 			}
 		}
-		return tA + block.getSignalPassDelay();
+		return tA + block.getSignalPassDelay() + successors.get(specificSuccessor);
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class PassTerminal extends AbstractTerminal {
 								Math.pow(
 									(double) 1
 									- (
-											(double) (tR - t.getTAMinusDelay(this)) //slack
+											(double) (tR - t.getTAPlusDelay(this)) //slack
 											/ (double) dMax
 									),
 									critExp
@@ -76,8 +77,8 @@ public class PassTerminal extends AbstractTerminal {
 	}
 
 	@Override
-	public int getTAMinusDelay(AbstractTerminal specificSuccessor) {
-		return tA - successors.get(specificSuccessor);
+	public int getTAPlusDelay(AbstractTerminal specificSuccessor) {
+		return tA + successors.get(specificSuccessor);
 	}
 
 	@Override
@@ -99,6 +100,7 @@ public class PassTerminal extends AbstractTerminal {
 	@Override
 	public void addSuccessor(AbstractTerminal newSuccessor) {
 		successors.put(newSuccessor, TimingAnalyzer.getInstance().lookUpSinglePathNoEndpoints(block, newSuccessor.getBlock(), block.getX(), block.getY(), newSuccessor.getX(), newSuccessor.getY()));
+		successorsCache.put(newSuccessor, -1);
 	}
 
 	@Override
@@ -184,6 +186,38 @@ public class PassTerminal extends AbstractTerminal {
 	@Override
 	public double getExpCrit(AbstractTerminal specificPredecessor) {
 		return predecessors.get(specificPredecessor);
+	}
+
+	@Override
+	public List<AbstractTerminal> traceCriticalPath(AbstractTerminal specificSuccessor) {
+		List<AbstractTerminal> output= null;
+		AbstractTerminal criticalPred= null;
+		double criticality= 0;
+		for(AbstractTerminal t : predecessors.keySet()) {
+			if(predecessors.get(t) > criticality) {
+				criticality= predecessors.get(t);
+				criticalPred= t;
+			}
+		}
+		output= criticalPred.traceCriticalPath(this);
+		output.add(this);
+		return output;
+	}
+
+	@Override
+	public void generateOutput(StringBuilder output, AbstractTerminal specificSuccessor) {
+		output.append("CLB(comb)\t");
+		output.append(block.getName());
+		output.append("(");
+		output.append(block.getX());
+		output.append(",");
+		output.append(block.getY());
+		output.append(")");
+		output.append("\t");
+		output.append(successors.get(specificSuccessor));
+		output.append("\t");
+		output.append(tA);
+		output.append("\n");
 	}
 
 }

@@ -1,8 +1,6 @@
 package designAnalyzer.structures.pathElements.pins;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import designAnalyzer.structures.pathElements.PathElement;
@@ -104,7 +102,6 @@ public class OPin extends PathElement {
 	@Override
 	public void setCoordinates(int newXCoordinate, int newYCoordinate) {
 		
-		//TODO maybe check resource availability
 		xCoordinate= newXCoordinate;
 		yCoordinate= newYCoordinate;
 

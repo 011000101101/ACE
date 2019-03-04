@@ -2,6 +2,7 @@ package designAnalyzer.abstractedTimingGraph;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
@@ -28,6 +29,7 @@ public class AbstractedTimingGraph {
 		AbstractTerminal[] immediateSinkTerminals= new AbstractTerminal[n.getSinks().size()];
 		int j= 0;
 		
+		//process source
 		if( ! (n.getSource() instanceof LogicBlock && !((LogicBlock) n.getSource()).isClocked())) { //not a combinatorial logic block...
 			SourceTerminal tmp= createSourceTerminal(n.getSource());
 			sourceTerminals.add(tmp);
@@ -37,6 +39,7 @@ public class AbstractedTimingGraph {
 			immediateSourceTerminal= getPassTerminal((LogicBlock) n.getSource());
 		}
 		
+		//process all sinks
 		for(NetlistBlock b : n.getSinks()) {
 			if( ! (b instanceof LogicBlock && ! ((LogicBlock) b).isClocked() ) ) { //not a combinatorial logic block...
 				SinkTerminal tmp= createSinkTerminal(b);
@@ -86,6 +89,8 @@ public class AbstractedTimingGraph {
 			if(tmp > dMax) dMax= tmp;
 		}
 		
+		System.out.println("dMax: " + dMax);
+		
 		for(SourceTerminal t : sourceTerminals) { //annotate tR and slack (saved already converted into exponentiated criticality)
 			t.annotataTRAndSlack(critExp, dMax);
 		}
@@ -105,20 +110,27 @@ public class AbstractedTimingGraph {
 		delta+= computeDeltaCostForOneBlock(block1, block2XCoord, block2YCoord);
 		if(block2 != null) delta+= computeDeltaCostForOneBlock(block2, block1.getX(), block1.getY());
 		
+//		System.err.println("delta timing: " + delta);
+		
 		return delta;
 	}
 	
 	private double computeDeltaCostForOneBlock(NetlistBlock block, int newX, int newY) {
 		double delta= 0.0;
 		
-		if(block instanceof LogicBlock && ((LogicBlock) block).isClocked()) { //is combinatorial block
+		
+		if(block instanceof LogicBlock && !((LogicBlock) block).isClocked()) { //is combinatorial block
 			PassTerminal tmp0= ((LogicBlock) block).getPassTerminal();
-			if(tmp0 != null) delta+= tmp0.computeDeltaCost(newX, newY);
+			if(tmp0 != null) {
+				delta+= tmp0.computeDeltaCost(newX, newY);
+			}
 		}
 		else {
 			
 			SourceTerminal tmp= block.getSourceTerminal();
-			if(tmp != null) delta+= tmp.computeDeltaCost(newX, newY);
+			if(tmp != null) {
+				delta+= tmp.computeDeltaCost(newX, newY);
+			}
 			
 			if(block instanceof LogicBlock) {
 				SinkTerminal[] tmp1= ((LogicBlock) block).getSinkTerminals();
@@ -130,7 +142,9 @@ public class AbstractedTimingGraph {
 			
 			else {
 				SinkTerminal tmp2= ((IOBlock) block).getSinkTerminal();
-				if(tmp2 != null) delta+= tmp2.computeDeltaCost(newX, newY);
+				if(tmp2 != null) {
+					delta+= tmp2.computeDeltaCost(newX, newY);
+				}
 			}
 		}
 		
@@ -143,7 +157,7 @@ public class AbstractedTimingGraph {
 	}
 	
 	private void confirmSwap(NetlistBlock block) {
-		if(block instanceof LogicBlock && ((LogicBlock) block).isClocked()) { //is combinatorial block
+		if(block instanceof LogicBlock && !((LogicBlock) block).isClocked()) { //is combinatorial block
 			PassTerminal tmp0= ((LogicBlock) block).getPassTerminal();
 			if(tmp0 != null) tmp0.confirmSwap();
 		}
@@ -172,7 +186,7 @@ public class AbstractedTimingGraph {
 	}
 
 	private void rollback(NetlistBlock block) {
-		if(block instanceof LogicBlock && ((LogicBlock) block).isClocked()) { //is combinatorial block
+		if(block instanceof LogicBlock && !((LogicBlock) block).isClocked()) { //is combinatorial block
 			PassTerminal tmp0= ((LogicBlock) block).getPassTerminal();
 			if(tmp0 != null) tmp0.rollback();
 		}
@@ -192,6 +206,33 @@ public class AbstractedTimingGraph {
 				SinkTerminal tmp2= ((IOBlock) block).getSinkTerminal();
 				if(tmp2 != null) tmp2.rollback();
 			}
+		}
+	}
+
+	public List<AbstractTerminal> traceCriticalPath(AbstractTerminal criticalSink) {
+		
+		if(criticalSink != null) return criticalSink.traceCriticalPath(null);
+		else {
+			System.err.println("could not print critical path: no sink terminals present");
+			return null;
+		}
+	}
+
+	public AbstractTerminal getCriticalSink() {
+		SinkTerminal criticalSink= null;
+		int dMax= -1;
+		for(SinkTerminal t : sinkTerminals) {
+			if(t.getTAPlusDelay(null) > dMax) {
+				dMax= t.getTAPlusDelay(null);
+				criticalSink= t;
+			}
+		}
+		return criticalSink;
+	}
+	
+	public void annotateTAOnly() {
+		for(SinkTerminal t : sinkTerminals) { //annotate tA
+			t.annotataTA(null);
 		}
 	}
 	

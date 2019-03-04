@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import designAnalyzer.structures.pathElements.PathElement;
-import designAnalyzer.structures.pathElements.blocks.IOBlock;
-import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 
 /**
  * 
@@ -44,7 +42,7 @@ public abstract class AbstractChannel extends PathElement{
 	 * stores the location of the output node that lies on the critical path in the connection array connectedNodes
 	 * @see designAnalyzer.structures.pathElements.PathElement#connectedNodes
 	 */
-	private int criticalPathIndex;
+//	private int criticalPathIndex;
 
 	/**
 	 * previous node (in signal flow direction)

@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import designAnalyzer.ParameterManager;
+import designAnalyzer.abstractedTimingGraph.AbstractTerminal;
+import designAnalyzer.abstractedTimingGraph.AbstractedTimingGraph;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
@@ -39,18 +41,28 @@ public class TimingAnalyzer {
 	private int yMax;
 
 	/**
-	 * look up table for delay values indexed by block type, deltaX and deltaY
+	 * look up table for delay values from LogicBlock (signal source) to LogicBlock (signal sink), indexed by deltaX and deltaY
 	 */
-	private int[][][] delayLUT;
-
 	private int[][] delayLUT_LL;
 
+	/**
+	 * look up table for delay values from LogicBlock (signal source) to IOBlock (signal sink), indexed by deltaX and deltaY
+	 */
 	private int[][] delayLUT_LIO;
 
+	/**
+	 * look up table for delay values from IOBlock (signal source) to LogicBlock (signal sink), indexed by deltaX and deltaY
+	 */
 	private int[][] delayLUT_IOL;
 
+	/**
+	 * look up table for delay values from IOBlock (signal source) to IOBlock (signal sink), indexed by deltaX and deltaY
+	 */
 	private int[][] delayLUT_IOIO;
 	
+	/**
+	 * look up table for delay values from LogicBlock (signal source) to LogicBlock (signal sink), indexed by deltaX and deltaY
+	 */
 	private static TimingAnalyzer singleton;
 	
 	/**
@@ -95,154 +107,40 @@ public class TimingAnalyzer {
 			startAnalyzeTiming();
 		}
 		else{
-			estimateTiming();
+			betterEstimateTiming();
+//			estimateTiming();
 		}
 	}
 
-	/**
-	 * estimate the timing of the whole design and output results
-	 */
-	private void estimateTiming() {
+	private void betterEstimateTiming() {
 		
-		Net criticalNet= null;
-		int criticalPathLength= -1;
+		initializeDelayLUT();
 		
-		for(Net n : nets){
-			if(!n.getIsClocknNet()) { // ignore clock nets
-				int temp= estimateSingleNet(n);
-				if(temp > criticalPathLength){
-					criticalPathLength= temp;
-					criticalNet= n;
-				}
-			}
-		}
+		AbstractedTimingGraph timingGraph= new AbstractedTimingGraph(structureManager.getNetCollection());
 		
-		printEstimatedCriticalPath(criticalNet, criticalPathLength);
-		
-	}
-
-	
-	/**
-	 * prints the estimated critical path by printing source and sink
-	 * @param criticalNet
-	 * @param criticalPathLength
-	 */
-	private void printEstimatedCriticalPath(Net criticalNet, int criticalPathLength) {
-
 		StringBuilder output= new StringBuilder();
-		
 		output.append("estimated critical path: \n \n");
-		
 		addTimingHeader(output);
 		
-		NetlistBlock source= criticalNet.getSource();
-		NetlistBlock sink= criticalNet.getCriticalSink();
+		timingGraph.annotateTAOnly(); //restore tA values which were reset during tR annotation ->Design Analyzer is not performance critical, in contrast to Placer
 		
-		//print source
-		output.append((source instanceof IOBlock) ? "I_BLOCK" : "CLB(seq)");
-		output.append("\t");
-		output.append(source.getName());
-		output.append("\t");
-		output.append("(");
-		output.append(source.getX());
-		output.append(",");
-		output.append(source.getY());
-		output.append(")");
-		if(source instanceof IOBlock) {
-			output.append(source.getSubblk_1() ? 1 : 0);
+		AbstractTerminal criticalSink= timingGraph.getCriticalSink(); //critical sink only findable with tA values...
+		
+		timingGraph.analyzeTiming(1, -1); //if critExp= 1, then ((1 - (slack / dMax)) ^ critExp) == 1 <=> slack == 0
+		
+		List<AbstractTerminal> criticalPath= timingGraph.traceCriticalPath(criticalSink); //tracing only possible with tR values...
+		
+		timingGraph.annotateTAOnly(); //restore tA values which were reset during tR annotation ->Design Analyzer is not performance critical, in contrast to Placer
+		
+		for(int j= 0; j < criticalPath.size() - 1; j++) { //printing need tA values again...
+			criticalPath.get(j).generateOutput(output, criticalPath.get(j + 1));
 		}
-		output.append("\t");
-		output.append("\t");
-		output.append(0);
+		criticalPath.get(criticalPath.size() - 1).generateOutput(output, null);
 		
-
-		output.append("\n"); //new line
-		
-		//print sink
-		output.append((sink instanceof IOBlock) ? "O_BLOCK" : "CLB(seq)");
-		output.append("\t");
-		output.append(sink.getName());
-		output.append("\t");
-		output.append("(");
-		output.append(sink.getX());
-		output.append(",");
-		output.append(sink.getY());
-		output.append(")");
-		if(sink instanceof IOBlock) {
-			output.append(sink.getSubblk_1() ? 1 : 0);
-		}
-		output.append("\t");
-		output.append("\t");
-		output.append(criticalPathLength);
-
-		output.append("\n"); //new line
-		
+		output.append("\n('Delay' is delay from current to next Terminal, add final Delay and tA to get dMax)\n");
 		
 		printToFile(output, true);
 		System.out.println(output.toString());
-		
-	}
-
-
-	/**
-	 * determines the estimated length of the estimated critical path of a net<br>
-	 * and annotates the sink causing the critical path back into the processed net
-	 * @param currentNet the net to estimate the critical path length of
-	 * @return estimated length of the estimated critical path of the given net
-	 */
-	private int estimateSingleNet(Net currentNet) {
-		
-		NetlistBlock source= currentNet.getSource();
-		Collection<NetlistBlock> sinks= currentNet.getSinks();
-		int criticalPathLength= -1;
-		
-		for(NetlistBlock b : sinks){
-			int temp= estimateSinglePath(source, b);
-			if(temp > criticalPathLength){
-				criticalPathLength= temp;
-				currentNet.setCriticalSink(b);
-			}
-		}
-		
-		return criticalPathLength;
-		
-	}
-
-	/**
-	 * estimates the delay between one source and one sink by computing the shortest possible path and its delays without regard to resource usage by other paths or nets
-	 * @param source source node of the path, <br>
-	 * either an IOBlock or a logicBlock<br>
-	 * <br>
-	 * @param sink sink node of the path, <br>
-	 * either an IOBlock or a logicBlock<br>
-	 * <br>
-	 * @return estimated length of the path in the unit of time defined in the parameterManager
-	 */
-	private int estimateSinglePath(NetlistBlock source, NetlistBlock sink) {
-		
-		
-		
-		/**
-		 * delay from channel into sink
-		 */
-		int tIn= parameterManager.T_FFIN ;
-		
-		/**
-		 * delay from source to channel
-		 */
-		int tOut= parameterManager.T_FFOUT ;
-		
-		if(source instanceof IOBlock){
-			tOut= parameterManager.T_IPAD ;
-		}
-
-		if(sink instanceof IOBlock){
-			tIn= parameterManager.T_OPAD ;
-		}
-		
-		
-		
-		return tIn + tOut + estimateSinglePathNoEndpoints(source.getX(), source.getY(), sink.getX(), sink.getY());
 	}
 	
 	public int estimateSinglePathNoEndpoints(int xSource, int ySource, int xSink, int ySink) {

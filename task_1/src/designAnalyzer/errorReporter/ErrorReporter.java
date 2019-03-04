@@ -1,12 +1,7 @@
 package designAnalyzer.errorReporter;
 
 import designAnalyzer.inputParser.AbstractInputParser;
-import designAnalyzer.inputParser.ArchitectureParser;
-import designAnalyzer.inputParser.NetlistParser;
-import designAnalyzer.inputParser.PlacementParser;
-import designAnalyzer.inputParser.RoutingParser;
 import designAnalyzer.structures.Net;
-import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 

@@ -1,13 +1,9 @@
 package designAnalyzer.structures.pathElements.pins;
 
 import designAnalyzer.structures.pathElements.PathElement;
-import designAnalyzer.structures.pathElements.blocks.IOBlock;
-import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
-import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 import designAnalyzer.structures.pathElements.channels.ChannelX;
 import designAnalyzer.structures.pathElements.channels.ChannelY;
-import designAnalyzer.structures.pathElements.channels.AbstractChannel;
 
 /**
  * 
@@ -34,6 +30,7 @@ public class IPin extends PathElement{
 	/**
 	 * slack of connection to next node
 	 */
+	@SuppressWarnings("unused")
 	private int slackToNext;
 
 	@Override
@@ -127,7 +124,6 @@ public class IPin extends PathElement{
 	@Override
 	public void setCoordinates(int newXCoordinate, int newYCoordinate) {
 
-		//TODO maybe check resource availability
 		xCoordinate= newXCoordinate;
 		yCoordinate= newYCoordinate;
 		

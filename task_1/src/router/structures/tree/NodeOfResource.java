@@ -4,7 +4,6 @@ import java.util.PriorityQueue;
 
 import router.structures.resourceWithCost.ChannelWithCost;
 import router.structures.resourceWithCost.ResourceWithCost;
-import router.structures.resourceWithCost.SinkWithCost;
 
 public class NodeOfResource {
 

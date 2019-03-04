@@ -1,14 +1,12 @@
 package designAnalyzer.consistencyChecker;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
-import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.pins.IPin;
 

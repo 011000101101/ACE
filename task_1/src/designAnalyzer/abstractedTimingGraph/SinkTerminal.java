@@ -1,5 +1,8 @@
 package designAnalyzer.abstractedTimingGraph;
 
+import java.util.List;
+
+import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class SinkTerminal extends AbstractTerminal {
@@ -61,7 +64,7 @@ public class SinkTerminal extends AbstractTerminal {
 					Math.pow(
 							(double) 1
 							- (
-									(double) (tR - predecessor.getTAMinusDelay(this)) //slack
+									(double) (tR - predecessor.getTAPlusDelay(this)) //slack
 											/ (double) dMax
 									),
 									critExp
@@ -73,8 +76,8 @@ public class SinkTerminal extends AbstractTerminal {
 	}
 
 	@Override
-	public int getTAMinusDelay(AbstractTerminal specificSuccessor) {
-		return -1;
+	public int getTAPlusDelay(AbstractTerminal specificSuccessor) {
+		return tA + block.getSignalExitDelay();
 	}
 
 	@Override
@@ -150,6 +153,33 @@ public class SinkTerminal extends AbstractTerminal {
 	@Override
 	public double getExpCrit(AbstractTerminal specificPredecessor) {
 		return expCrit;
+	}
+
+	@Override
+	public List<AbstractTerminal> traceCriticalPath(AbstractTerminal specificSuccessor) {
+		List<AbstractTerminal> output= predecessor.traceCriticalPath(this);
+		output.add(this);
+		return output;
+	}
+
+	@Override
+	public void generateOutput(StringBuilder output, AbstractTerminal specificSuccessor) {
+		output.append(
+				(block instanceof IOBlock) ? "O_Block\t" : "CLB(seq)\t"
+		);
+		output.append(block.getName());
+		output.append("(");
+		output.append(block.getX());
+		output.append(",");
+		output.append(block.getY());
+		output.append(")");
+		output.append(
+				(block instanceof IOBlock) ? (((IOBlock) block).getSubblk_1() ? "1\t" : "0\t" ) : "\t"
+		);
+		output.append(block.getSignalExitDelay());
+		output.append("\t");
+		output.append(tA);
+		output.append("\n");
 	}
 
 }

@@ -3,13 +3,10 @@ package designAnalyzer.structures.pathElements.blocks;
 
 
 import java.util.ArrayList;
-import java.util.List;
-
 import designAnalyzer.abstractedTimingGraph.SinkTerminal;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.pins.IPin;
-import designAnalyzer.structures.pathElements.pins.OPin;
 
 /**
  * 
@@ -31,6 +28,7 @@ public class IOBlock extends NetlistBlock {
 	/**
 	 * slack of connection to next node
 	 */
+	@SuppressWarnings("unused")
 	private int slackToNext;
 
 	private SinkTerminal sinkTerminal;

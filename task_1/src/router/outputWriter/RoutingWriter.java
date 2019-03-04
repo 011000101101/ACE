@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -12,13 +11,10 @@ import java.util.Map;
 import designAnalyzer.ParameterManager;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.StructureManager;
-import designAnalyzer.structures.pathElements.PathElement;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
-import designAnalyzer.structures.pathElements.pins.OPin;
 import router.structures.resourceWithCost.ChannelWithCost;
-import router.structures.resourceWithCost.ResourceWithCost;
 import router.structures.resourceWithCost.SinkWithCost;
 import router.structures.resourceWithCost.SourceDummy;
 import router.structures.tree.NodeOfResource;
@@ -41,12 +37,6 @@ public class RoutingWriter{
 	private BufferedWriter outputFileWriter;
 	
 	/**
-	 * object managing all datastructure instances <br>
-	 * -handling insertion, retrieval and others
-	 */
-	private StructureManager structureManager;
-	
-	/**
 	 * object managing all structural parameters 
 	 */
 	private ParameterManager parameterManager;
@@ -58,7 +48,7 @@ public class RoutingWriter{
 	
 	public RoutingWriter() {
 		parameterManager= ParameterManager.getInstance();
-		structureManager= StructureManager.getInstance();
+		StructureManager.getInstance();
 	}
 	
 	/**

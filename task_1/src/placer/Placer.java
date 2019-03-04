@@ -63,7 +63,6 @@ public class Placer {
 	 * reference to instance of timing analyzer
 	 */
 	private static TimingAnalyzer timingAnalyzer;
-	//public static int[] parameterInitialized;
 	
 	/**
 	 * object managing all datastructure instances <br>
@@ -504,11 +503,10 @@ public class Placer {
 //					returnVal += currentNet.getWiringCost();
 //				}
 //			}
-			oldWiringCost = totalWiringCost();//returnVal;
-			//TODO
-			System.out.println("total wiring cost: " + oldWiringCost);
+			//oldWiringCost = totalWiringCost();//returnVal; //TODO check if can be omitted
+			System.out.println("\ntotal wiring cost: " + oldWiringCost);
 			oldTimingCost = timingGraph.analyzeTiming(critExp, temp);//TimingCost(critExp) ; 
-			System.out.println("total timing cost: " + oldTimingCost);
+			System.out.println("total timing cost: " + oldTimingCost + "\n");
 //			System.out.println("ce: " + critExp);
 			for(int j = 0; j < stepCount; j++) {
 				
@@ -529,11 +527,11 @@ public class Placer {
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					newTimingCost= timingGraph.computeDeltaCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]], logicBlockSwap[3], logicBlockSwap[4]);//newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					deltaTimingCost= timingGraph.computeDeltaCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]], logicBlockSwap[3], logicBlockSwap[4]);//newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap);//calculates delta wiring cost with hashmap and logicBlockSwap
 					newWiringCost= oldWiringCost + deltaWiringCost;
 					
-					deltaTimingCost = newTimingCost - oldTimingCost ; 
+					newTimingCost= oldTimingCost + deltaTimingCost ; 
 					//System.out.println("delta timing cost: " + deltaTimingCost);
 //					newWiringCost = totalWiringCost();
 //					deltaWiringCost = newWiringCost - oldWiringCost;
@@ -544,6 +542,7 @@ public class Placer {
 					
 					if (deltaCost <= 0) { 
 						//System.out.println("swapped io block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
+						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						applySwap(logicBlockSwap);
 						
 						oldTimingCost= newTimingCost; //update buffer
@@ -553,10 +552,10 @@ public class Placer {
 					}
 					else if(swapAnywaysFactor < (Math.exp((-1 * deltaCost / temp)))) { 
 						//System.out.println("swapped io block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
+						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
-						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						acceptedTurns++;
 						cost += deltaCost;
 					}
@@ -586,14 +585,14 @@ public class Placer {
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					newTimingCost= timingGraph.computeDeltaCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]], logicBlockSwap[3], logicBlockSwap[4]);//newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					deltaTimingCost= timingGraph.computeDeltaCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]], logicBlockSwap[3], logicBlockSwap[4]);//newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					//
 					//deltaWiringCost = oldWiringCost - totalWiringCost(sBlocks);
 					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap);//calculates delta wiring cost with hashmap and logicBlockSwap
 
 					newWiringCost= oldWiringCost + deltaWiringCost;
 					//double newWiringCost= newWiringCostSwap(sBlocks, logicBlockSwap);
-					deltaTimingCost = newTimingCost - oldTimingCost ; 
+					newTimingCost= oldTimingCost + deltaTimingCost; 
 					//
 					//System.out.println("delta timing cost: " + deltaTimingCost);
 //					newWiringCost = totalWiringCost();
@@ -605,6 +604,7 @@ public class Placer {
 					//System.out.println("delta abs cost: " + deltaCost);
 					if (deltaCost <= 0) { 
 //						System.out.println("swapped logic block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
+						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
@@ -615,10 +615,10 @@ public class Placer {
 //						System.out.println("deltaCost" + deltaCost);
 //						System.out.println("(Math.exp((-1 * deltaCost / temp))): " + (Math.exp((-1 * deltaCost / temp))));
 //						System.out.println("swapped logic block " + sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getName() + " at (" + logicBlockSwap[0] + "," + logicBlockSwap[1] + ") to ("  + logicBlockSwap[3] + "," + logicBlockSwap[4] + ")");
+						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
-						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						acceptedTurns++;
 						cost += deltaCost;
 					}
@@ -1172,7 +1172,6 @@ public class Placer {
 		System.out.println("computing initial temperature...");
 		double n= blockCount;
 		double cQuer= 0;
-		int sumCSquare= 0;
 		cost= 1;
 		double[] cI= new double[(int) n];
 		for(int i= 0; i < (int) n; i++) {
@@ -1219,22 +1218,25 @@ public class Placer {
 		}
 		
 		//System.out.println("compute new cost...");
-		double newTimingCost= timingGraph.computeDeltaCost(sBlocks[blockSwap[0]][blockSwap[1]][blockSwap[2]], sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]], blockSwap[3], blockSwap[4]);//newTimingCostSwapBetter(critExp, blockSwap, oldTimingCost); //only recompute changed values
+		double olderTimingCost= oldTimingCost;
+		oldTimingCost= oldTimingCost + timingGraph.computeDeltaCost(sBlocks[blockSwap[0]][blockSwap[1]][blockSwap[2]], sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]], blockSwap[3], blockSwap[4]);//newTimingCostSwapBetter(critExp, blockSwap, oldTimingCost); //only recompute changed values
 		//System.out.println("new timing cost: " + newTimingCost);
 		//System.out.println("delta wiring cost: " + calcDeltaTotalWiringCost(blockSwap, sBlocks));
-		double newWiringCost= totalWiringCost(); //oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO 
+		double olderWiringCost= oldWiringCost;
+		oldWiringCost= oldWiringCost + calcDeltaTotalWiringCost(blockSwap);//newWiringCostSwap(sBlocks, blockSwap);
 //		System.out.println("new wiring cost: " + newWiringCost);
 		//System.out.println("new cost computed.");
 		
 		//System.out.println(blockSwap[0] + "," + blockSwap[1] + "," +blockSwap[2] + "-" + blockSwap[3] + "," + blockSwap[4] + "," +blockSwap[5]);
 		//System.out.println("deltaWCOST " +calcDeltaTotalWiringCost(blockSwap, sBlocks));
+		timingGraph.confirmSwap(sBlocks[blockSwap[0]][blockSwap[1]][blockSwap[2]], sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]]);
 		applySwap(blockSwap);
 
 //		System.out.println("oldWCOST: "+ oldWiringCost);
 //		System.out.println("timingCOST: "+ newTimingCost);
 //		System.out.println("wiringCOST: "+ newWiringCost);
 //		System.out.println("totalCOST: "+ (lambda * (newTimingCost - oldTimingCost) / oldTimingCost + (1 - lambda) * (newWiringCost - oldWiringCost) / oldWiringCost));
-		return lambda * (newTimingCost - oldTimingCost) / oldTimingCost + (1 - lambda) * (newWiringCost - oldWiringCost) / oldWiringCost;  
+		return lambda * (oldTimingCost - olderTimingCost) / olderTimingCost + (1 - lambda) * (oldWiringCost - olderWiringCost) / olderWiringCost;  
 		
 	}
 
@@ -1458,74 +1460,6 @@ public class Placer {
 		}
 	}
 
-
-	/**
-	 * prints total wiring cost, acceptance rate, rLimit and rLimit logic block into files (as lines of 'x,y' pairs where x = datapoint, y= value
-	 * @param placementFilePath 
-	 */
-	private static void printDiagnoseData(String newFilePath) {
-		String filePath= newFilePath + ".costData";
-		File outputFile= new File(filePath);
-		try {
-			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
-			
-			for(int i = 0; i < outputTotalCost.size()-1; i++) {
-				writer.write(i + "," + outputTotalCost.get(i) + "\n");
-			}
-			
-			writer.close();
-		} catch (IOException e) {
-			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
-			e.printStackTrace();
-		}
-		
-		filePath= newFilePath + ".rAData";
-		outputFile= new File(filePath);
-		try {
-			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
-			
-			for(int i = 0; i < outputAcceptanceRate.size()-1; i++) {
-				writer.write(i + "," + outputAcceptanceRate.get(i) + "\n");
-			}
-			
-			writer.close();
-		} catch (IOException e) {
-			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
-			e.printStackTrace();
-		}
-		
-		filePath= newFilePath + ".rLimitData";
-		outputFile= new File(filePath);
-		try {
-			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
-			
-			for(int i = 0; i < outputRLimit.size()-1; i++) {
-				writer.write(i + "," + outputRLimit.get(i) + "\n");
-			}
-			
-			writer.close();
-		} catch (IOException e) {
-			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
-			e.printStackTrace();
-		}
-		
-		filePath= newFilePath + ".rLimitLBData";
-		outputFile= new File(filePath);
-		try {
-			BufferedWriter writer= new BufferedWriter(new FileWriter(outputFile));
-			
-			for(int i = 0; i < outputRLimitLogicBlock.size()-1; i++) {
-				writer.write(i + "," + outputRLimitLogicBlock.get(i) + "\n");
-			}
-			
-			writer.close();
-		} catch (IOException e) {
-			System.err.println("Error occured trying to create a new file at path '" + filePath + "'");
-			e.printStackTrace();
-		}
-		
-	}
-
 	/**
 	 * plots total wiring cost, acceptance rate, rLimit and rLimit logic block
 	 */
@@ -1536,8 +1470,8 @@ public class Placer {
 		XYSeries totalWiringCostSerie = new XYSeries("Wiring Cost");
 		XYSeries totalTimingCostSerie = new XYSeries("Timing Cost");
 		XYSeries acceptanceRateSerie = new XYSeries("Acceptance Rate");	
-		XYSeries rLimitSerie = new XYSeries("R Limit");	
-		XYSeries rLimitLogicBlocksSerie = new XYSeries("R Limit Logic Blocks");	 //TODO better fitting name
+		XYSeries rLimitSerie = new XYSeries("R Limit IO Blocks");	
+		XYSeries rLimitLogicBlocksSerie = new XYSeries("R Limit Logic Blocks");
 		
 //		System.out.println("Number of data points: " + outputTotalCost.size());
 		for(int i = 0; i < outputAcceptanceRate.size()-1; i++) {
@@ -1601,7 +1535,7 @@ public class Placer {
 		ApplicationFrame frameWC = new ApplicationFrame("Wiring Cost");
 		ApplicationFrame frameTC = new ApplicationFrame("Timing Cost");
 		ApplicationFrame frameAR = new ApplicationFrame("Acceptance rate");
-		ApplicationFrame frameRL = new ApplicationFrame("RLimit");
+		ApplicationFrame frameRL = new ApplicationFrame("RLimit IO Blocks");
 		ApplicationFrame frameRLL = new ApplicationFrame("RLimit Logic Blocks");
 	
 		frameC.setContentPane(chartPanelC);
@@ -1636,7 +1570,7 @@ public class Placer {
 		    OutputStream frameWCOut = new FileOutputStream(outputPathBase + "/Wiring_Cost.png");
 			OutputStream frameTCOut = new FileOutputStream(outputPathBase + "/Timing_Cost.png");
 			OutputStream frameAROut = new FileOutputStream(outputPathBase + "/Acceptance_rate.png");
-			OutputStream frameRLOut = new FileOutputStream(outputPathBase + "/RLimit.png");
+			OutputStream frameRLOut = new FileOutputStream(outputPathBase + "/RLimit_IO_Blocks.png");
 			OutputStream frameRLLOut = new FileOutputStream(outputPathBase + "/RLimit_Logic_Blocks.png");
 		    ChartUtilities.writeChartAsPNG(frameCOut,
 		    		chartC,

@@ -1,5 +1,7 @@
 package designAnalyzer.abstractedTimingGraph;
 
+import java.util.List;
+
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public abstract class AbstractTerminal {
@@ -16,6 +18,8 @@ public abstract class AbstractTerminal {
 		block= newBlock;
 		xCoordBuffer= block.getX();
 		yCoordBuffer= block.getY();
+		tA= -1;
+		tR= Integer.MAX_VALUE;
 	}
 	protected abstract int annotataTA(AbstractTerminal specificSuccessor);
 	protected abstract int annotataTRAndSlack(double critExp, int dMax);
@@ -32,7 +36,7 @@ public abstract class AbstractTerminal {
 		return block;
 	}
 	
-	public abstract int getTAMinusDelay(AbstractTerminal specificSuccessor);
+	public abstract int getTAPlusDelay(AbstractTerminal specificSuccessor);
 	
 	protected abstract double updateDelayOutgoing(double exponentiatedCriticalityOfSuccessor, AbstractTerminal specificSuccessor, int newX, int newY);
 	public abstract double updateDelayIncoming(double exponentiatedCriticalityOfSuccessor, AbstractTerminal specificSuccessor, int newX, int newY);
@@ -51,5 +55,8 @@ public abstract class AbstractTerminal {
 	public abstract double getWeightedCost(double expCrit, AbstractTerminal specificSuccessor);
 	public abstract double getExpCrit(AbstractTerminal specificPredecessor);
 	
-	
+
+
+	public abstract List<AbstractTerminal> traceCriticalPath(AbstractTerminal specificSuccessor);
+	public abstract void generateOutput(StringBuilder output, AbstractTerminal specificSuccessor);
 }

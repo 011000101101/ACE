@@ -6,17 +6,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import designAnalyzer.ParameterManager;
 import designAnalyzer.abstractedTimingGraph.PassTerminal;
 import designAnalyzer.abstractedTimingGraph.SinkTerminal;
-import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
-import designAnalyzer.structures.pathElements.channels.AbstractChannel;
-import designAnalyzer.structures.pathElements.channels.ChannelX;
-import designAnalyzer.structures.pathElements.channels.ChannelY;
 import designAnalyzer.structures.pathElements.pins.IPin;
-import designAnalyzer.structures.pathElements.pins.OPin;
 
 /**
  * 
@@ -38,6 +32,7 @@ public class LogicBlock extends NetlistBlock {
 	//TODO check if needed
 	private PathElement criticalPrevious;
 
+	@SuppressWarnings("unused")
 	private int slackToNext;
 	
 	int[] tA2= new int[4];
