@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import designAnalyzer.ParameterManager;
+import designAnalyzer.abstractedTimingGraph.PassTerminal;
+import designAnalyzer.abstractedTimingGraph.SinkTerminal;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
@@ -39,6 +41,10 @@ public class LogicBlock extends NetlistBlock {
 	private int slackToNext;
 	
 	int[] tA2= new int[4];
+
+	private PassTerminal passTerminal;
+
+	private SinkTerminal[] sinkTerminals;
 	
 	
 	
@@ -54,7 +60,8 @@ public class LogicBlock extends NetlistBlock {
 		
 		subblk_1= false;
 		
-		
+		passTerminal= null;
+		sinkTerminals= new SinkTerminal[4];
 		
 	}
 
@@ -377,6 +384,28 @@ public class LogicBlock extends NetlistBlock {
 	@Override
 	public int getSignalPassDelay() {
 		return parameterManager.T_COMB;
+	}
+
+	public void setPassTerminal(PassTerminal newPassTerminal) {
+		passTerminal= newPassTerminal;
+	}
+
+	public PassTerminal getPassTerminal() {
+		return passTerminal;
+	}
+
+	@Override
+	public void addSinkTerminal(SinkTerminal newSinkTerminal) {
+		for(int j= 0; j < 4; j++) { //store in first free location
+			if(sinkTerminals[j] == null) {
+				sinkTerminals[j]= newSinkTerminal;
+				break;
+			}
+		}
+	}
+	
+	public SinkTerminal[] getSinkTerminals() {
+		return sinkTerminals;
 	}
 	
 	

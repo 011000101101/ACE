@@ -15,11 +15,11 @@ import java.util.Random;
 
 import designAnalyzer.DesignAnalyzer;
 import designAnalyzer.ParameterManager;
+import designAnalyzer.abstractedTimingGraph.AbstractedTimingGraph;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.ArchitectureParser;
 import designAnalyzer.inputParser.NetlistParser;
 import designAnalyzer.structures.Net;
-import designAnalyzer.structures.SimplePath;
 import designAnalyzer.structures.StructureManager;
 import designAnalyzer.structures.pathElements.blocks.IOBlock;
 import designAnalyzer.structures.pathElements.blocks.LogicBlock;
@@ -155,8 +155,6 @@ public class Placer {
 	 * for wiring cost
 	 */
 	public final static int PHI = 1;
-	
-	private static List<SimplePath> paths= new LinkedList<SimplePath>();
 
 	/**
 	 * cache for wiring cost
@@ -185,6 +183,7 @@ public class Placer {
 	 */
 	private static NetlistBlock[][][] sBlocks;
 
+	private static AbstractedTimingGraph timingGraph;
 	
 	/**
 	 * main method
@@ -469,18 +468,20 @@ public class Placer {
 
 		double critExp = computeNewExponent(rLimit, rLimitInitial); 
 		
-		int numberOfNets= 0;
+//		int numberOfNets= 0;
 		
-		for(Net n : structureManager.getNetCollection()) { //generate all paths
-			if(! n.getIsClocknNet()) {
-				paths.addAll(n.generateSimplePaths());
-				numberOfNets++;
-			}
-		}
-		for(SimplePath p : paths) { 
-			p.registerAtBlocks();
-		}
+//		for(Net n : structureManager.getNetCollection()) { //generate all paths
+//			if(! n.getIsClocknNet()) {
+//				paths.addAll(n.generateSimplePaths());
+//				numberOfNets++;
+//			}
+//		}
+//		for(SimplePath p : paths) { 
+//			p.registerAtBlocks();
+//		}
 		timingAnalyzer.initializeDelayLUT();
+		
+		timingGraph= new AbstractedTimingGraph(structureManager.getNetCollection()); //generate timing graph
 
 
 //		Collection<Net> allNets = structureManager.getNetCollection();
@@ -492,8 +493,8 @@ public class Placer {
 //			}
 //		}
 		oldWiringCost = totalWiringCost();//returnVal;
-		analyzeTiming(); 
-		oldTimingCost = TimingCost(critExp) ; 
+		//analyzeTiming(); 
+		oldTimingCost = timingGraph.analyzeTiming(critExp, -1);//TimingCost(critExp) ; 
 //		System.out.println("init timing cost: " + oldTimingCost);
 //		System.out.println("INIT wiring cost: " + oldWiringCost);
 //		
@@ -501,8 +502,8 @@ public class Placer {
 		
 		//double avgCostPerNet= getAvgCostPerNet();
 		//experimental: use avg timing cost per path instead of complete cost and per net
-		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
-		double avgPathsPerNet= paths.size() / (double) numberOfNets;
+//		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
+//		double avgPathsPerNet= paths.size() / (double) numberOfNets;
 		
 		
 //		System.out.println("initial Temp: " + temp);
@@ -520,7 +521,7 @@ public class Placer {
 			System.out.println("Temp: " + temp);
 //			System.out.println("test");
 			/* compute Ta, Tr and slack() */ 
-			analyzeTiming() ; 
+			//analyzeTiming() ; 
 			
 			/* für Normalisierung der Kostenterme */ 
 //			allNets = structureManager.getNetCollection();
@@ -534,7 +535,7 @@ public class Placer {
 			oldWiringCost = totalWiringCost();//returnVal;
 			//TODO
 			System.out.println("total wiring cost: " + oldWiringCost);
-			oldTimingCost = TimingCost(critExp) ; 
+			oldTimingCost = timingGraph.analyzeTiming(critExp, temp);//TimingCost(critExp) ; 
 			System.out.println("total timing cost: " + oldTimingCost);
 //			System.out.println("ce: " + critExp);
 			for(int j = 0; j < stepCount; j++) {
@@ -556,7 +557,7 @@ public class Placer {
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					newTimingCost= newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					newTimingCost= timingGraph.computeDeltaCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]], logicBlockSwap[3], logicBlockSwap[4]);//newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap);//calculates delta wiring cost with hashmap and logicBlockSwap
 					newWiringCost= oldWiringCost + deltaWiringCost;
 					
@@ -583,19 +584,21 @@ public class Placer {
 						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
+						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						acceptedTurns++;
 						cost += deltaCost;
 					}
 					else {
 						rejectedTurns++;
-						for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
-							p.resetCostCache(); //reset cost cache to valid value
-						}
-						if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
-							for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
-								p.resetCostCache(); //reset cost cache to valid value
-							}
-						}
+//						for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
+//							p.resetCostCache(); //reset cost cache to valid value
+//						}
+//						if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
+//							for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
+//								p.resetCostCache(); //reset cost cache to valid value
+//							}
+//						}
+						timingGraph.abortSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						resetWiringCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
 						if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
 							resetWiringCost(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
@@ -611,7 +614,7 @@ public class Placer {
 //					System.out.println(logicBlockSwap[1]);
 //					System.out.println(logicBlockSwap[2]);
 					
-					newTimingCost= newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
+					newTimingCost= timingGraph.computeDeltaCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]], logicBlockSwap[3], logicBlockSwap[4]);//newTimingCostSwapBetter(critExp, logicBlockSwap, oldTimingCost); //only recompute changed values
 					//
 					//deltaWiringCost = oldWiringCost - totalWiringCost(sBlocks);
 					deltaWiringCost = calcDeltaTotalWiringCost(logicBlockSwap);//calculates delta wiring cost with hashmap and logicBlockSwap
@@ -643,19 +646,21 @@ public class Placer {
 						applySwap(logicBlockSwap);
 						oldTimingCost= newTimingCost; //update buffer
 						oldWiringCost= newWiringCost;
+						timingGraph.confirmSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						acceptedTurns++;
 						cost += deltaCost;
 					}
 					else {
 						rejectedTurns++;
-						for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
-							p.resetCostCache(); //reset cost cache to valid value
-						}
-						if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
-							for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
-								p.resetCostCache(); //reset cost cache to valid value
-							}
-						}
+//						for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
+//							p.resetCostCache(); //reset cost cache to valid value
+//						}
+//						if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
+//							for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
+//								p.resetCostCache(); //reset cost cache to valid value
+//							}
+//						}
+						timingGraph.abortSwap(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]], sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
 						resetWiringCost(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
 						if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
 							resetWiringCost(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]]);
@@ -721,13 +726,13 @@ public class Placer {
  * @param ce
  * @return
  */
-	private static double getAvgTimingCostPerPath(double ce) {
-		double sum= 0;
-		for(SimplePath p : paths) {
-			sum+= p.timingCost(ce);
-		}
-		return sum / (double) paths.size();
-	}
+//	private static double getAvgTimingCostPerPath(double ce) {
+//		double sum= 0;
+//		for(SimplePath p : paths) {
+//			sum+= p.timingCost(ce);
+//		}
+//		return sum / (double) paths.size();
+//	}
 
 	/**
 	 * reset changed wiring cost values if swap was rejected
@@ -803,14 +808,14 @@ public class Placer {
 	 * @param logicBlockSwap
 	 * @return
 	 */
-	private static double newTimingCostSwap(double ce, int[] logicBlockSwap) {
-		double sum= 0;
-		//System.out.println("size of paths list in placer: " + paths.size());
-		for(SimplePath p : paths) {
-			sum += p.timingCostSwap(ce, logicBlockSwap);
-		}
-		return sum;
-	}
+//	private static double newTimingCostSwap(double ce, int[] logicBlockSwap) {
+//		double sum= 0;
+//		//System.out.println("size of paths list in placer: " + paths.size());
+//		for(SimplePath p : paths) {
+//			sum += p.timingCostSwap(ce, logicBlockSwap);
+//		}
+//		return sum;
+//	}
 
 	/**
 	 * computes timing cost after swap
@@ -820,38 +825,38 @@ public class Placer {
 	 * @param oldCost
 	 * @return
 	 */
-	private static double newTimingCostSwapBetter(double ce, int[] logicBlockSwap, double oldCost) {
-//		System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
-//		System.out.println(logicBlockSwap[0]);
-//		System.out.println(logicBlockSwap[1]);
-//		System.out.println(logicBlockSwap[2]);
-		for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
-			if(! p.getUpdated()) {
-				oldCost-= p.getCachedCost(ce);
-				oldCost+= p.timingCostSwap(ce, logicBlockSwap);
-				p.setUpdated(true); //set flag to avoid duplicate treatment
-			}
-		}
-		if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
-			for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
-				if(! p.getUpdated()) {
-					oldCost-= p.getCachedCost(ce);
-					oldCost+= p.timingCostSwap(ce, logicBlockSwap);
-					p.setUpdated(true); //set flag to avoid duplicate treatment
-				}
-			}
-		}
-		for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
-			p.setUpdated(false); //reset flag
-		}
-		if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
-			for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
-				p.setUpdated(false); //reset flag
-			}
-		}
-		
-		return oldCost;
-	}
+//	private static double newTimingCostSwapBetter(double ce, int[] logicBlockSwap, double oldCost) {
+////		System.out.println(sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]]);
+////		System.out.println(logicBlockSwap[0]);
+////		System.out.println(logicBlockSwap[1]);
+////		System.out.println(logicBlockSwap[2]);
+//		for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
+//			if(! p.getUpdated()) {
+//				oldCost-= p.getCachedCost(ce);
+//				oldCost+= p.timingCostSwap(ce, logicBlockSwap);
+//				p.setUpdated(true); //set flag to avoid duplicate treatment
+//			}
+//		}
+//		if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
+//			for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
+//				if(! p.getUpdated()) {
+//					oldCost-= p.getCachedCost(ce);
+//					oldCost+= p.timingCostSwap(ce, logicBlockSwap);
+//					p.setUpdated(true); //set flag to avoid duplicate treatment
+//				}
+//			}
+//		}
+//		for(SimplePath p : sBlocks[logicBlockSwap[0]][logicBlockSwap[1]][logicBlockSwap[2]].getConnectedPaths()) {
+//			p.setUpdated(false); //reset flag
+//		}
+//		if(sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]] != null) {
+//			for(SimplePath p : sBlocks[logicBlockSwap[3]][logicBlockSwap[4]][logicBlockSwap[5]].getConnectedPaths()) {
+//				p.setUpdated(false); //reset flag
+//			}
+//		}
+//		
+//		return oldCost;
+//	}
 
 	/**
 	 * computes the coordinates of a random logic block and it's random swapping partner (empty slot or other logic block)
@@ -908,10 +913,10 @@ public class Placer {
 		blockSwap[4] = block1.getY() + y;
 		blockSwap[5] = 0;
 		
-		block1.setChanged();
-		if(sBlocks[blockSwap[3]][blockSwap[4]][0] != null) {
-			sBlocks[blockSwap[3]][blockSwap[4]][0].setChanged();
-		}
+//		block1.setChanged();
+//		if(sBlocks[blockSwap[3]][blockSwap[4]][0] != null) {
+//			sBlocks[blockSwap[3]][blockSwap[4]][0].setChanged();
+//		}
 	}
 
 	/**
@@ -1048,10 +1053,10 @@ public class Placer {
 		blockSwap[4] = yCoord;
 		blockSwap[5] = subblk_1 ? 1 : 0;
 		
-		block1.setChanged();
-		if(sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]] != null) {
-			sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]].setChanged();
-		}
+//		block1.setChanged();
+//		if(sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]] != null) {
+//			sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]].setChanged();
+//		}
 	}
 
 	/**
@@ -1079,18 +1084,18 @@ public class Placer {
 	/**
 	 * compute delay (tA) and slack for all paths and annotate it
 	 */
-	private static void analyzeTiming() {
-		int dMax= -1;
-		for(SimplePath p : paths) { 
-			int delay= p.computeDelay();
-			if(delay > dMax) {
-				dMax= delay;
-			}
-		}
-		for(SimplePath p : paths) { 
-			p.computeSlack(dMax);
-		}
-	}
+//	private static void analyzeTiming() {
+//		int dMax= -1;
+//		for(SimplePath p : paths) { 
+//			int delay= p.computeDelay();
+//			if(delay > dMax) {
+//				dMax= delay;
+//			}
+//		}
+//		for(SimplePath p : paths) { 
+//			p.computeSlack(dMax);
+//		}
+//	}
 
 	/**
 	 * update rLimit
@@ -1144,13 +1149,13 @@ public class Placer {
 	 * @param ce
 	 * @return
 	 */
-	private static double TimingCost(double ce) {
-		double sum= 0;
-		for(SimplePath p : paths) {
-			sum += p.timingCost(ce);
-		}
-		return sum;
-	}
+//	private static double TimingCost(double ce) {
+//		double sum= 0;
+//		for(SimplePath p : paths) {
+//			sum += p.timingCost(ce);
+//		}
+//		return sum;
+//	}
 
 
 	/**
@@ -1242,7 +1247,7 @@ public class Placer {
 		}
 		
 		//System.out.println("compute new cost...");
-		double newTimingCost= newTimingCostSwapBetter(critExp, blockSwap, oldTimingCost); //only recompute changed values
+		double newTimingCost= timingGraph.computeDeltaCost(sBlocks[blockSwap[0]][blockSwap[1]][blockSwap[2]], sBlocks[blockSwap[3]][blockSwap[4]][blockSwap[5]], blockSwap[3], blockSwap[4]);//newTimingCostSwapBetter(critExp, blockSwap, oldTimingCost); //only recompute changed values
 		//System.out.println("new timing cost: " + newTimingCost);
 		//System.out.println("delta wiring cost: " + calcDeltaTotalWiringCost(blockSwap, sBlocks));
 		double newWiringCost= totalWiringCost(); //oldWiringCost + calcDeltaTotalWiringCost(blockSwap, sBlocks);//newWiringCostSwap(sBlocks, blockSwap); //TODO 

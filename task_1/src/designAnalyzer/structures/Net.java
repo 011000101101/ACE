@@ -1,17 +1,13 @@
 package designAnalyzer.structures;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.pathElements.PathElement;
-import designAnalyzer.structures.pathElements.blocks.IOBlock;
-import designAnalyzer.structures.pathElements.blocks.LogicBlock;
 import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 import designAnalyzer.structures.pathElements.pins.IPin;
 import placer.Placer;
@@ -70,7 +66,7 @@ public class Net {
 	/**
 	 * holds all simplePaths the sinks of hich are part of this net
 	 */
-	private SimplePath[] sinkingPaths;
+//	private SimplePath[] sinkingPaths;
 	
 	//for Star+ o(1) update
 	private double uix;
@@ -357,47 +353,47 @@ public class Net {
 	 * updates tR in all simplePaths the sinks of which are part of this net
 	 * @param newTR new value for tR
 	 */
-	public void updateTRAllSinks(int newTR) {
-		for(SimplePath p : sinkingPaths) {
-			p.updateTR(newTR);
-		}
-	}
+//	public void updateTRAllSinks(int newTR) {
+//		for(SimplePath p : sinkingPaths) {
+//			p.updateTR(newTR);
+//		}
+//	}
 	
 	/**
 	 * generates all simplePaths sinking in this net and saves them locally
 	 * @return 
 	 */
-	public List<SimplePath> generateSimplePaths() {
-		List<SimplePath> pathsTemp= new LinkedList<SimplePath>();
-		
-		for(NetlistBlock b : sinks.keySet()) {
-			if(b instanceof IOBlock || ((LogicBlock) b).isClocked()) {
-				createPaths(b, pathsTemp);
-			}
-		}
-		sinkingPaths= pathsTemp.toArray(new SimplePath[0]);
-		return pathsTemp;
-	}
+//	public List<SimplePath> generateSimplePaths() {
+//		List<SimplePath> pathsTemp= new LinkedList<SimplePath>();
+//		
+//		for(NetlistBlock b : sinks.keySet()) {
+//			if(b instanceof IOBlock || ((LogicBlock) b).isClocked()) {
+//				createPaths(b, pathsTemp);
+//			}
+//		}
+//		sinkingPaths= pathsTemp.toArray(new SimplePath[0]);
+//		return pathsTemp;
+//	}
 
 	/**
 	 * creates all simplePaths ending in the given sink (a path to a single sink may branch at a combinatorial logic block)
 	 * @param pathSink the sink of the sinmplePaths
 	 * @param pathsTemp list holding all simplePaths sinking in this net that have already been generated
 	 */
-	private void createPaths(NetlistBlock pathSink, List<SimplePath> pathsTemp) {
-		if(source instanceof IOBlock || ((LogicBlock) source).isClocked()) {
-			pathsTemp.add(new SimplePath(source, pathSink, this));
-		}
-		else {
-			for(Net n : StructureManager.getInstance().getNetCollection()) {
-				if(n.getSinks().contains(source)) {
-					List<NetlistBlock> intermediate= new LinkedList<NetlistBlock>();
-					intermediate.add(0, source);
-					n.extendPath(intermediate, pathSink, this, pathsTemp);
-				}
-			}
-		}
-	}
+//	private void createPaths(NetlistBlock pathSink, List<SimplePath> pathsTemp) {
+//		if(source instanceof IOBlock || ((LogicBlock) source).isClocked()) {
+//			pathsTemp.add(new SimplePath(source, pathSink, this));
+//		}
+//		else {
+//			for(Net n : StructureManager.getInstance().getNetCollection()) {
+//				if(n.getSinks().contains(source)) {
+//					List<NetlistBlock> intermediate= new LinkedList<NetlistBlock>();
+//					intermediate.add(0, source);
+//					n.extendPath(intermediate, pathSink, this, pathsTemp);
+//				}
+//			}
+//		}
+//	}
 
 	/**
 	 * creates all simplePaths ending in the given remote sink, leading through a sink of this net (a path to a single sink may branch at a combinatorial logic block)
@@ -406,21 +402,21 @@ public class Net {
 	 * @param sinkingNet the net that contains remoteSink as a sink
 	 * @param pathsTemp list holding all simplePaths sinking in sinkingNet(!) that have already been generated
 	 */
-	private void extendPath(List<NetlistBlock> intermediate, NetlistBlock remoteSink, Net sinkingNet,  List<SimplePath> pathsTemp) {
-		if(source instanceof IOBlock || ((LogicBlock) source).isClocked()) {
-			pathsTemp.add(new SimplePath(source, remoteSink, intermediate.toArray(new NetlistBlock[0]), sinkingNet));
-		}
-		else {
-			for(Net n : StructureManager.getInstance().getNetCollection()) {
-				if(n.getSinks().contains(source)) {
-					List<NetlistBlock> intermediateNew= new LinkedList<NetlistBlock>();
-					intermediateNew.addAll(intermediate);
-					intermediateNew.add(0, source);
-					n.extendPath(intermediateNew, remoteSink, sinkingNet, pathsTemp);
-				}
-			}
-		}
-	}
+//	private void extendPath(List<NetlistBlock> intermediate, NetlistBlock remoteSink, Net sinkingNet,  List<SimplePath> pathsTemp) {
+//		if(source instanceof IOBlock || ((LogicBlock) source).isClocked()) {
+//			pathsTemp.add(new SimplePath(source, remoteSink, intermediate.toArray(new NetlistBlock[0]), sinkingNet));
+//		}
+//		else {
+//			for(Net n : StructureManager.getInstance().getNetCollection()) {
+//				if(n.getSinks().contains(source)) {
+//					List<NetlistBlock> intermediateNew= new LinkedList<NetlistBlock>();
+//					intermediateNew.addAll(intermediate);
+//					intermediateNew.add(0, source);
+//					n.extendPath(intermediateNew, remoteSink, sinkingNet, pathsTemp);
+//				}
+//			}
+//		}
+//	}
 	
 	/**
 	 * initializes star+ metric value

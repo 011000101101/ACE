@@ -668,6 +668,8 @@ public class TimingAnalyzer {
 		int deltaX= xSink - xSource;
 		int deltaY= ySink - ySource;
 		int delay;
+//		System.out.println("x" + xSource + "y" +  ySource + "x" + xSink + "y" + ySink);
+//		System.out.println(sink.toString());
 		if(source instanceof IOBlock) {
 			if(sink instanceof IOBlock) {
 				delay= delayLUT_IOIO[deltaX + xMax][deltaY + yMax];
