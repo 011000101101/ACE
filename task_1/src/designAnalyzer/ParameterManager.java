@@ -117,4 +117,8 @@ public class ParameterManager {
 		
 	}
 
+	public void destroy() {
+		instance= null;
+	}
+
 }

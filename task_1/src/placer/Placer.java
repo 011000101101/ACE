@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import designAnalyzer.DesignAnalyzer;
 import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.ArchitectureParser;
@@ -260,7 +261,8 @@ public class Placer {
 		   
 			if(diagnoseDataFlag) {
 				//printDiagnoseData(placementFilePath);
-				plotDiagnoseData(placementFilePath);
+				plotDiagnoseData(placementFilePath, String.valueOf(elapsedTime/1000), String.valueOf(elapsedTime), String.valueOf(stepCountFactor), String.valueOf(oldWiringCost), String.valueOf(oldTimingCost));
+				runDesignAnalyzer(netlistFilePath, architectureFilePath, placementFilePath, parameterManager.X_GRID_SIZE, parameterManager.Y_GRID_SIZE);
 			}
 			
 		} catch (FileNotFoundException e) {
@@ -1522,7 +1524,9 @@ public class Placer {
 	/**
 	 * plots total wiring cost, acceptance rate, rLimit and rLimit logic block
 	 */
-	private static void plotDiagnoseData(String placementFilePath) {
+	private static void plotDiagnoseData(String placementFilePath, String execTimeS, String execTimeMS, String stepCountFactor, String finalWiringCost, String finalTimingCost) {
+		
+		
 		XYSeries totalCostSerie = new XYSeries("Total Cost");	
 		XYSeries totalWiringCostSerie = new XYSeries("Wiring Cost");
 		XYSeries totalTimingCostSerie = new XYSeries("Timing Cost");
@@ -1615,6 +1619,14 @@ public class Placer {
 			
 			new File(outputPathBase).mkdirs();
 			
+			BufferedWriter timeAndCostWriter= new BufferedWriter(new FileWriter(new File(outputPathBase + "/Execution_Time_and_Final_Costs.txt")));
+			timeAndCostWriter.append("Diagnostic Data for Design: '" + placementFilePath.substring(placementFilePath.lastIndexOf('/') + 1, placementFilePath.lastIndexOf('.')) + "'\n\n");
+			timeAndCostWriter.append("Execution Time: " + execTimeS + "(s), " + execTimeMS + "(ms)\n");
+			timeAndCostWriter.append(">Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): " + stepCountFactor + "\n\n");
+			timeAndCostWriter.append("Final Timing Cost (weighted sum of delays of all data paths): " + finalTimingCost + "\n");
+			timeAndCostWriter.append("Final Wiring Cost (sum of 'Star+' wiring cost over all nets): " + finalWiringCost + "\n");
+			timeAndCostWriter.close();
+			
 		    OutputStream frameCOut = new FileOutputStream(outputPathBase + "/Total_Cost.png");
 		    OutputStream frameWCOut = new FileOutputStream(outputPathBase + "/Wiring_Cost.png");
 			OutputStream frameTCOut = new FileOutputStream(outputPathBase + "/Timing_Cost.png");
@@ -1657,5 +1669,21 @@ public class Placer {
 		frameRL.setVisible(true);
 		frameRLL.setVisible(true);
 
-	}		
+	}
+
+
+	private static void runDesignAnalyzer(String netlistFilaPath, String architectureFilePath, String placementFilePath, int xGridSize, int yGridSize) {
+		parameterManager.destroy();
+		structureManager.destroy();
+		timingAnalyzer.destroy();
+		DesignAnalyzer.main(new String[] {
+				netlistFilaPath,
+				architectureFilePath,
+				placementFilePath,
+				"-X",
+				String.valueOf(xGridSize),
+				"-Y",
+				String.valueOf(yGridSize)
+		});
+	}
 }

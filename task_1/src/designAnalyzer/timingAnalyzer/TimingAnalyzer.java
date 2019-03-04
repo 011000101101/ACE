@@ -53,8 +53,12 @@ public class TimingAnalyzer {
 	
 	private static TimingAnalyzer singleton;
 	
+	/**
+	 * directory to save the output files in
+	 */
+	String directory;
 	
-	private TimingAnalyzer(){
+	private TimingAnalyzer(String newDirectory){
 		
 		structureManager= StructureManager.getInstance();
 		parameterManager= ParameterManager.getInstance();
@@ -62,11 +66,19 @@ public class TimingAnalyzer {
 		xMax= parameterManager.X_GRID_SIZE + 1;
 		yMax= parameterManager.Y_GRID_SIZE + 1;
 		
+		directory= newDirectory;
+	}
+	
+	public static TimingAnalyzer getInstance(String newDirectory) {
+		if(singleton == null) {
+			singleton= new TimingAnalyzer(newDirectory);
+		}
+		return singleton;
 	}
 	
 	public static TimingAnalyzer getInstance() {
 		if(singleton == null) {
-			singleton= new TimingAnalyzer();
+			singleton= new TimingAnalyzer("");
 		}
 		return singleton;
 	}
@@ -635,7 +647,7 @@ public class TimingAnalyzer {
 			filename= "segment_count";
 		}
 		try {
-			PrintWriter writer = new PrintWriter(filename + ".txt", "UTF-8");
+			PrintWriter writer = new PrintWriter(directory + filename + ".txt", "UTF-8");
 			writer.append(output);
 			writer.close();
 		}
@@ -760,6 +772,10 @@ public class TimingAnalyzer {
 				delayLUT_IOIO[i + xMax][j + yMax]= -1;
 			}
 		}
+	}
+
+	public void destroy() {
+		singleton= null;
 	}
 
 }

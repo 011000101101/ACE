@@ -363,6 +363,21 @@ public class LogicBlock extends NetlistBlock {
 		}
 		return returnArray.toArray(new Net[0]);
 	}
+
+	@Override
+	public int getSignalEntryDelay() {
+		return parameterManager.T_FFOUT;
+	}
+
+	@Override
+	public int getSignalExitDelay() {
+		return parameterManager.T_FFIN;
+	}
+
+	@Override
+	public int getSignalPassDelay() {
+		return parameterManager.T_COMB;
+	}
 	
 	
 	

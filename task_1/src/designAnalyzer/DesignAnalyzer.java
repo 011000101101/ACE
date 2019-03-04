@@ -94,7 +94,14 @@ public class DesignAnalyzer {
 			consistencyChecker= new ConsistencyChecker();
 			consistencyChecker.checkConsistency(routingFileProvided);
 
-			timingAnalyzer= TimingAnalyzer.getInstance();
+			String directory;
+			if(routingFileProvided) {
+				directory= routingFilePath.substring(0, routingFilePath.lastIndexOf('.')) + "_diagnose_data/";
+			}
+			else {
+				directory= placementFilePath.substring(0, placementFilePath.lastIndexOf('.')) + "_diagnose_data/";
+			}
+			timingAnalyzer= TimingAnalyzer.getInstance(directory);
 			
 			analyze();
 			

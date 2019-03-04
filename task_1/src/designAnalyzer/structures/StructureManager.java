@@ -325,6 +325,11 @@ public class StructureManager {
 			netMap.remove(netName);
 		}
 	}
+
+
+	public void destroy() {
+		instance= null;
+	}
 	
 	
 }

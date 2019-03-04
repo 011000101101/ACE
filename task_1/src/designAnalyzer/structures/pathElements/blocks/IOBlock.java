@@ -232,5 +232,20 @@ public class IOBlock extends NetlistBlock {
 		}
 		return returnArray.toArray(new Net[0]);
 	}
+
+	@Override
+	public int getSignalEntryDelay() {
+		return parameterManager.T_IPAD;
+	}
+
+	@Override
+	public int getSignalExitDelay() {
+		return parameterManager.T_OPAD;
+	}
+
+	@Override
+	public int getSignalPassDelay() {
+		return -1;
+	}
 	
 }

@@ -239,5 +239,10 @@ public abstract class NetlistBlock extends PathElement{
 		return ((this instanceof IOBlock) ? "IOBlock" : "LogicBlock") + " @ (" + xCoordinate + "," + yCoordinate + ")";
 	}
 
+	public abstract int getSignalEntryDelay();
+	
+	public abstract int getSignalExitDelay();
+	
+	public abstract int getSignalPassDelay();
 	
 }
