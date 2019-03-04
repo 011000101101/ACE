@@ -274,10 +274,38 @@ public class Placer {
 		}
 	}
 
-
+	/**
+	 * if there is only one IOBlock placed on a coordinate and this IOBlock has the subblocknumber 1, it will be swapped to subblock 0
+	 */
 	private static void normalizeIOBlockPadPlacement() {
-		// TODO Auto-generated method stub
-		
+		for(int i=1; i <= parameterManager.X_GRID_SIZE + 1; i++) {// top and bottem row
+			if(sBlocks[i][parameterManager.Y_GRID_SIZE +1][0] == null && sBlocks[i][parameterManager.Y_GRID_SIZE +1][1] != null) {
+				normalizeIOBlock(i, parameterManager.Y_GRID_SIZE +1);
+			}
+			if(sBlocks[i][0][0] == null && sBlocks[i][0][1] != null) {
+				normalizeIOBlock(i, parameterManager.Y_GRID_SIZE +1);
+			}
+		}
+		for(int i=1; i <= parameterManager.Y_GRID_SIZE + 1; i++) {// left and right column
+			if(sBlocks[0][i][0] == null && sBlocks[0][i][1] != null) {
+				normalizeIOBlock(0, i);
+			}
+			if(sBlocks[parameterManager.X_GRID_SIZE + 1][i][0] == null && sBlocks[parameterManager.X_GRID_SIZE + 1][i][1] != null) {
+				normalizeIOBlock(parameterManager.X_GRID_SIZE +1, i);
+			}
+		}
+	}
+
+	/**
+	 * swaps IOBlock at position x and y with subblock number 1 to subblock number 0  
+	 * @param x x Coordinate
+	 * @param y y Coordinate
+	 */
+	private static void normalizeIOBlock(int x, int y) {
+		sBlocks[x][y][1].setSubblk_1(false); 
+		IOBlock tmp = (IOBlock) sBlocks[x][y][1];
+		sBlocks[x][y][1] = sBlocks[x][y][0]; // = null;
+		sBlocks[x][y][0] = tmp;
 	}
 
 

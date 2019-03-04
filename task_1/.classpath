@@ -6,6 +6,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/01100/eclipse-workspace/ACE/task_1/bibliothek/jfreechart-1.0.19/jfreechart-1.0.19-demo.jar"/>
+	<classpathentry kind="lib" path="bibliothek/jfreechart-1.0.19/jfreechart-1.0.19-demo.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
