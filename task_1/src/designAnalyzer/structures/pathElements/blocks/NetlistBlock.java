@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import designAnalyzer.abstractedTimingGraph.SinkTerminal;
+import designAnalyzer.abstractedTimingGraph.SourceTerminal;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.SimplePath;
@@ -62,7 +64,9 @@ public abstract class NetlistBlock extends PathElement{
 	/**
 	 * list holding all connected paths
 	 */
-	private List<SimplePath> connectedPaths= new LinkedList<SimplePath>(); 
+	private List<SimplePath> connectedPaths= new LinkedList<SimplePath>();
+
+	private SourceTerminal sourceTerminal; 
 	
 	
 	
@@ -244,5 +248,11 @@ public abstract class NetlistBlock extends PathElement{
 	public abstract int getSignalExitDelay();
 	
 	public abstract int getSignalPassDelay();
+
+	public void setSourceTerminal(SourceTerminal newSourceTerminal) {
+		sourceTerminal= newSourceTerminal;
+	}
+
+	public abstract void addSinkTerminal(SinkTerminal newSinkTerminal);
 	
 }

@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import designAnalyzer.ParameterManager;
+import designAnalyzer.abstractedTimingGraph.PassTerminal;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.structures.Net;
 import designAnalyzer.structures.pathElements.PathElement;
@@ -39,6 +40,8 @@ public class LogicBlock extends NetlistBlock {
 	private int slackToNext;
 	
 	int[] tA2= new int[4];
+
+	private PassTerminal passTerminal;
 	
 	
 	
@@ -54,7 +57,7 @@ public class LogicBlock extends NetlistBlock {
 		
 		subblk_1= false;
 		
-		
+		passTerminal= null;
 		
 	}
 
@@ -377,6 +380,14 @@ public class LogicBlock extends NetlistBlock {
 	@Override
 	public int getSignalPassDelay() {
 		return parameterManager.T_COMB;
+	}
+
+	public void setPassTerminal(PassTerminal newPassTerminal) {
+		passTerminal= newPassTerminal;
+	}
+
+	public PassTerminal getPassTerminal() {
+		return passTerminal;
 	}
 	
 	
