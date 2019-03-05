@@ -151,14 +151,11 @@ public class Net {
 
 
 	public void addSink(NetlistBlock currentBlock) {
-		//TODO revisit and check if sufficient
+		
 		sinks.put(currentBlock, null);
 		
 	}
 	
-//	public void linkSinkToPin(NetlistBlock currentBlock, IPin pin) {
-//		sinks.put(currentBlock, pin);
-//	}
 
 
 	/**
@@ -170,20 +167,7 @@ public class Net {
 		return firstInternalNode;
 	}
 	
-	/**
-	 * computes the critical path length for this net
-	 * @return critical path length if this is not a clock net, '-1' else
-	 */
-	/* different implementation of critical path discovery, no longer needed
-	public int beginAnalyzeTiming(){
-		if(isClockNet){	//clock nets are ignored during timing analysis
-			return -1;	//send negative value so it will be ignored in maximum computation
-		}
-		else{
-			return source.startAnalyzeTiming(); //compute critical path length starting at source and return
-		}
-		
-	}*/
+	
 	
 	/**
 	 * prints the critical path of this net

@@ -201,7 +201,7 @@ public class Placer {
 		if(commandLineDoubleInput[0] == -1) lambda= 0.5; //default value
 		else lambda= commandLineDoubleInput[0]; //value passed via command line
 		int stepCountFactor;
-//		System.out.println("stepCountFACTOR: "+ commandLineInput[10]);
+		
 		if(commandLineInput[10] == -1) stepCountFactor= 10; //default value
 		else stepCountFactor= (int)commandLineInput[10]; //value passed via command line
 		
@@ -217,7 +217,7 @@ public class Placer {
 			seed= new Random().nextLong(); //create random seed and store for debugging
 			rand= new Random(seed);
 		}
-//		System.out.println("seed: " + seed);
+
 		
 		
 		
@@ -258,8 +258,8 @@ public class Placer {
 			placementWriter.write(placementFilePath);
 		   
 			if(diagnoseDataFlag) {
-				//printDiagnoseData(placementFilePath);
-				plotDiagnoseData(placementFilePath, String.valueOf(elapsedTime/1000), String.valueOf(elapsedTime), String.valueOf(stepCountFactor), String.valueOf(oldWiringCost), String.valueOf(oldTimingCost));
+				
+				plotDiagnoseData(placementFilePath, String.valueOf(elapsedTime/1000), String.valueOf(elapsedTime), String.valueOf(stepCountFactor), String.valueOf(oldWiringCost), String.valueOf(oldTimingCost), String.valueOf(seed));
 				runDesignAnalyzer(netlistFilePath, architectureFilePath, placementFilePath, parameterManager.X_GRID_SIZE, parameterManager.Y_GRID_SIZE);
 			}
 			
@@ -302,7 +302,7 @@ public class Placer {
 	private static void normalizeIOBlock(int x, int y) {
 		sBlocks[x][y][1].setSubblk_1(false); 
 		IOBlock tmp = (IOBlock) sBlocks[x][y][1];
-		sBlocks[x][y][1] = sBlocks[x][y][0]; // = null;
+		sBlocks[x][y][1] = sBlocks[x][y][0];
 		sBlocks[x][y][0] = tmp;
 	}
 
@@ -370,7 +370,6 @@ public class Placer {
 			case "-stepCountFactor":
 				i++;
 				parameterInitialized[10]= Integer.valueOf(args[i]);
-//				System.out.println("stepCountF.: "+ parameterInitialized[1]);
 			break;
 			
 			case "-diagnoseData":
@@ -429,17 +428,12 @@ public class Placer {
 				clockGeneratingBlocks.add(b);
 			}
 		}
-//		System.out.println(iOBlocksTemp);
+
 		iOBlocks= iOBlocksTemp.toArray(new IOBlock[0]);
 		logicBlocks= logicBlocksTemp.toArray(new LogicBlock[0]);
 		iOBlockCount= iOBlocks.length;
 		blockCount= iOBlockCount + logicBlocks.length;
-//		System.out.println(iOBlocks);
-//		System.out.println(logicBlocks);
-//		System.out.println(logicBlocks[0]);
-//		System.out.println(logicBlocks[3]);
-//		System.out.println(logicBlocks[6]);
-//		System.out.println(logicBlocks[9]);
+
 	}
 	
 	/**
@@ -450,10 +444,6 @@ public class Placer {
 	private static void place(int stepCountFactor, double newLambda) {
 		
 		int stepCount= (int) Math.floor( stepCountFactor * Math.pow((double) blockCount, ( (double) 4 / (double) 3 ) ) );
-//		System.out.println("stepCountfac: "+ stepCountFactor);
-//		System.out.println("stepCountMultiplier: "+ Math.pow((double) blockCount, ( (double) 4 / (double) 3 ))) ;
-//		System.out.println("stepCount: "+ stepCount);
-//		System.out.println("stepCount as double: "+ stepCountFactor * Math.pow((double) blockCount, ( (double) 4 / (double) 3 )));
 		double lambda= newLambda;
 		
 		sBlocks = randomBlockPlacement() ; 
@@ -467,75 +457,32 @@ public class Placer {
 
 		double critExp = computeNewExponent(rLimit, rLimitInitial); 
 		
-//		int numberOfNets= 0;
-		
-//		for(Net n : structureManager.getNetCollection()) { //generate all paths
-//			if(! n.getIsClocknNet()) {
-//				paths.addAll(n.generateSimplePaths());
-//				numberOfNets++;
-//			}
-//		}
-//		for(SimplePath p : paths) { 
-//			p.registerAtBlocks();
-//		}
+
 		timingAnalyzer.initializeDelayLUT();
 		
 		timingGraph= new AbstractedTimingGraph(structureManager.getNetCollection()); //generate timing graph
 
 
-//		Collection<Net> allNets = structureManager.getNetCollection();
-//		double returnVal = 0 ;
-//		for(Net currentNet: allNets) {
-//			if(!currentNet.getIsClocknNet()) {
-//				currentNet.initializeWiringCost();
-//				returnVal += currentNet.getWiringCost();
-//			}
-//		}
-		oldWiringCost = totalWiringCost();//returnVal;
-		//analyzeTiming(); 
-		oldTimingCost = timingGraph.analyzeTiming(critExp, -1);//TimingCost(critExp) ; 
-//		System.out.println("init timing cost: " + oldTimingCost);
-//		System.out.println("INIT wiring cost: " + oldWiringCost);
-//		
+
+		oldWiringCost = totalWiringCost();
+		 
+		oldTimingCost = timingGraph.analyzeTiming(critExp, -1);
+
+		
 		double temp = computeInitialTemperature(rLimit, rLimitLogicBlocks, critExp, lambda) ; 
 		
-		//double avgCostPerNet= getAvgCostPerNet();
-		//experimental: use avg timing cost per path instead of complete cost and per net
-//		double avgTimingCostPerPath= getAvgTimingCostPerPath(critExp);
-//		double avgPathsPerNet= paths.size() / (double) numberOfNets;
-		
-		
-//		System.out.println("initial Temp: " + temp);
-//		System.out.println("Temp limit: " + (0.005 * avgPathsPerNet * avgTimingCostPerPath));
-//		System.out.println("avgPathsPerNet " +avgPathsPerNet);
-//		System.out.println("avgTimingCostPerPath " + avgTimingCostPerPath);
-//
-//		System.out.println("initial timing Cost: "+ oldTimingCost);
-//		System.out.println("initial wiring Cost: "+ oldWiringCost);
-//		System.out.println("initial total Cost: "+ cost);
+
 		double outerLoopBound= (0.005 * cost / structureManager.getNetCollection().size());
 		System.out.println("outerLoopBound: " + outerLoopBound);
-		while(temp > outerLoopBound) { //0.005 * avgPathsPerNet * avgTimingCostPerPath) {//experimental: use avg timing cost per path instead of complete cost and per net
-//			System.out.println(0.005 * avgPathsPerNet * avgTimingCostPerPath);
+		while(temp > outerLoopBound) { 
+
 			System.out.println("Temp: " + temp);
-//			System.out.println("test");
-			/* compute Ta, Tr and slack() */ 
-			//analyzeTiming() ; 
-			
-			/* für Normalisierung der Kostenterme */ 
-//			allNets = structureManager.getNetCollection();
-//			returnVal = 0 ;
-//			for(Net currentNet: allNets) {
-//				if(!currentNet.getIsClocknNet()) {
-//					currentNet.initializeWiringCost();
-//					returnVal += currentNet.getWiringCost();
-//				}
-//			}
-			//oldWiringCost = totalWiringCost();//returnVal; //TODO check if can be omitted
+
+			oldWiringCost = totalWiringCost();
 			System.out.println("\ntotal wiring cost: " + oldWiringCost);
-			oldTimingCost = timingGraph.analyzeTiming(critExp, temp);//TimingCost(critExp) ; 
+			oldTimingCost = timingGraph.analyzeTiming(critExp, temp);
 			System.out.println("total timing cost: " + oldTimingCost + "\n");
-//			System.out.println("ce: " + critExp);
+
 			for(int j = 0; j < stepCount; j++) {
 				
 				double swapAnywaysFactor= rand.nextDouble();
@@ -1491,7 +1438,7 @@ public class Placer {
 	/**
 	 * plots total wiring cost, acceptance rate, rLimit and rLimit logic block
 	 */
-	private static void plotDiagnoseData(String placementFilePath, String execTimeS, String execTimeMS, String stepCountFactor, String finalWiringCost, String finalTimingCost) {
+	private static void plotDiagnoseData(String placementFilePath, String execTimeS, String execTimeMS, String stepCountFactor, String finalWiringCost, String finalTimingCost, String seed) {
 		
 		
 		XYSeries totalCostSerie = new XYSeries("Total Cost");	
@@ -1587,7 +1534,8 @@ public class Placer {
 			new File(outputPathBase).mkdirs();
 			
 			BufferedWriter timeAndCostWriter= new BufferedWriter(new FileWriter(new File(outputPathBase + "/Execution_Time_and_Final_Costs.txt")));
-			timeAndCostWriter.append("Diagnostic Data for Design: '" + placementFilePath.substring(placementFilePath.lastIndexOf('/') + 1, placementFilePath.lastIndexOf('.')) + "'\n\n");
+			timeAndCostWriter.append("Diagnostic Data for Design: '" + placementFilePath.substring(placementFilePath.lastIndexOf('/') + 1, placementFilePath.lastIndexOf('.')) + "'\n");
+			timeAndCostWriter.append(">used seed for random number generator: " + seed + "\n\n");
 			timeAndCostWriter.append("Execution Time: " + execTimeS + "(s), " + execTimeMS + "(ms)\n");
 			timeAndCostWriter.append(">Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): " + stepCountFactor + "\n\n");
 			timeAndCostWriter.append("Final Timing Cost (weighted sum of delays of all data paths): " + finalTimingCost + "\n");

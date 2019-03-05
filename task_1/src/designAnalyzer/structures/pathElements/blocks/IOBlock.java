@@ -120,13 +120,13 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public void addPrevious(PathElement newPrevious) {
 		previous= newPrevious;
-		//TODO check if connectivity has to be verified here
+		
 	}
 	
 	@Override
 	public void addNext(PathElement newNext) {
 		next= newNext;
-		//TODO check if connectivity has to be verified here
+		
 	}
 
 	@Override

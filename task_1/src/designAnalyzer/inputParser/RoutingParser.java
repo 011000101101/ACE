@@ -39,7 +39,7 @@ public class RoutingParser extends AbstractInputParser {
 
 	public RoutingParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
-		// TODO Auto-generated constructor stub
+	
 		structureManager= StructureManager.getInstance();
 		
 		currentLine= readLineAndTokenize();
@@ -268,15 +268,15 @@ public class RoutingParser extends AbstractInputParser {
 		}
 		
 		checkSameCoordinates(currentBlock, xCoordinate, yCoordinate);
-		//TODO check IPIN uses valid input pin
+		
 		
 		checkValidPin(currentBlock, pad, true);
 		
-		//checkValidCoordinates(currentNet.getActivePathElement(), currentBlock);
+		
 		
 		linkAndSetActive(currentNet, currentBlock);
 		
-		//currentNet.linkSinkToPin(currentBlock, currentIPin);
+		
 		
 		
 		
@@ -335,7 +335,7 @@ public class RoutingParser extends AbstractInputParser {
 			ErrorReporter.reportSyntaxError(OPIN_TOKEN, currentLine[0], this);
 		}
 		checkSameCoordinates(currentBlock, xCoordinate , yCoordinate );
-		//TODO check OPIN uses valid output pin
+	
 		
 		checkValidPin(currentBlock, pinNum, false);
 		
@@ -423,12 +423,12 @@ public class RoutingParser extends AbstractInputParser {
 				ErrorReporter.reportSyntaxError(CLASS_TOKEN, currentLine[2], this);
 			}
 			if(SOURCE_TOKEN.equals(currentLine[0])) {
-				if(!(1 == Integer.valueOf(currentLine[3]))) { //TODO class not correctly set in logic block
+				if(!(1 == Integer.valueOf(currentLine[3]))) { 
 					ErrorReporter.reportInconsistentArgumentError(1, currentLine[3], "Class value of Source logic block" + currentBlock.getName(), this);
 				}
 			}
 			else if(SINK_TOKEN.equals(currentLine[0])) {
-				if(!(0 == Integer.valueOf(currentLine[3]))) { //TODO class not correctly set in logic block
+				if(!(0 == Integer.valueOf(currentLine[3]))) { 
 					ErrorReporter.reportInconsistentArgumentError(0, currentLine[3], "Class value of Sink logic block" + currentBlock.getName(), this);
 				}
 			}
@@ -451,11 +451,7 @@ public class RoutingParser extends AbstractInputParser {
 		
 		Net currentNet= structureManager.retrieveNetNoInsert(currentLine[2].substring(1, currentLine[2].length() - 1));
 		
-		/*
-		if(currentNet == null){
-			ErrorReporter.reportMissingNetError(currentLine[2].substring(1, currentLine[2].length() - 1), this);
-			return null;
-		}*/
+		
 		
 		if(currentNet != null) {
 			currentNet.setNetNumber(netNumber);

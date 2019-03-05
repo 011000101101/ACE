@@ -21,30 +21,6 @@ public abstract class AbstractChannel extends PathElement{
 	protected int wire;
 
 	/**
-	 * each cell represents a possible connection to an adjacent PathElement <br>
-	 * <br>
-	 * at most 1 stored path element can be the (local) signal source <br>
-	 * all other connected path elements are (local) sinks
-	 */
-	/*
-	protected PathElement[] connectedNodes;
-	*/
-	
-	/**
-	 * stores the location of the source node in the connection array connectedNodes
-	 * @see designAnalyzer.structures.pathElements.PathElement#connectedNodes
-	 */
-	/*
-	protected int sourceIndex= -1;
-	*/
-	
-	/**
-	 * stores the location of the output node that lies on the critical path in the connection array connectedNodes
-	 * @see designAnalyzer.structures.pathElements.PathElement#connectedNodes
-	 */
-//	private int criticalPathIndex;
-
-	/**
 	 * previous node (in signal flow direction)
 	 */
 	private PathElement previous;
@@ -61,28 +37,7 @@ public abstract class AbstractChannel extends PathElement{
 	
 	
 
-	/* alternative critical path computation, not needed
-	public int analyzeTiming(){
-		
-		for(int i= 0; i < connectedNodes.length; i++){ //process all connected output nodes (PathElements)
-			
-			if(i != sourceIndex && connectedNodes[i] != null){	//proces only the connected output nodes
-				
-				int temp= connectedNodes[i].analyzeTiming() + connectedNodes[i].getTConnectToChannel();	//compute critical path from here to all sinks reachable through this output node 
-				
-				if(temp >= t){	//if this critical path is longer, save it
-				
-					t += temp;
-					criticalPathIndex= i;
-					
-				}
-				
-			}
-			
-		}
-		return t;
-	}
-	*/
+
 	
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA){
@@ -91,33 +46,6 @@ public abstract class AbstractChannel extends PathElement{
 		criticalNext.printCriticalPath(output, tA);
 	}
 
-	/**
-	 * returns value of parameter constant stored in the ParameterManager
-	 * @return the requested value
-	 */
-	/*
-	public int getTConnectToIOBlock() {
-		
-		return ParameterManager.T_CONNECT_CHANNEL_IOBLOCK;
-		
-	}
-	
-	public int getTConnectToChannel(){
-		
-		return ParameterManager.T_CONNECT_CHANNEL_CHANNEL;
-		
-	}*/
-
-	/**
-	 * returns value of parameter constant stored in the ParameterManager
-	 * @return the requested value
-	 */
-	/*
-	public int getTConnectToLogicBlock() {
-		
-		return ParameterManager.T_CONNECT_CHANNEL_LOGIC_BLOCK;
-		
-	}*/
 	
 	public int getWire(){
 		return wire;
@@ -160,11 +88,7 @@ public abstract class AbstractChannel extends PathElement{
 		
 	}
 	
-	/*
-	protected PathElement getSingleSource() {
-		return previous;
-	}*/
-	
+
 	
 	@Override
 	protected int annotateTA(int[] exactWireLengt) {
