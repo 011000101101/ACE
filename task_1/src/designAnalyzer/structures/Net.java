@@ -152,7 +152,10 @@ public class Net {
 		
 	}
 
-
+	/**
+	 * adds a sink to the net
+	 * @param currentBlock
+	 */
 	public void addSink(NetlistBlock currentBlock) {
 		
 		sinks.put(currentBlock, null);

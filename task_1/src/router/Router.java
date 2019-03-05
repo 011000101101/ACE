@@ -265,8 +265,11 @@ public class Router {
 		}
 	}
 
-
-
+	/**
+	 * returns an integer which describes where an IOBlock is located, and which pin has to be used
+	 * @param b
+	 * @return
+	 */
 	private static int findIOBlockInputPin(NetlistBlock b) {
 		if(b.getX() == 0) return 3; //left io, right pin
 		else if(b.getY() == 0) return 2; //bottom io, top pin

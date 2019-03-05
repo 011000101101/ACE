@@ -85,7 +85,13 @@ public abstract class ResourceWithCost {
 	private double getCostSum() {
 		return costSum;
 	}
-
+	
+	/**
+	 * estimates time from a channel to the given sink
+	 * @param sinkX
+	 * @param sinkY
+	 * @return
+	 */
 	protected abstract double computeCostDistEst(int sinkX, int sinkY);
 
 	public abstract void addChannelToPriorityQueue(PriorityQueue<ResourceWithCost> pQ);
