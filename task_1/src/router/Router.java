@@ -7,7 +7,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 
 import designAnalyzer.DesignAnalyzer;
 import designAnalyzer.ParameterManager;
@@ -252,7 +255,7 @@ public class Router {
 			
 			routingWriter.write(routingFilePath, finalRouting);
 			
-			printAnalysisData(elapsedTime, parameterManager.X_GRID_SIZE, parameterManager.Y_GRID_SIZE, upperBound, upperBoundInitial);
+			printAnalysisData(routingFilePath, elapsedTime, parameterManager.X_GRID_SIZE, parameterManager.Y_GRID_SIZE, upperBound, upperBoundInitial);
 			runDesignAnalyzer(netlistFilePath, architectureFilePath, placementFilePath, routingFilePath, parameterManager.X_GRID_SIZE, parameterManager.Y_GRID_SIZE, upperBound);
 
 			
@@ -839,9 +842,27 @@ public class Router {
 	}
 	
 
-	private static void printAnalysisData(long elapsedTime, int x_GRID_SIZE, int y_GRID_SIZE, int upperBound,
-			int upperBoundInitial) {
-		// TODO Auto-generated method stub
+	private static void printAnalysisData(String routingFilePath, long elapsedTime, int x_GRID_SIZE, int y_GRID_SIZE, int finalChannelWidth,
+			int initialChannelWidth) {
+		
+		try {
+
+			String outputPathBase= routingFilePath.substring(0, routingFilePath.lastIndexOf('.')) + "_diagnose_data";
+			
+			new File(outputPathBase).mkdirs();
+			
+			BufferedWriter timeWriter= new BufferedWriter(new FileWriter(new File(outputPathBase + "/Execution_Time_and_Meta_Info.txt")));
+			timeWriter.append("Diagnostic Data for Design: '" + routingFilePath.substring(routingFilePath.lastIndexOf('/') + 1, routingFilePath.lastIndexOf('.')) + "'\n\n");
+			timeWriter.append("Execution Time: " + elapsedTime/1000 + "(s), " + elapsedTime + "(ms)\n\n");
+			timeWriter.append("Final Channel Width: " + finalChannelWidth + "\n");
+			timeWriter.append(">Initial Channel Width (start of binary search) was: " + initialChannelWidth + " ('-1' means no binary search...)\n\n");
+			timeWriter.append("(Grid Size is: " + x_GRID_SIZE + "x" + y_GRID_SIZE + " logic blocks)\n");
+			timeWriter.close();
+			
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 
