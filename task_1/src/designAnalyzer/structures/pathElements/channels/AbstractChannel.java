@@ -28,7 +28,7 @@ public abstract class AbstractChannel extends PathElement{
 	/**
 	 * next nodes and slack of connection to them (in signal flow direction)
 	 */
-	private Map<PathElement, Integer> next= new HashMap<PathElement, Integer>();
+	private Map<PathElement, Integer> next;
 	
 	/**
 	 * the next node on the critical path
@@ -37,28 +37,38 @@ public abstract class AbstractChannel extends PathElement{
 	
 	
 
-
+	public AbstractChannel() {
+		
+		next= new HashMap<PathElement, Integer>();
+		
+	}
 	
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA){
 
 		printThisNode(output, lastTA);
 		criticalNext.printCriticalPath(output, tA);
+		
 	}
 
 	
 	public int getWire(){
+		
 		return wire;
+		
 	}
 	
 	public void setWire(int newWire) {
+		
 		wire= newWire;
+		
 	}
 	
 	public abstract boolean isHorizontal();
 
 	@Override
 	public void setCoordinates(int newXCoordinate, int newYCoordinate) {
+		
 		xCoordinate= newXCoordinate;
 		yCoordinate= newYCoordinate;
 		
@@ -66,7 +76,9 @@ public abstract class AbstractChannel extends PathElement{
 	
 	@Override
 	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin) {
+		
 		return (!isPin) && matchesIsChanX(isChanX) && (checkXCoordinate == xCoordinate) && (checkYCoordinate == yCoordinate) && (checkTrack == wire);
+		
 	}
 
 	/**
@@ -78,6 +90,7 @@ public abstract class AbstractChannel extends PathElement{
 	
 	@Override
 	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean init, boolean isPin) {
+		
 		PathElement found= null;
 		for(PathElement p : next.keySet()) {
 			if(found == null) {
@@ -88,8 +101,6 @@ public abstract class AbstractChannel extends PathElement{
 		
 	}
 	
-
-	
 	@Override
 	protected int annotateTA(int[] exactWireLengt) {
 		
@@ -98,6 +109,7 @@ public abstract class AbstractChannel extends PathElement{
 		exactWireLengt[0] =exactWireLengt[0] + 1; //add CHANNEL segment
 		exactWireLengt[3]= exactWireLengt[3] + 1; //add SWITCH segment
 		return tA;
+		
 	}
 	
 	protected int annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
@@ -119,17 +131,22 @@ public abstract class AbstractChannel extends PathElement{
 	}
 	
 	public void addPrevious(PathElement newPrevious) {
+		
 		previous= newPrevious;
+		
 	}
 	
 	public void addNext(PathElement newNext) {
+		
 		next.put(newNext, -1);
+		
 	}
 	
 	@Override
 	public PathElement getOrigin() {
+		
 		return previous.getOrigin();
+		
 	}
-	
 	
 }

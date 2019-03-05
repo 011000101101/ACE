@@ -38,11 +38,13 @@ public class RoutingParser extends AbstractInputParser {
 	
 
 	public RoutingParser(String newFilePath) throws FileNotFoundException {
+		
 		super(newFilePath);
 	
 		structureManager= StructureManager.getInstance();
 		
 		currentLine= readLineAndTokenize();
+		
 	}
 
 	/**
@@ -75,8 +77,6 @@ public class RoutingParser extends AbstractInputParser {
 		
 		currentLine= readLineAndTokenize();
 		
-		
-		
 	}
 
 	/**
@@ -85,7 +85,6 @@ public class RoutingParser extends AbstractInputParser {
 	@Override
 	protected void parseOneBlock() {
 
-		
 		Net currentNet= parseBlockHeader();
 		
 		if(currentNet != null && !currentNet.getIsClocknNet()) {
@@ -128,6 +127,7 @@ public class RoutingParser extends AbstractInputParser {
 	 * @param currentNet the net currently being parsed
 	 */
 	private void connectPathAndParseNextSink(Net currentNet) {
+		
 		connectPath(currentNet);
 		parseUntilNextSink(currentNet);
 		
@@ -172,8 +172,6 @@ public class RoutingParser extends AbstractInputParser {
 	 * @param currentNet
 	 */
 	private void parseSinglePathElement(Net currentNet) {
-		
-		
 		
 		if(CHANX_TOKEN.equals(currentLine[0])) {
 			parseChanX(currentNet);
@@ -276,10 +274,6 @@ public class RoutingParser extends AbstractInputParser {
 		
 		linkAndSetActive(currentNet, currentBlock);
 		
-		
-		
-		
-		
 	}
 	
 	/**
@@ -322,8 +316,6 @@ public class RoutingParser extends AbstractInputParser {
 		
 		currentNet.setActivePathElement(currentBlock);
 		
-		
-		
 		currentLine= readLineAndTokenize();
 		
 		int xCoordinate= parseXCoordinate();
@@ -358,8 +350,6 @@ public class RoutingParser extends AbstractInputParser {
 		currentOPin.setCoordinates(xCoordinate, yCoordinate);
 		
 		linkAndSetActive(currentNet, currentOPin);
-		
-		
 		
 	}
 	
@@ -485,7 +475,9 @@ public class RoutingParser extends AbstractInputParser {
 	 * @return x coordinate
 	 */
 	private int parseXCoordinate() {
+		
 		return Integer.valueOf(currentLine[1].substring(1, currentLine[1].indexOf(",")));
+		
 	}
 
 	/**
@@ -493,7 +485,9 @@ public class RoutingParser extends AbstractInputParser {
 	 * @return y coordinate
 	 */
 	private int parseYCoordinate() {
+		
 		return Integer.valueOf(currentLine[1].substring(currentLine[1].indexOf(",") + 1, currentLine[1].length() - 1));
+		
 	}
 
 	/**
@@ -504,9 +498,11 @@ public class RoutingParser extends AbstractInputParser {
 	 * @param yCoordinate
 	 */
 	private void checkSameCoordinates(NetlistBlock lastBlock, int xCoordinate, int yCoordinate) {
+		
 		if(!(lastBlock.getX() == xCoordinate && lastBlock.getY() == yCoordinate)){
 			ErrorReporter.reportPinPlacementRoutingError(lastBlock, xCoordinate, yCoordinate, this);
 		}
+		
 	}
 
 }

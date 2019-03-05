@@ -62,12 +62,7 @@ public class Net {
 	 */
 	private PathElement firstInternalNode;
 	
-	private boolean isClockNet= false;
-	
-	/**
-	 * holds all simplePaths the sinks of hich are part of this net
-	 */
-//	private SimplePath[] sinkingPaths;
+	private boolean isClockNet;
 	
 	//for Star+ o(1) update
 	private double uix;
@@ -78,12 +73,12 @@ public class Net {
 	
 	private double viy;
 	
-	private double wiringCost= 0;
+	private double wiringCost;
 
 	/**
 	 * flag to avoid duplicate wiring cost update
 	 */
-	private boolean updated= false;
+	private boolean updated;
 
 	/**
 	 * cache to be able to restore old value if swap was rejected
@@ -110,18 +105,24 @@ public class Net {
 	 */
 	private double oldWiringCost;
 
-	private boolean buffersChanged= false;
+	private boolean buffersChanged;
 	
 	
 	
 	
 	public Net(String newName, int newAssignedIdentifier, boolean newIsClockNet) {
+		
+		isClockNet= false;
+		wiringCost= 0;
+		updated= false;
+		buffersChanged= false;
 		name= newName;
 		assignedIdentifier= newAssignedIdentifier;
 		isClockNet= newIsClockNet;
 		
 		source= null;
 		sinks= new HashMap<NetlistBlock, IPin>();
+		
 	}
 
 
@@ -130,7 +131,9 @@ public class Net {
 	 * @return if this net is a clock net 
 	 */
 	public boolean getIsClocknNet() {
+		
 		return isClockNet;
+		
 	}
 
 
@@ -164,7 +167,9 @@ public class Net {
 	 * @see designAnalyzer.structures.Net#firstInternalNode
 	 */
 	public PathElement getFirstInternalNode() {
+		
 		return firstInternalNode;
+		
 	}
 	
 	
@@ -173,7 +178,9 @@ public class Net {
 	 * prints the critical path of this net
 	 */
 	public void printCriticalPath(StringBuilder output){
+		
 		criticalSink.getOriginInit(sinks.get(criticalSink)).printCriticalPath(output, 0);
+		
 	}
 
 
@@ -182,7 +189,9 @@ public class Net {
 	 * @param newBlockClass value to be set for variable
 	 */
 	public void setNetNumber(int newNetNumber) {
+		
 		netNumber= newNetNumber;
+		
 	}
 
 
@@ -191,12 +200,14 @@ public class Net {
 	 * @param newBlockClass value to be set for variable
 	 */
 	public void setActivePathElement(PathElement currentPathElement) {
+		
 		activePathElement= currentPathElement;
 		
 	}
 
 
 	public boolean containsSink(NetlistBlock checkSink, IPin iPin) {
+		
 		for(NetlistBlock b : sinks.keySet()){
 			if(b.equals(checkSink)){
 				sinks.put(b, iPin);
@@ -204,6 +215,7 @@ public class Net {
 			}
 		}
 		return false;
+		
 	}
 
 
@@ -212,7 +224,9 @@ public class Net {
 	 * @return the requested value
 	 */
 	public NetlistBlock getSource() {
+		
 		return source;
+		
 	}
 
 
@@ -221,7 +235,9 @@ public class Net {
 	 * @return the requested value
 	 */
 	public PathElement getActivePathElement() {
+		
 		return activePathElement;
+		
 	}
 	
 	/**
@@ -229,7 +245,9 @@ public class Net {
 	 * @param newBlockClass value to be set for variable
 	 */
 	public void setCriticalSink(NetlistBlock newCriticalSink){
+		
 		criticalSink= newCriticalSink;
+		
 	}
 
 
@@ -238,7 +256,9 @@ public class Net {
 	 * @return the requested value
 	 */
 	public Collection<NetlistBlock> getSinks() {
+		
 		return sinks.keySet();
+		
 	}
 
 	public boolean recoverCurrentPathElement(int xCoordinate, int yCoordinate, int track, boolean isChanX, boolean isPin) {
@@ -259,6 +279,7 @@ public class Net {
 	 * @return length of the critical path
 	 */
 	public int annotateTA(List<int[]> exactWireLengths) {
+		
 		int criticalLength= -1;
 		int pathCounter= 0;
 		for(NetlistBlock b : sinks.keySet()) {
@@ -276,6 +297,7 @@ public class Net {
 			}
 		}
 		return criticalLength;
+		
 	}
 
 	/**
@@ -283,7 +305,9 @@ public class Net {
 	 * @param exactWireLengths 
 	 */
 	public void annotateTRAndSlack(int criticalPathLength, int[] exactWireLengthDummy) {
+		
 		source.startAnalyzeTRAndSlack(criticalPathLength, exactWireLengthDummy);
+		
 	}
 
 
@@ -294,6 +318,7 @@ public class Net {
 	public String getName() {
 		
 		return name;
+		
 	}
 	
 	/**
@@ -303,15 +328,20 @@ public class Net {
 	public int getNumber() {
 	
 		return netNumber;
+		
 	}
 
 	public NetlistBlock getCriticalSink() {
+		
 		return criticalSink;
+		
 	}
 
 	
 	public Map<NetlistBlock, IPin> getSinkMap(){
+		
 		return sinks;
+		
 	}
 
 
@@ -326,87 +356,21 @@ public class Net {
 	 * @return array of blocks
 	 */
 	private NetlistBlock[] getBlocks() {
+		
 		ArrayList<NetlistBlock> returnArray = new ArrayList<NetlistBlock>();
 		returnArray.add(source);
 		for(NetlistBlock block: sinks.keySet()) {
 			returnArray.add(block);
 		}
 		return returnArray.toArray(new NetlistBlock[0]);
+		
 	}
-	
-	/**
-	 * updates tR in all simplePaths the sinks of which are part of this net
-	 * @param newTR new value for tR
-	 */
-//	public void updateTRAllSinks(int newTR) {
-//		for(SimplePath p : sinkingPaths) {
-//			p.updateTR(newTR);
-//		}
-//	}
-	
-	/**
-	 * generates all simplePaths sinking in this net and saves them locally
-	 * @return 
-	 */
-//	public List<SimplePath> generateSimplePaths() {
-//		List<SimplePath> pathsTemp= new LinkedList<SimplePath>();
-//		
-//		for(NetlistBlock b : sinks.keySet()) {
-//			if(b instanceof IOBlock || ((LogicBlock) b).isClocked()) {
-//				createPaths(b, pathsTemp);
-//			}
-//		}
-//		sinkingPaths= pathsTemp.toArray(new SimplePath[0]);
-//		return pathsTemp;
-//	}
-
-	/**
-	 * creates all simplePaths ending in the given sink (a path to a single sink may branch at a combinatorial logic block)
-	 * @param pathSink the sink of the sinmplePaths
-	 * @param pathsTemp list holding all simplePaths sinking in this net that have already been generated
-	 */
-//	private void createPaths(NetlistBlock pathSink, List<SimplePath> pathsTemp) {
-//		if(source instanceof IOBlock || ((LogicBlock) source).isClocked()) {
-//			pathsTemp.add(new SimplePath(source, pathSink, this));
-//		}
-//		else {
-//			for(Net n : StructureManager.getInstance().getNetCollection()) {
-//				if(n.getSinks().contains(source)) {
-//					List<NetlistBlock> intermediate= new LinkedList<NetlistBlock>();
-//					intermediate.add(0, source);
-//					n.extendPath(intermediate, pathSink, this, pathsTemp);
-//				}
-//			}
-//		}
-//	}
-
-	/**
-	 * creates all simplePaths ending in the given remote sink, leading through a sink of this net (a path to a single sink may branch at a combinatorial logic block)
-	 * @param intermediate list of all blocks on a the path between source and remoteSink
-	 * @param remoteSink the final sink of the path, part of a different net
-	 * @param sinkingNet the net that contains remoteSink as a sink
-	 * @param pathsTemp list holding all simplePaths sinking in sinkingNet(!) that have already been generated
-	 */
-//	private void extendPath(List<NetlistBlock> intermediate, NetlistBlock remoteSink, Net sinkingNet,  List<SimplePath> pathsTemp) {
-//		if(source instanceof IOBlock || ((LogicBlock) source).isClocked()) {
-//			pathsTemp.add(new SimplePath(source, remoteSink, intermediate.toArray(new NetlistBlock[0]), sinkingNet));
-//		}
-//		else {
-//			for(Net n : StructureManager.getInstance().getNetCollection()) {
-//				if(n.getSinks().contains(source)) {
-//					List<NetlistBlock> intermediateNew= new LinkedList<NetlistBlock>();
-//					intermediateNew.addAll(intermediate);
-//					intermediateNew.add(0, source);
-//					n.extendPath(intermediateNew, remoteSink, sinkingNet, pathsTemp);
-//				}
-//			}
-//		}
-//	}
 	
 	/**
 	 * initializes star+ metric value
 	 */
 	public void initializeWiringCost() {
+		
 		NetlistBlock[] currentBlocks;
 		uix = 0;
 		uiy = 0;
@@ -422,6 +386,7 @@ public class Net {
 		double wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/currentBlocks.length + Placer.PHI);
 		double wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/currentBlocks.length + Placer.PHI);
 		wiringCost = wiringCostX + wiringCostY;
+		
 	}
 
 	/**
@@ -429,7 +394,9 @@ public class Net {
 	 * @return wiring cost of this net
 	 */
 	public double getWiringCost() {
+		
 		return wiringCost;
+		
 	}
 
 	/**
@@ -440,6 +407,7 @@ public class Net {
 	 * @return
 	 */
 	public double update (NetlistBlock block1, NetlistBlock block2, int[] logicBlockSwap) {
+		
 		if(!updated) {
 			
 			double deltaUix;
@@ -467,14 +435,8 @@ public class Net {
 				uiy += deltaUiy;
 				vix += deltaVix;
 				viy += deltaViy;
-//				System.out.println("uix " +uix);
-//				System.out.println("uiy " +uiy);
-//				System.out.println("vix " +vix);
-//				System.out.println("uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI " +(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI));
 				wiringCostX = Placer.GAMMA * Math.sqrt(uix - Math.pow(vix, 2)/getBlocks().length + Placer.PHI);
 				wiringCostY = Placer.GAMMA * Math.sqrt(uiy - Math.pow(viy, 2)/getBlocks().length + Placer.PHI);
-//				System.out.println("wiringCostX " +wiringCostX);
-//				System.out.println("wiringCostY "+wiringCostY);
 				wiringCost = wiringCostX + wiringCostY;
 				deltaWiringCost+= (wiringCost - oldWiringCost);
 			}
@@ -508,6 +470,7 @@ public class Net {
 			
 		}
 		return 0;
+		
 	}
 
 
@@ -515,8 +478,10 @@ public class Net {
 	 * reset the updated flag to false
 	 */
 	public void resetUpdatedFlag() {
+		
 		updated= false;
 		buffersChanged= false;
+		
 	}
 
 
@@ -524,15 +489,14 @@ public class Net {
 	 * reset changed wiring cost values if swap was rejected
 	 */
 	public void resetWiringCost() {
+		
 		uix= uixOld;
 		uiy= uiyOld;
 		vix= vixOld;
 		viy= viyOld;
 		wiringCost= oldWiringCost;
+		
 	}
-
-
 	
-
 }
 

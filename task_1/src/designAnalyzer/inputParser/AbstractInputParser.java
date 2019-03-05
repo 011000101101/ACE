@@ -16,8 +16,6 @@ import designAnalyzer.structures.*;
  */
 public abstract class AbstractInputParser {
 
-	
-
 	protected static final String ONE_TOKEN= "1";
 	
 	protected static final String ZERO_TOKEN= "0";
@@ -57,9 +55,6 @@ public abstract class AbstractInputParser {
 	 * object managing all structural parameters 
 	 */
 	protected ParameterManager parameterManager;
-	
-	
-	
 	
 	
 	public AbstractInputParser(String newFilePath) throws FileNotFoundException {
@@ -119,6 +114,7 @@ public abstract class AbstractInputParser {
 			e.printStackTrace();
 		}
 		return ""; //return empty line if IOException occurred
+		
 	}
 	
 
@@ -139,6 +135,7 @@ public abstract class AbstractInputParser {
 		}
 		
 	}
+	
 	/**
 	 * parses header of the file
 	 */
@@ -161,7 +158,9 @@ public abstract class AbstractInputParser {
 	 * @return current line number of the BufferedReader in the input file
 	 */
 	public int getLineNumber() {
+		
 		return currentLineNumber;
+		
 	}
 	
 	/**
@@ -169,8 +168,10 @@ public abstract class AbstractInputParser {
 	 * @return name of the current loaded file
 	 */
 	public String getFileName() {
+		
 		String fileName = this.inputFile.getName();
 		return fileName;
+		
 	}
 	
 }

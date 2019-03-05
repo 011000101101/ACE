@@ -22,20 +22,20 @@ public class LogicBlock extends NetlistBlock {
 	/**
 	 * true if this element has been analyzed by timing analyzer, false by default
 	 */
-	protected boolean analyzed= false;
+	protected boolean analyzed;
 	
 	private int blockClass;
 	
-	private List<IPin> previous= new LinkedList<IPin>();
-	private PathElement next;
+	private List<IPin> previous;
 	
+	private PathElement next;
 	
 	private PathElement criticalPrevious;
 
 	@SuppressWarnings("unused")
 	private int slackToNext;
 	
-	int[] tA2= new int[4];
+	int[] tA2;
 
 	private PassTerminal passTerminal;
 
@@ -57,6 +57,10 @@ public class LogicBlock extends NetlistBlock {
 		
 		passTerminal= null;
 		sinkTerminals= new SinkTerminal[4];
+		analyzed= false;
+		tA2= new int[4];
+		
+		previous= new LinkedList<IPin>();
 		
 	}
 
@@ -65,85 +69,31 @@ public class LogicBlock extends NetlistBlock {
 	 * @return true if sequential, false if combinatorial
 	 */
 	public boolean isClocked(){
+		
 		if(pinAssignments[5] == null){
 			return false;
 		}
 		else{
 			return true;
 		}
-	}
-
-	//only called on source or output "side" of logic blocks (clocked and unclocked)
-	/* alternative critical path computation, not needed
-	@Override
-	public int startAnalyzeTiming() {
-		
-		PathElement nextNode= pinAssignments[1].getFirstInternalNode(); //save next node for reuse
-		
-		if(nextNode instanceof AbstractChannel){//LogicBlock is always directly connected to a channel, not a block
-			return nextNode.analyzeTiming() + ((AbstractChannel) nextNode).getTConnectToLogicBlock(); 
-		}
-		else{
-			ErrorReporter.reportInvalidRoutingError(this, nextNode);
-			return 0;
-		}
-	}
-	*/
-
-	//only called on sink or input "side" of clocked sequential logic blocks and on unclocked combinatorial logic blocks
-	//@Override
-	/* alternative critical path computation, not needed
-	public int analyzeTiming() {
-		
-		if(isClocked()){ //is clocked block, critical path length to all sinks is 0 (this is the only sink)
-			return 0;
-		}
-		else if(analyzed){ //is combinatorial logic block, already analyzed, return known critical path length
-			return t;
-		}
-		else{ //is combinatorial logic block, recursively compute critical path length to all sinks of next net
-			t= this.startAnalyzeTiming() + this.getTConnectLogicBlockInternal();
-			return t;
-		}
 		
 	}
-	*/
-
-
-	/**
-	 * returns value of parameter constant stored in the ParameterManager
-	 * @return the requested value
-	 */
-	/* not needed
-	private int getTConnectLogicBlockInternal() {
-		
-		return ParameterManager.T_CONNECT_LOGIC_BLOCK_INTERNAL;
-		
-	}
-	*/
-
-
-	//@Override
-	/* not needed
-	public int getTConnectToChannel() {
-		
-		return ParameterManager.T_CONNECT_CHANNEL_LOGIC_BLOCK;
-		
-	}
-	*/
-
 
 	/**
 	 * standard setter
 	 * @param newBlockClass value to be set for variable
 	 */
 	public void setClass(Integer newBlockClass) {
+		
 		blockClass= newBlockClass;
+		
 	}
 
 
 	public Integer getBlockClass() {
+		
 		return blockClass;
+		
 	}
 	
 	@Override
@@ -171,7 +121,6 @@ public class LogicBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) {
 
-		
 		if(pinAssignments[5] != null) {
 			
 			for(IPin p : previous) {
@@ -195,6 +144,7 @@ public class LogicBlock extends NetlistBlock {
 			return -1; //internal node of path(s) running through this combinatorial lgic block, will be ignored in critical path computation
 		}
 		return -1;
+		
 	}
 	
 
@@ -212,6 +162,7 @@ public class LogicBlock extends NetlistBlock {
 			tR= criticalPathLength; //is sequential block, starting point for annotation algorithm
 		}
 		return tR;
+		
 	}
 		
 	
@@ -224,16 +175,21 @@ public class LogicBlock extends NetlistBlock {
 		else {
 			//do nothing
 		}
+		
 	}
 	
 	@Override
 	public void addPrevious(PathElement newPrevious) {
+		
 		previous.add((IPin) newPrevious);
+		
 	}
 	
 	@Override
 	public void addNext(PathElement newNext) {
+		
 		next= newNext;
+		
 	}
 
 
@@ -258,11 +214,11 @@ public class LogicBlock extends NetlistBlock {
 			
 		}
 		
-		
 	}
 
 
 	private void printThisNodeFinal(StringBuilder output, int lastTA) {
+		
 		output.append("CLB(");
 		output.append((pinAssignments[5] != null) ? "seq" : "comb");
 		output.append(")");
@@ -285,11 +241,13 @@ public class LogicBlock extends NetlistBlock {
 		output.append("|");
 		output.append(lastTA + parameterManager.T_FFIN);
 		output.append(System.getProperty("line.separator"));
+		
 	}
 
 
 	@Override
 	public void getInfo(StringBuilder output) {
+		
 		output.append("CLB(");
 		output.append((pinAssignments[5] != null) ? "seq" : "comb");
 		output.append(")");
@@ -319,23 +277,28 @@ public class LogicBlock extends NetlistBlock {
 		else {
 			return null;
 		}
+		
 	}
 
 
 	public boolean isSequential() {
+		
 		return (pinAssignments[5] != null);
+		
 	}
 	
 
 	
 	@Override
 	public PathElement getOrigin() {
+		
 		if(pinAssignments[5] == null) { //is combinatorial
 			return criticalPrevious.getOrigin();
 		}
 		else {
 			return this; //origin node of critical path
 		}
+		
 	}
 
 
@@ -352,6 +315,7 @@ public class LogicBlock extends NetlistBlock {
 	
 	@Override
 	public Net[] getNet() {
+		
 		ArrayList<Net> returnArray = new ArrayList<Net>();
 		for(int i = 0; i <= pinAssignments.length - 2; i++) {
 			if(pinAssignments[i] != null && !pinAssignments[i].getIsClocknNet()) {
@@ -359,47 +323,58 @@ public class LogicBlock extends NetlistBlock {
 			}
 		}
 		return returnArray.toArray(new Net[0]);
+		
 	}
 
 	@Override
 	public int getSignalEntryDelay() {
+		
 		return parameterManager.T_FFOUT;
+		
 	}
 
 	@Override
 	public int getSignalExitDelay() {
+		
 		return parameterManager.T_FFIN;
+		
 	}
 
 	@Override
 	public int getSignalPassDelay() {
+		
 		return parameterManager.T_COMB;
+		
 	}
 
 	public void setPassTerminal(PassTerminal newPassTerminal) {
+		
 		passTerminal= newPassTerminal;
+		
 	}
 
 	public PassTerminal getPassTerminal() {
+		
 		return passTerminal;
+		
 	}
 
 	@Override
 	public void addSinkTerminal(SinkTerminal newSinkTerminal) {
+		
 		for(int j= 0; j < 4; j++) { //store in first free location
 			if(sinkTerminals[j] == null) {
 				sinkTerminals[j]= newSinkTerminal;
 				break;
 			}
 		}
+		
 	}
 	
 	public SinkTerminal[] getSinkTerminals() {
+		
 		return sinkTerminals;
+		
 	}
-	
-	
-	
-	
 	
 }

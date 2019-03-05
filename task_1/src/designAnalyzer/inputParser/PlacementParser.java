@@ -131,9 +131,7 @@ public class PlacementParser extends AbstractInputParser {
 			ErrorReporter.reportInvalidTokenCount(5, this);
 		}
 		
-		
 		currentLine= readLineAndTokenize();
-		
 		
 	}
 

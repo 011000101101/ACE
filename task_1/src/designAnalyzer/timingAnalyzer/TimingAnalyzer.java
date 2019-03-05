@@ -36,8 +36,8 @@ public class TimingAnalyzer {
 	 */
 	private Collection<Net> nets;
 	
-
 	private int xMax;
+	
 	private int yMax;
 
 	/**
@@ -63,7 +63,7 @@ public class TimingAnalyzer {
 	/**
 	 * look up table for delay values from LogicBlock (signal source) to LogicBlock (signal sink), indexed by deltaX and deltaY
 	 */
-	private static TimingAnalyzer singleton;
+	private static TimingAnalyzer singleton= null;
 	
 	/**
 	 * directory to save the output files in
@@ -79,20 +79,25 @@ public class TimingAnalyzer {
 		yMax= parameterManager.Y_GRID_SIZE + 1;
 		
 		directory= newDirectory;
+		
 	}
 	
 	public static TimingAnalyzer getInstance(String newDirectory) {
+		
 		if(singleton == null) {
 			singleton= new TimingAnalyzer(newDirectory);
 		}
 		return singleton;
+		
 	}
 	
 	public static TimingAnalyzer getInstance() {
+		
 		if(singleton == null) {
 			singleton= new TimingAnalyzer("");
 		}
 		return singleton;
+		
 	}
 	
 	/**
@@ -108,8 +113,8 @@ public class TimingAnalyzer {
 		}
 		else{
 			betterEstimateTiming();
-//			estimateTiming();
 		}
+		
 	}
 
 	private void betterEstimateTiming() {
@@ -141,6 +146,7 @@ public class TimingAnalyzer {
 		
 		printToFile(output, true);
 		System.out.println(output.toString());
+		
 	}
 	
 	public int estimateSinglePathNoEndpoints(int xSource, int ySource, int xSink, int ySink) {
@@ -349,6 +355,7 @@ public class TimingAnalyzer {
 	 * @return
 	 */
 	private int computeDirection(int xSource, int ySource, int xSink, int ySink) {
+		
 		if(xSource == xSink){
 			if(ySource < ySink) return 0; //sink directly above source
 			else return 4; //sink directly below source
@@ -366,6 +373,7 @@ public class TimingAnalyzer {
 			if(ySource < ySink) return 7; //sink above source
 			else return 5; //sink below source
 		}
+		
 	}
 
 
@@ -566,8 +574,7 @@ public class TimingAnalyzer {
 		int deltaX= xSink - xSource;
 		int deltaY= ySink - ySource;
 		int delay;
-//		System.out.println("x" + xSource + "y" +  ySource + "x" + xSink + "y" + ySink);
-//		System.out.println(sink.toString());
+
 		if(source instanceof IOBlock) {
 			if(sink instanceof IOBlock) {
 				delay= delayLUT_IOIO[deltaX + xMax][deltaY + yMax];
@@ -616,48 +623,12 @@ public class TimingAnalyzer {
 		for(int i= -x_max + 1; i < x_max; i++) {
 			for(int j= -y_max + 1; j < y_max; j++) {
 				delayLUT_LL[i + x_max - 1][j + y_max - 1]= -1;
-				/*
-				if(i<0) {
-					if(j<0) {
-						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(x_max, y_max, x_max + i, y_max + j);
-					}
-					else {
-						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(x_max, 1, x_max + i, 1 + j);
-					}
-				}
-				else {
-					if(j<0) {
-						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(1, y_max, 1 + i, y_max + j);
-					}
-					else {
-						delayLUT_LL[i + x_max - 1][j + y_max - 1]= estimateSinglePathNoEndpoints(1, 1, 1 + i, 1 + j);
-					}
-				}
-				*/
 			}
 		}
 		delayLUT_LIO= new int[2*(x_max) + 1][2*(y_max) + 1];
 		for(int i= -x_max; i <= x_max; i++) {
 			for(int j= -y_max; j <= y_max; j++) {
 				delayLUT_LIO[i + x_max][j + y_max]= -1;
-				/*
-				if(i<0) {
-					if(j<0) {
-						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(-i, -j, 0, 0);
-					}
-					else {
-						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(-i, yMax - j, 0, yMax);
-					}
-				}
-				else {
-					if(j<0) {
-						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(xMax - i, -j, xMax, 0);
-					}
-					else {
-						delayLUT_LIO[i + x_max][j + y_max]= estimateSinglePathNoEndpoints(xMax - i, yMax - j, xMax, yMax);
-					}
-				}
-				*/
 			}
 		}
 		delayLUT_IOL= new int[2*(x_max) + 1][2*(y_max) + 1];

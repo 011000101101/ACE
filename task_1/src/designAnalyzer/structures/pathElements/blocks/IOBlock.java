@@ -41,43 +41,6 @@ public class IOBlock extends NetlistBlock {
 		pinAssignments= new Net[2];
 		
 	}
-
-	//only called on input blocks
-	//@Override
-	/* alternative critical path computation, not needed
-	public int startAnalyzeTiming() {
-		
-		PathElement nextNode= pinAssignments[1].getFirstInternalNode(); //save next node for reuse
-		
-		if(nextNode instanceof AbstractChannel){//IOBlock is always directly connected to a channel, not a block
-			return nextNode.analyzeTiming() + ((AbstractChannel) nextNode).getTConnectToIOBlock(); //compute critical path length and return
-		}
-		else{
-			ErrorReporter.reportInvalidRoutingError(this, nextNode); //report error if connected PathElement is not a channel
-			return 0;
-		}
-		
-	}
-	*/
-
-	//only called on output blocks
-	//@Override
-	/* alternative critical path computation, not needed
-	public int analyzeTiming() {
-		
-		return 0; //is output block, critical path length to all sinks is 0 (this is the only sink)
-		
-	}
-	*/
-
-	//@Override
-	/* not needed
-	public int getTConnectToChannel() {
-		
-		return ParameterManager.T_CONNECT_CHANNEL_IOBLOCK;
-		
-	}
-	*/
 	
 	@Override
 	protected int annotateTA(int[] exactWireLengt) {
@@ -90,7 +53,6 @@ public class IOBlock extends NetlistBlock {
 	@Override
 	public int startAnalyzeTA(PathElement iPin, int[] exactWireLengt) { //is external output block
 
-		
 		tA= previous.analyzeTA(exactWireLengt);
 		tA+= parameterManager.T_OPAD; //always connected to a IPIN
 		exactWireLengt[2]= exactWireLengt[2] + 1; //add a OPAD element
@@ -119,12 +81,14 @@ public class IOBlock extends NetlistBlock {
 	
 	@Override
 	public void addPrevious(PathElement newPrevious) {
+		
 		previous= newPrevious;
 		
 	}
 	
 	@Override
 	public void addNext(PathElement newNext) {
+		
 		next= newNext;
 		
 	}
@@ -141,6 +105,7 @@ public class IOBlock extends NetlistBlock {
 
 	@Override
 	public void getInfo(StringBuilder output) {
+		
 		output.append((pinAssignments[1] != null) ? "In_Block" : "Out_Block");
 		output.append("\t");
 		output.append("|");
@@ -154,22 +119,7 @@ public class IOBlock extends NetlistBlock {
 		output.append(").");
 		output.append(subblk_1 ? 1 : 0);
 		
-		
 	}
-
-	/*
-	@Override
-	protected PathElement getSingleSource() {
-
-		if(pinAssignments[1] != null) { //is input block
-			return null;
-		}
-		else {
-			return previous;
-		}
-		
-	}*/
-	
 
 	@Override
 	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin, boolean init) {
@@ -180,6 +130,7 @@ public class IOBlock extends NetlistBlock {
 		else {
 			return null;
 		}
+		
 	}
 	
 	/**
@@ -225,6 +176,7 @@ public class IOBlock extends NetlistBlock {
 	
 	@Override
 	public Net[] getNet() {
+		
 		ArrayList<Net> returnArray = new ArrayList<Net>();
 		for(int i = 0; i < pinAssignments.length; i++) {
 			if(pinAssignments[i] != null && !pinAssignments[i].getIsClocknNet()) {
@@ -232,30 +184,41 @@ public class IOBlock extends NetlistBlock {
 			}
 		}
 		return returnArray.toArray(new Net[0]);
+		
 	}
 
 	@Override
 	public int getSignalEntryDelay() {
+		
 		return parameterManager.T_IPAD;
+		
 	}
 
 	@Override
 	public int getSignalExitDelay() {
+		
 		return parameterManager.T_OPAD;
+		
 	}
 
 	@Override
 	public int getSignalPassDelay() {
+		
 		return -1;
+		
 	}
 
 	@Override
 	public void addSinkTerminal(SinkTerminal newSinkTerminal) {
+		
 		sinkTerminal= newSinkTerminal;
+		
 	}
 	
 	public SinkTerminal getSinkTerminal() {
+		
 		return sinkTerminal;
+		
 	}
 	
 }

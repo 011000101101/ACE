@@ -20,7 +20,7 @@ public class DesignAnalyzer {
 	/**
 	 * flag indicating if a routing file has been provided by the user
 	 */
-	private static boolean routingFileProvided= false;
+	private static boolean routingFileProvided;
 
 	/**
 	 * reference to instance of input parser
@@ -53,7 +53,6 @@ public class DesignAnalyzer {
 	 * reference to instance of timing analyzer
 	 */
 	private static TimingAnalyzer timingAnalyzer;
-	//public static int[] parameterInitialized;
 	
 	
 	/**
@@ -62,6 +61,7 @@ public class DesignAnalyzer {
 	 */
 	public static void main(String[] args) {
 
+		routingFileProvided= false;
 		
 		String netlistFilePath= args[0];
 		String architectureFilePath= args[1];
@@ -72,9 +72,6 @@ public class DesignAnalyzer {
 			routingFileProvided= true;
 			routingFilePath= args[3];
 		}
-		
-		
-		
 		
 		try {
 			int[] commandLineInput = parseCommandlineArguments(args); //array in form from int to initialize architectureParser with
@@ -112,6 +109,7 @@ public class DesignAnalyzer {
 			System.err.println("Execution aborted as a result of previously detected errors.");
 			e.printStackTrace();
 		}
+		
 	}
 	
 	/**
@@ -120,6 +118,7 @@ public class DesignAnalyzer {
 	 * @return
 	 */
 	private static int[] parseCommandlineArguments(String[] args) {
+		
 		int[] parameterInitialized = new int[] {-1,-1,-1,-1,-1,-1,-1,-1,-1};
 		for(int i = (routingFileProvided ? 4 : 3); i< args.length; i++) {
 			switch(args[i]) {
@@ -171,6 +170,7 @@ public class DesignAnalyzer {
 			}
 		}
 		return parameterInitialized;
+		
 	}
 	
 
@@ -193,7 +193,6 @@ public class DesignAnalyzer {
 	 * analyze or estimate timing depending on rountingFileProvided and output results
 	 */
 	private static void analyze() {
-		
 		
 		timingAnalyzer.analyzeTiming(routingFileProvided);
 		

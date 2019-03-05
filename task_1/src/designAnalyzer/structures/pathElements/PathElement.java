@@ -14,34 +14,33 @@ public abstract class PathElement {
 	 * every node acts as root of a subtree with arbitrary number (at least 1) of sinks
 	 * @see designAnalyzer.structures.pathElements.PathElement#analyzed
 	 */
-	protected int t= 0;
+	protected int t;
 	
 	/**
 	 * if already analyzed, holds tA of this node, if not, holds '-1'
 	 */
-	protected int tA= -1;
+	protected int tA;
 	
 	/**
 	 * if already analyzed, holds tR of this node, if not, holds '-1'
 	 */
-	protected int tR= -1;
+	protected int tR;
 	
-	protected int xCoordinate= -1;
-	protected int yCoordinate= -1;
+	protected int xCoordinate;
+	protected int yCoordinate;
 	
 	protected ParameterManager parameterManager;
 	
 	public PathElement() {
 
+		t= 0;
+		tA= -1;
+		tR= -1;
+		xCoordinate= -1;
+		yCoordinate= -1;
 		parameterManager= ParameterManager.getInstance();
 		
 	}
-	
-	
-	
-	/* alternative critical path computation, not needed
-	public abstract int analyzeTiming();
-	*/
 
 	/**
 	 * prints the critical path of the subnet represented by this PathElement
@@ -52,6 +51,7 @@ public abstract class PathElement {
 	 * prints this node as part of the critical path
 	 */
 	protected void printThisNode(StringBuilder output, int lastTA) {
+		
 		getInfo(output);
 		output.append("\t");
 		output.append("|");
@@ -60,20 +60,12 @@ public abstract class PathElement {
 		output.append("|");
 		output.append(tA);
 		output.append(System.getProperty("line.separator"));
+		
 	}
 	
 	public abstract void getInfo(StringBuilder output);
-
-	/**
-	 * returns value of parameter constant stored in the ParameterManager
-	 * @return the requested value
-	 */
-	/* not needed
-	public abstract int getTConnectToChannel();
-	*/
 	
 	public abstract boolean isNeighbour(PathElement neighbour);
-
 
 	/**
 	 * standard getter
@@ -82,8 +74,6 @@ public abstract class PathElement {
 	public int getX() {
 		return xCoordinate;
 	}
-
-
 
 	/**
 	 * standard getter
@@ -116,8 +106,6 @@ public abstract class PathElement {
 
 	protected abstract PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin, boolean init);
 
-
-
 	/**
 	 * checks if this is the Channel defined by coordinates and track number
 	 * @param checkXCoordinate xCoordinate
@@ -127,15 +115,6 @@ public abstract class PathElement {
 	 * @return true if this instanceof Channel and params match with own ones, false else
 	 */
 	protected abstract boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin);
-
-	/**
-	 * returns the single signal source of this PathElement, if present, else returns null
-	 * @param exactWireLengt 
-	 * @return the PathElement that acts as source to this PathElement
-	 */
-	/*
-	protected abstract PathElement getSingleSource();
-	*/
 
 	public int analyzeTA(int[] exactWireLengt) {
 		if(tA != -1) {

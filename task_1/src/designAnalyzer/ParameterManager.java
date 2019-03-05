@@ -79,6 +79,7 @@ public class ParameterManager {
 	public final int CHANNEL_WIDTH;
 	
 	private ParameterManager(String netlistFilePath, String architectureFilePath, String placementFilePath, int[] parameter) {
+		
 		NETLIST_PATH = netlistFilePath;
 		ARCHITECTURE_PATH = architectureFilePath;
 		PLACEMENT_PATH = placementFilePath;
@@ -91,6 +92,7 @@ public class ParameterManager {
 		T_COMB = parameter[6];
 		T_FFIN = parameter[7];
 		T_FFOUT = parameter[8];
+		
 	}
 	
 	/**
@@ -101,6 +103,7 @@ public class ParameterManager {
 	 * @param array with all parameters (grid size, channel width and delays)
 	 */
 	public static void initialize(String netlistFilePath, String architectureFilePath, String placementFilePath, int[] parameter) {
+		
 		if(instance == null) {
 			instance= new ParameterManager(netlistFilePath, architectureFilePath, placementFilePath, parameter);
 		}
@@ -118,7 +121,9 @@ public class ParameterManager {
 	}
 
 	public void destroy() {
+		
 		instance= null;
+		
 	}
 
 }

@@ -17,9 +17,11 @@ public class ArchitectureParser extends AbstractInputParser {
 	private int[] allParameters; 
 	
 	public ArchitectureParser(String newFilePath, int[] commandLineInput) throws FileNotFoundException {
+		
 		super(newFilePath);
 		allParameters = commandLineInput;
 		currentLine = readLineAndTokenize();
+		
 	}
 
 
@@ -57,7 +59,9 @@ public class ArchitectureParser extends AbstractInputParser {
 	 * @return array with parameters like grid size, channel width and delays
 	 */
 	public int[] getAllParameters() {
+		
 		return allParameters;
+		
 	}
 
 }

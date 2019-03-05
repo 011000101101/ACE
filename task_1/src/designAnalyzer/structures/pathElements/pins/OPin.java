@@ -25,13 +25,21 @@ public class OPin extends PathElement {
 	/**
 	 * next nodes and slack of connection to them (in signal flow direction)
 	 */
-	private Map<PathElement, Integer> next= new HashMap<PathElement, Integer>();
+	private Map<PathElement, Integer> next;
 	
 	/**
 	 * the next node on the critical path
 	 */
 	private PathElement criticalNext;
 
+	
+	public OPin() {
+		
+		next= new HashMap<PathElement, Integer>();
+		
+	}
+	
+	
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA) {
 
@@ -42,6 +50,7 @@ public class OPin extends PathElement {
 
 	@Override
 	public void getInfo(StringBuilder output) {
+		
 		output.append("O_Pin");
 		output.append("\t");
 		output.append("|");
@@ -54,9 +63,8 @@ public class OPin extends PathElement {
 		output.append(yCoordinate);
 		output.append(").");
 		output.append("1");
-				
+		
 	}
-
 
 	@Override
 	public boolean isNeighbour(PathElement neighbour) {
@@ -110,6 +118,7 @@ public class OPin extends PathElement {
 	@Override
 	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX,
 			boolean init, boolean isPin) {
+		
 		PathElement found= null;
 		for(PathElement p : next.keySet()) {
 			if(found == null) {
@@ -117,17 +126,20 @@ public class OPin extends PathElement {
 			}
 		}
 		return found;
+		
 	}
 
 	@Override
 	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack,
 			boolean isChanX, boolean isPin) {
+		
 		if(isPin) {
 			if(checkXCoordinate == xCoordinate && checkYCoordinate == yCoordinate) {
 				return true;
 			}
 		}
 		return false;
+		
 	}
 
 	@Override
@@ -146,6 +158,7 @@ public class OPin extends PathElement {
 			// else do nothing, previous is unclocked logic block, delay already handled in logicBlock
 		}
 		return tA;
+		
 	}
 
 	@Override
@@ -173,6 +186,7 @@ public class OPin extends PathElement {
 
 	@Override
 	public void addPrevious(PathElement newPrevious) {
+		
 		if(previous != null) {
 			//report error
 			
@@ -192,7 +206,9 @@ public class OPin extends PathElement {
 
 	@Override
 	public String getName() {
+		
 		return "OPIN(" + xCoordinate + "," + yCoordinate + ")";
+		
 	}
 
 	/**
@@ -221,6 +237,9 @@ public class OPin extends PathElement {
 	
 	@Override
 	public PathElement getOrigin() {
+		
 		return previous.getOrigin();
+		
 	}
+	
 }

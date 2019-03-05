@@ -28,12 +28,12 @@ public class NetlistParser extends AbstractInputParser {
 	private String globalNet = "";
 	
 	public NetlistParser(String newFilePath) throws FileNotFoundException {
+		
 		super(newFilePath);
 		
 		structureManager= StructureManager.getInstance();
 		
 		currentLine= readLineAndTokenize();
-		
 		
 	}
 	
@@ -42,9 +42,7 @@ public class NetlistParser extends AbstractInputParser {
 	 */
 	protected void parseOneBlock() {
 		
-		/**
-		 * the block currently being parsed
-		 */
+		//the block currently being parsed
 		NetlistBlock currentBlock= null;
 		
 		boolean newBlock= false;
@@ -99,9 +97,7 @@ public class NetlistParser extends AbstractInputParser {
 	 * @return the newly created InputBlock
 	 */
 	private NetlistBlock parseInputBlock() {
-		
-		//parse clock input block, handle seperately in placer
-		//if(!currentLine[1].equals(globalNet)) { 
+
 			NetlistBlock currentBlock= new IOBlock(currentLine[1], numberOfBlocks);
 			
 			currentLine= readLineAndTokenize();
@@ -125,10 +121,6 @@ public class NetlistParser extends AbstractInputParser {
 			
 			return currentBlock;
 			
-		//}
-
-		//currentLine= readLineAndTokenize();
-		//return null;
 	}
 	
 	/**
@@ -163,6 +155,7 @@ public class NetlistParser extends AbstractInputParser {
 
 		currentLine= readLineAndTokenize();
 		return null;
+		
 	}
 	
 	/**
@@ -172,14 +165,10 @@ public class NetlistParser extends AbstractInputParser {
 	 */
 	private NetlistBlock parseLogicBlock() {
 		
-		/**
-		 * name of the current block
-		 */
+		//name of the current block
 		String name= currentLine[1];
 		
-		/**
-		 * connectivity status for each pin, default value is false
-		 */
+		//connectivity status for each pin, default value is false
 		boolean[] pinsConnected= new boolean[6];
 		
 		NetlistBlock currentBlock= new LogicBlock(name, numberOfBlocks);
@@ -279,7 +268,6 @@ public class NetlistParser extends AbstractInputParser {
 	@Override
 	protected void parseHeader() {
 		// empty method, no header
-		
 	}
 
 }

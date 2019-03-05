@@ -76,10 +76,12 @@ public class StructureManager {
 	 * @return the single StructureManager instance
 	 */
 	public static StructureManager getInstance() {
+		
 		if(instance == null) {
 			instance= new StructureManager();
 		}
 		return instance;
+		
 	}
 	
 
@@ -91,6 +93,7 @@ public class StructureManager {
 	 * @return instance of Net belonging to the given name
 	 */
 	public Net retrieveNet(String name, boolean isClockNet) {
+		
 		if(netMap.containsKey(name)) {
 			return netMap.get(name);
 		}
@@ -100,6 +103,7 @@ public class StructureManager {
 			netMap.put(name,  newNet);
 			return newNet;
 		}
+		
 	}
 
 
@@ -124,18 +128,22 @@ public class StructureManager {
 	 * @return the HashMap containing all blocks with names as keys
 	 */
 	public HashMap<String, NetlistBlock> getBlockMap(){
+		
 		return blockMap;
+		
 	}
 
 	/**
 	 * 
 	 */
 	public NetlistBlock retrieveBlockByName(String name) {
+		
 		if(blockMap.containsKey(name)) {
 			return blockMap.get(name);
 		} else {
 			return null;
 		}
+		
 	}
 
 	/**
@@ -229,8 +237,6 @@ public class StructureManager {
 			return logicBlockIndex[xCoordinate - 1][yCoordinate - 1];
 		}
 		
-		
-		
 	}
 
 
@@ -240,16 +246,20 @@ public class StructureManager {
 	 * @return the net that was requested, or null if no such net exists
 	 */
 	public Net retrieveNetNoInsert(String name) {
+		
 		if(netMap.containsKey(name)) {
 			return netMap.get(name);
 		}
 		else{
 			return null;
 		}
+		
 	}
 	
 	public Collection<Net> getNetCollection(){
+		
 		return netMap.values();
+		
 	}
 
 
@@ -321,14 +331,18 @@ public class StructureManager {
 	 * @param netName name of the clock net
 	 */
 	public void removeClockNet(String netName) {
+		
 		if(netMap.containsKey(netName)) {
 			netMap.remove(netName);
 		}
+		
 	}
 
 
 	public void destroy() {
+		
 		instance= null;
+		
 	}
 	
 	

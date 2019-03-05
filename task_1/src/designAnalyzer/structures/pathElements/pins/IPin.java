@@ -15,7 +15,7 @@ public class IPin extends PathElement{
 	/**
 	 * pin number of the current IPin with the coordinates saved in PathElement
 	 */
-	int pinNumber = -1;
+	int pinNumber;
 
 	/**
 	 * previous node (in signal flow direction)
@@ -32,6 +32,10 @@ public class IPin extends PathElement{
 	 */
 	@SuppressWarnings("unused")
 	private int slackToNext;
+	
+	public IPin() {
+		pinNumber = -1;
+	}
 
 	@Override
 	public void printCriticalPath(StringBuilder output, int lastTA) {
@@ -43,6 +47,7 @@ public class IPin extends PathElement{
 
 	@Override
 	public void getInfo(StringBuilder output) {
+		
 		output.append("I_Pin");
 		output.append("\t");
 		output.append("|");
@@ -55,7 +60,6 @@ public class IPin extends PathElement{
 		output.append(yCoordinate);
 		output.append(").");
 		output.append(pinNumber);
-		
 		
 	}
 
@@ -118,8 +122,8 @@ public class IPin extends PathElement{
 		else {
 			return false;
 		}
+		
 	}
-
 
 	@Override
 	public void setCoordinates(int newXCoordinate, int newYCoordinate) {
@@ -132,14 +136,18 @@ public class IPin extends PathElement{
 	@Override
 	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin,
 			boolean init) {
+		
 		return next.getBranchingElement(checkXCoordinate, checkYCoordinate, checkTrack, isChanX, isPin, false);
+		
 	}
 
 	@Override
 	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack,
 			boolean isChanX, boolean isPin) {
+		
 		//can't branch at IPin
 		return false;
+		
 	}
 
 	@Override
@@ -162,10 +170,12 @@ public class IPin extends PathElement{
 		tR-= w; //compute local tR
 		
 		return tR;
+		
 	}
 
 	@Override
 	public void addPrevious(PathElement newPrevious) {
+		
 		if(previous != null) {
 			//report error
 			
@@ -178,6 +188,7 @@ public class IPin extends PathElement{
 
 	@Override
 	public void addNext(PathElement newNext) {
+		
 		if(next != null) {
 			//report error
 			
@@ -190,7 +201,9 @@ public class IPin extends PathElement{
 
 	@Override
 	public String getName() {
+		
 		return "IPIN(" + xCoordinate + "," + yCoordinate + ")." + pinNumber;
+		
 	}
 
 	/**
@@ -225,6 +238,9 @@ public class IPin extends PathElement{
 	
 	@Override
 	public PathElement getOrigin() {
+		
 		return previous.getOrigin();
+		
 	}
+	
 }

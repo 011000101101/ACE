@@ -11,6 +11,10 @@ import designAnalyzer.structures.pathElements.pins.OPin;
  */
 public class ChannelY extends AbstractChannel {
 
+	
+	public ChannelY() {
+		super();
+	}
 
 	@Override
 	public boolean isHorizontal() {

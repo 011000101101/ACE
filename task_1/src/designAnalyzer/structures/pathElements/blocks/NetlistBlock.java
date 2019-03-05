@@ -53,22 +53,21 @@ public abstract class NetlistBlock extends PathElement{
 	 */
 	protected boolean subblk_1;
 
-	/**
-	 * list holding all connected paths
-	 */
-//	private List<SimplePath> connectedPaths= new LinkedList<SimplePath>();
-
 	private SourceTerminal sourceTerminal; 
 	
 	
 	
 	public NetlistBlock(String newName, int newAssignedIdentifier) {
+		
 		name= newName;
 		assignedIdentifier= newAssignedIdentifier;
+		
 	}
 	
 	public void setBlockNumber(int newInt) {
+		
 		blockNumber = newInt;
+		
 	}
 	
 	/**
@@ -76,7 +75,9 @@ public abstract class NetlistBlock extends PathElement{
 	 * @param newVal
 	 */
 	public void setSubblk_1(boolean newVal) {
+		
 		subblk_1= newVal;
+		
 	}
 	
 	
@@ -90,6 +91,7 @@ public abstract class NetlistBlock extends PathElement{
 	 * @param newYCoordinate the Y coordinate of this block
 	 */
 	public void setCoordinates(int newXCoordinate, int newYCoordinate) {
+		
 		xCoordinate= newXCoordinate;
 		yCoordinate= newYCoordinate;
 		
@@ -103,51 +105,52 @@ public abstract class NetlistBlock extends PathElement{
 	 * @param newYCoordinate the Y coordinate of this block
 	 */
 	public void updateCoordinates(int newXCoordinate, int newYCoordinate) {
+		
 		xCoordinate= newXCoordinate;
 		yCoordinate= newYCoordinate;
-		
 		
 	}
 	
 	public void connect(Net netToConnect, int pinNumber) {
+		
 		if(pinAssignments[pinNumber] == null) {
 			pinAssignments[pinNumber]= netToConnect;
 		}
 		else {
 			ErrorReporter.reportDuplicatePinAssignmentError(this, pinNumber, netToConnect);
 		}
+		
 	}
-	
-	
-	/**
-	 * method to start timing analysis on the source node of a net
-	 * @return
-	 */
-	/* alternative critical path computation, not needed
-	public abstract int startAnalyzeTiming();
-	*/
-
 
 	/**
 	 * standard getter
 	 * @return the name of this block
 	 */
 	public String getName() {
+		
 		return name;
+		
 	}
 	
 	public boolean getSubblk_1(){
+		
 		return subblk_1;
+		
 	}
 	
 	@Override
 	protected boolean checkIfBranchingPoint(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin) {
+		
 		return false;
+		
 	}
 	
 	public int getBlockNumber() {
+		
 		return blockNumber;
+		
 	}
+	
 	public abstract int startAnalyzeTA(PathElement iPin, int[] exactWireLengt);
 	
 	public abstract void startAnalyzeTRAndSlack(int criticalPathLength, int[] exactWireLengthexactWireLengthDummy);
@@ -167,36 +170,10 @@ public abstract class NetlistBlock extends PathElement{
 		else {
 			return false;
 		}
+		
 	}
 	
 	public abstract PathElement getOriginInit(IPin pin);
-
-	/**
-	 * marks all connected paths as changed
-	 */
-//	public void setChanged() {
-//		
-//		for(SimplePath p : connectedPaths) {
-//			p.setChanged();
-//		}
-//		
-//	}
-	
-	/**
-	 * adds a path to the list of connected paths
-	 * @param p the path to add
-	 */
-//	public void addPath(SimplePath p) {
-//		connectedPaths.add(p);
-//	}
-	
-	/**
-	 * standard getter
-	 * @return
-	 */
-//	public List<SimplePath> getConnectedPaths(){
-//		return connectedPaths;
-//	}
 
 	/**
 	 * returns an array of connected nets without clock net
@@ -205,6 +182,7 @@ public abstract class NetlistBlock extends PathElement{
 	public abstract Net[] getNet();
 
 	public boolean isNoClockGeneratingBlock() {
+		
 		Net[] tmp= getNet();
 		for(int i = 0; i < tmp.length - 2; i++) {
 			if(pinAssignments[i] != null && pinAssignments[i].getIsClocknNet()) {
@@ -212,11 +190,14 @@ public abstract class NetlistBlock extends PathElement{
 			}
 		}
 		return true;
+		
 	}
 	
 	@Override
 	public String toString() {
+		
 		return ((this instanceof IOBlock) ? "IOBlock" : "LogicBlock") + " @ (" + xCoordinate + "," + yCoordinate + ")";
+		
 	}
 
 	public abstract int getSignalEntryDelay();
@@ -226,11 +207,15 @@ public abstract class NetlistBlock extends PathElement{
 	public abstract int getSignalPassDelay();
 
 	public void setSourceTerminal(SourceTerminal newSourceTerminal) {
+		
 		sourceTerminal= newSourceTerminal;
+		
 	}
 	
 	public SourceTerminal getSourceTerminal() {
+		
 		return sourceTerminal;
+		
 	}
 
 	public abstract void addSinkTerminal(SinkTerminal newSinkTerminal);

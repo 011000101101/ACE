@@ -173,9 +173,9 @@ public class Placer {
 	/**
 	 * for whether output of variables is needed
 	 */
-	private static boolean diagnoseDataFlag = false;
+	private static boolean diagnoseDataFlag;
 	
-	private static List<NetlistBlock> clockGeneratingBlocks= new LinkedList<NetlistBlock>();
+	private static List<NetlistBlock> clockGeneratingBlocks;
 
 	/**
 	 * current placement
@@ -196,6 +196,8 @@ public class Placer {
 		outputAcceptanceRate= new ArrayList<Double>();
 		outputRLimit= new ArrayList<Double>();
 		outputRLimitLogicBlock= new ArrayList<Double>();
+		clockGeneratingBlocks= new LinkedList<NetlistBlock>();
+		diagnoseDataFlag = false;
 		
 		long startTime = System.currentTimeMillis();
 		String netlistFilePath= args[0];
