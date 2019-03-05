@@ -154,7 +154,7 @@ public class Router {
 					nets.add(n);
 				}
 			}
-			//TODO
+			
 			limit= 45;
 			globalIterationCounter= 0;
 			finalRouting= new HashMap<Net, NodeOfResource>((int) (structureManager.getNetCollection().size() / 0.75) + 1);
@@ -169,7 +169,7 @@ public class Router {
 				currentRouting.put(n, nodeOfResourceDummy);
 			}
 			
-			//TODO comments
+			
 			sinkWithCostMaps= new Map[5];
 			for(int j= 0; j < 5; j++) {
 				sinkWithCostMaps[j]= new HashMap<NetlistBlock, SinkWithCost>(structureManager.getBlockMap().size()); //more overall blocks than blocks of a specific type
@@ -196,7 +196,7 @@ public class Router {
 				
 				
 				while(!globalRouter()) {
-					//TODO better strategy for initial values
+					
 					lowerBound= upperBound;
 					upperBound+= 4;
 					currentChannelWidth = upperBound;
@@ -215,7 +215,6 @@ public class Router {
 					}
 					globalIterationCounter++;
 	
-//					pFak= pFak<<1;
 					
 					
 				}
@@ -439,9 +438,6 @@ public class Router {
 	private static NodeOfResource signalRouter(Net currentNet) {
 
 		
-		//TODO remove
-//		System.out.println("starting Signal Router, source: " + currentNet.getSource().toString() + "innerIterationCounter: " + innerIterationCounter);
-		
 		PriorityQueue<ResourceWithCost> pQ= new PriorityQueue<ResourceWithCost>(
 			parameterManager.X_GRID_SIZE * 2 + parameterManager.Y_GRID_SIZE * 2, 
 			new Comparator<ResourceWithCost>() {
@@ -472,8 +468,6 @@ public class Router {
 			/* route Verbindung zur Senke sink */
 			
 			
-			//TODO remove
-//			System.out.println("routing path to sink: " + sink.getName() + "@ (" + sink.getX() + "," + sink.getY() + ")" + " in Net: " + currentNet.getName() + ", size of pQ: " + pQ.size());
 			
 			if(routingTreeRoot != null) {
 				routingTreeRoot.addAllToPriorityQueue(pQ, sink.getX(), sink.getY());
@@ -526,7 +520,7 @@ public class Router {
 						SinkWithCost tmp= sinkWithCostMaps[inputPin].get(sink);
 					
 						tmp.setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, sink.getX(), sink.getY());
-	//					System.err.println("cost of IPin: " + tmp.getCost());
+						
 						pQ.add(tmp);
 					}
 				}
@@ -537,7 +531,7 @@ public class Router {
 						SinkWithCost tmp= sinkWithCostMaps[4].get(sink);
 					
 						tmp.setPathCostAndPreviousIfNotYetComputedInThisIteration(((ChannelWithCost) currentChannel), pFak, sink.getX(), sink.getY());
-	//					System.err.println("cost of IPin: " + tmp.getCost());
+
 						pQ.add(tmp);
 					}
 				}
@@ -547,8 +541,6 @@ public class Router {
 				
 				currentChannel = pQ.poll(); 
 				
-				//remove
-//				System.out.println("currentChannel: " + currentChannel.toString());
 				
 				polledResources.add(currentChannel);
 			}
@@ -569,23 +561,17 @@ public class Router {
 			NodeOfResource currentBranch= new NodeOfResource(currentChannel); //create new branch
 			currentChannel.incUsedCounter(); //set IPIN as used
 			
-			//TODO remove
-//			System.err.println(currentChannelWidth + ": " + iterationCounter + ": used Pin: " + currentChannel.toString() + ", counter is: " + currentChannel.getUsedCounter(iterationCounter, globalIterationCounter));
-			
-//			System.err.println("IPin :" + currentChannel.toString() + ", cost: " + currentChannel.getCost() + ", currentCHannelWidth: " + currentChannelWidth + ", track: " + ((ChannelWithCost) currentChannel.getPrevious()).getTrackNum() + ", usedCounter: " + currentChannel.getUsedCounter(globalIterationCounter));
-			
 			
 			//sink added to branch
 			
 			tmpChannel= currentChannel.getPrevious();
 			branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel); //not null if tmpChannel is already part of routingTree (already used by different path of same net)
 			currentBranch= new NodeOfResource(tmpChannel, currentBranch); //append tmpChannel to front of current branch
-			//TODO remove
-//			System.err.println(currentChannelWidth + ": " + iterationCounter + ": used channel: " + tmpChannel.toString() + ", counter is: " + tmpChannel.getUsedCounter(iterationCounter, globalIterationCounter));
+			
 			if(branchingPoint == null) { //branching point reached, tmpChannel holds branching point which is already used by this net, do not iterate usedCounter, while will be skipped
 				tmpChannel.incUsedCounter();
 			}
-//			System.err.println("tmpChannel :" + tmpChannel.toString() + ", usedCounter: " + tmpChannel.getUsedCounter(globalIterationCounter));
+
 			
 			
 			//first channel before sink added to branch
@@ -596,12 +582,11 @@ public class Router {
 
 				branchingPoint= routingTreeRoot.findBranchingPoint(tmpChannel); //not null if tmpChannel is already part of routingTree (already used by different path of same net)
 				currentBranch= new NodeOfResource(tmpChannel, currentBranch); //append tmpChannel to front of current branch
-				//TODO remove
-//				System.err.println(currentChannelWidth + ": " + iterationCounter + ": used channel: " + tmpChannel.toString() + ", counter is: " + tmpChannel.getUsedCounter(iterationCounter, globalIterationCounter));
+				
 				if(branchingPoint == null) { //branching point reached, tmpChannel holds branching point which is already used by this net, do not iterate usedCounter, while will be exited
 					tmpChannel.incUsedCounter();
 				}
-//				System.err.println("tmpChannel :" + tmpChannel.toString() + ", branchingPoint: " + branchingPoint);
+
 				tmpChannel= tmpChannel.getPrevious();
 				
 			}
@@ -651,19 +636,15 @@ public class Router {
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY()][0][trackNum];
 				channelsAdded++;
 				//no horizontal channels at x = 0
-				//if(currentChannel.getX() > 0) {
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY()][0][trackNum];
 					channelsAdded++;
-				//}
 			}
 			if(currentChannel.getY() < parameterManager.Y_GRID_SIZE) { //add top neighbors
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() + 1][0][trackNum];
 				channelsAdded++;
 				//no horizontal channels at x = 0
-				//if(currentChannel.getX() > 0) {
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() - 1][currentChannel.getY() + 1][0][trackNum];
 					channelsAdded++;
-				//}
 			}
 		}
 		else { //is a vertical channel
@@ -680,19 +661,15 @@ public class Router {
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY()][1][trackNum];
 				channelsAdded++;
 				//no vertical channels at y = 0
-				//if(currentChannel.getX() > 0) {
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX()][currentChannel.getY() - 1][1][trackNum];
 					channelsAdded++;
-				//}
 			}
 			if(currentChannel.getX() < parameterManager.X_GRID_SIZE) {  //add right neighbors
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() + 1][currentChannel.getY()][1][trackNum];
 				channelsAdded++;
 				//no vertical channels at y = 0
-				//if(currentChannel.getX() > 0) {
 				neighbouringChannels[channelsAdded]= channelIndex[currentChannel.getX() + 1][currentChannel.getY() - 1][1][trackNum];
 					channelsAdded++;
-				//}
 			}
 			
 		}

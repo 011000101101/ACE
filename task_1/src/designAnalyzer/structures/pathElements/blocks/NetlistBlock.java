@@ -80,10 +80,7 @@ public abstract class NetlistBlock extends PathElement{
 		
 	}
 	
-	
-
-
-	
+		
 	/**
 	 * sets X and Y coordinate of this block <br>
 	 * and adds it to an indexing structure allowing for efficient lookup by coordinates

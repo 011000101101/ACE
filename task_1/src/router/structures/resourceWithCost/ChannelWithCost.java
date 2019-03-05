@@ -13,9 +13,7 @@ public class ChannelWithCost extends ResourceWithCost{
 	 * flag for horizontal or vertical channels
 	 */
 	private Boolean horizontal;
-//	private boolean lastChannel;
-	
-	//BlockPinCost sinkToReach;
+
 	
 	public ChannelWithCost(int newX, int newY, boolean newHorizontal, int newTrackNum) {
 		super(null);

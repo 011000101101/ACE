@@ -53,7 +53,6 @@ public class NodeOfResource {
 	 * @return the NodeOfPoint that contains a point equal to branchingPoint, or null if none such NodeOfPoint exists in the subtree
 	 */
 	public NodeOfResource findBranchingPoint(ResourceWithCost branchingPoint) {
-		//if(data.neighbours(branchingPoint)) return this;
 		if(data.equals(branchingPoint)) return this;
 		NodeOfResource tmp= null;
 		if(child != null) tmp= child.findBranchingPoint(branchingPoint);
@@ -97,14 +96,6 @@ public class NodeOfResource {
 		else sibling.addSibling(additionalSibling);
 	}
 
-//	public void addAllChannelsToPriorityQueue(PriorityQueue<ResourceWithCost> pQ) {
-//		
-//		
-//		data.addChannelToPriorityQueue(pQ);
-//		data.setAlreadyAdded(true, innerIterationCounter, iterationCounter);
-//		if(sibling != null) sibling.addAllChannelsToPriorityQueue(pQ);
-//		if(child != null) child.addAllChannelsToPriorityQueue(pQ);
-//	}
 	
 	public NodeOfResource getSibling() {
 		return sibling;
@@ -177,11 +168,7 @@ public class NodeOfResource {
 		boolean violated= false;
 		violated= data.getUsedCounter() > 1;
 		
-		//TODO remove / deactivate
-//		if(violated) {
-//			if(data instanceof ChannelWithCost) System.err.println("violating Channel: " + data.toString() + ", counter: " + data.getUsedCounter() + ", cost: " + data.getCost());
-//			else System.err.println("violating IPin: " + ((SinkWithCost) data).getSinkingBlock().toString() + ", counter: " + data.getUsedCounter());
-//		}
+
 		
 		if(child != null) if(child.checkForResourceLimitViolations()) violated= true;
 		if(sibling != null) if(sibling.checkForResourceLimitViolations()) violated= true;

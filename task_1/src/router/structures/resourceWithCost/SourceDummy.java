@@ -99,16 +99,6 @@ public class SourceDummy extends ResourceWithCost {
 		return source;
 	}
 
-//	@Override
-//	public void resetCounters() {
-//		// nothing to do
-//	}
-
-//	@Override
-//	protected void setUsedCounterToOne() {
-//		// nothing to do here...
-//		
-//	}
 
 	@Override
 	public String toString() {

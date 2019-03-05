@@ -135,20 +135,14 @@ public class RoutingWriter{
 		outputFileWriter.write("SOURCE (" + n.getSource().getX() + "," + n.getSource().getY() + ") "); 
 		if(n.getSource() instanceof LogicBlock) {
 			outputFileWriter.write("Class: 1" + "\n");
-//			duplicateLineCache = ("OPIN: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pin: 4" +"\n");
-//			outputFileWriter.write(duplicateLineCache);
 		}
 		else if(n.getSource() instanceof IOBlock){
 			outputFileWriter.write("Pad: ");
 			
 			if(n.getSource().getSubblk_1()) {
 				outputFileWriter.write("1" + "\n");
-//				duplicateLineCache = ("OPIN: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 1" +"\n");
-//				outputFileWriter.write(duplicateLineCache);
 			} else {
 				outputFileWriter.write("0" + "\n");
-//				duplicateLineCache = ("OPIN: (" + n.getSource().getX() + "," + n.getSource().getY() + ") " + "Pad: 0" +"\n");
-//				outputFileWriter.write(duplicateLineCache);
 			}
 		}
 		
@@ -162,14 +156,8 @@ public class RoutingWriter{
 			}
 			
 			if(branchingPoint.size() > 0) {
-				//Object[] tmp = branchingPoint.get(0);
-				//branchingPoint.remove(0);
 				
-				//duplicateLineCache = (String) tmp[0];
-				//nodeOfResource= (NodeOfResource)tmp[1];	
 				nodeOfResource= branchingPoint.remove(0);
-				
-				//outputFileWriter.write(duplicateLineCache);
 			
 			}
 			else nodeOfResource = null;
@@ -188,7 +176,6 @@ public class RoutingWriter{
 	  */
 	private void writeLines(/*List<Object[]>*/ List<NodeOfResource> list, NodeOfResource currentNode) throws IOException {
 		if(currentNode.getSibling() != null) {
-			//addToList(list, currentNode.getSibling());
 			list.add(0, currentNode.getSibling());
 		}
 		if(currentNode.getData() instanceof SourceDummy) {
