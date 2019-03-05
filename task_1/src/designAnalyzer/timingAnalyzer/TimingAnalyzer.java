@@ -116,7 +116,10 @@ public class TimingAnalyzer {
 		}
 		
 	}
-
+	
+	/**
+	 * estimates timing cost by using a instance of AbstractedTimingGraph
+	 */
 	private void betterEstimateTiming() {
 		
 		initializeDelayLUT();
@@ -149,6 +152,14 @@ public class TimingAnalyzer {
 		
 	}
 	
+	/**
+	 * estimates delay for the connection between to blocks, without entry and exit delay
+	 * @param xSource
+	 * @param ySource
+	 * @param xSink
+	 * @param ySink
+	 * @return
+	 */
 	public int estimateSinglePathNoEndpoints(int xSource, int ySource, int xSink, int ySink) {
 		
 		int horizontalChannelsUsed=-1;

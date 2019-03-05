@@ -280,7 +280,10 @@ public class LogicBlock extends NetlistBlock {
 		
 	}
 
-
+	/**
+	 * checks whether a block is sequential or not
+	 * @return
+	 */
 	public boolean isSequential() {
 		
 		return (pinAssignments[5] != null);

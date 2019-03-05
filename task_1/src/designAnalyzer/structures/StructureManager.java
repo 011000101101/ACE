@@ -39,8 +39,19 @@ public class StructureManager {
 	 */
 	private HashMap<String, NetlistBlock> blockMap;
 	
+	/**
+	 * holds all logic blocks
+	 */
 	private NetlistBlock[][] logicBlockIndex;
+	
+	/**
+	 * holds all IOBlocks in left and right coloumn
+	 */
 	private NetlistBlock[][][] ioBlockLRIndex;
+	
+	/**
+	 * holds all IOBlocks on top and bottom row 
+	 */
 	private NetlistBlock[][][] ioBlockTBIndex;
 	
 	private boolean[][][] chanXUsed;
@@ -134,7 +145,7 @@ public class StructureManager {
 	}
 
 	/**
-	 * 
+	 * returns a block by it´s name
 	 */
 	public NetlistBlock retrieveBlockByName(String name) {
 		
@@ -218,7 +229,13 @@ public class StructureManager {
 			
 	}
 
-
+	/**
+	 * returns a block by it´s coordinates
+	 * @param xCoordinate
+	 * @param yCoordinate
+	 * @param pad
+	 * @return
+	 */
 	public NetlistBlock retrieveBlockByCoordinates(int xCoordinate, int yCoordinate, int pad) {
 		
 		if(xCoordinate == 0) {

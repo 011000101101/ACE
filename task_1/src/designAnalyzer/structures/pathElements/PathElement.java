@@ -65,6 +65,11 @@ public abstract class PathElement {
 	
 	public abstract void getInfo(StringBuilder output);
 	
+	/**
+	 * checks whether given pathelement is a neighbour
+	 * @param neighbour
+	 * @return
+	 */
 	public abstract boolean isNeighbour(PathElement neighbour);
 
 	/**
