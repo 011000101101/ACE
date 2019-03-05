@@ -11,14 +11,17 @@ import designAnalyzer.timingAnalyzer.TimingAnalyzer;
 
 public class SourceTerminal extends AbstractTerminal {
 
+	
 	/**
 	 * maps successors to delay of segment to that successor
 	 */
 	Map<AbstractTerminal, Integer> successors;
+	
 	/**
 	 * caches the old values of delay
 	 */
 	Map<AbstractTerminal, Integer> successorsCache;
+	
 	
 	public SourceTerminal(NetlistBlock newBlock) {
 		super(newBlock);
@@ -26,6 +29,7 @@ public class SourceTerminal extends AbstractTerminal {
 		successors= new HashMap<AbstractTerminal, Integer>(10);
 		successorsCache= new HashMap<AbstractTerminal, Integer>(10);
 	}
+	
 	
 	@Override
 	protected int annotataTA(AbstractTerminal specificSuccessor) {

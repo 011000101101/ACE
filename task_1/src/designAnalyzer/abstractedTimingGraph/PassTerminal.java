@@ -9,20 +9,27 @@ import designAnalyzer.timingAnalyzer.TimingAnalyzer;
 
 public class PassTerminal extends AbstractTerminal {
 
+	
 	/**
 	 * maps successors to exponentiated criticality of segment to that predecessors
 	 */
 	Map<AbstractTerminal, Double> predecessors;
+	
 	/**
 	 * maps successors to delay of segment to that successor
 	 */
 	Map<AbstractTerminal, Integer> successors;
+	
 	/**
 	 * caches the old values of delay
 	 */
 	Map<AbstractTerminal, Integer> successorsCache;
 	
+	/**
+	 * temperature of current iteration, if computeWeightedSumOfDelays(...) has already been called in this iteration, or a larger value (or -1) if not
+	 */
 	double tempOfCurrentIteration;
+	
 
 	public PassTerminal(NetlistBlock newBlock) {
 		super(newBlock);
@@ -31,6 +38,7 @@ public class PassTerminal extends AbstractTerminal {
 		successorsCache= new HashMap<AbstractTerminal, Integer>(10);
 	}
 
+	
 	@Override
 	protected int annotataTA(AbstractTerminal specificSuccessor) {
 		tR= Integer.MAX_VALUE; //may be reset here! (saves one method call...)

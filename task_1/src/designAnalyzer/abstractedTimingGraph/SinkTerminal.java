@@ -7,23 +7,22 @@ import designAnalyzer.structures.pathElements.blocks.NetlistBlock;
 
 public class SinkTerminal extends AbstractTerminal {
 
-	public SinkTerminal(NetlistBlock newBlock) {
-		super(newBlock);
-	}
-
-//	/**
-//	 * maps successors to exponentiated criticality of segment to that predecessors
-//	 */
-//	Map<AbstractTerminal, Double> predecessors;
 	
 	/**
 	 * predecessor (immediate signal source)
 	 */
 	AbstractTerminal predecessor;
+	
 	/**
 	 * exponentiated criticality of segment to predecessor
 	 */
 	double expCrit;
+	
+
+	public SinkTerminal(NetlistBlock newBlock) {
+		super(newBlock);
+	}
+	
 	
 	@Override
 	protected int annotataTA(AbstractTerminal specificSuccessor) {

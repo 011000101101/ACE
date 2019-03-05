@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.io.FileNotFoundException;
 
+import designAnalyzer.DesignAnalyzer;
 import designAnalyzer.ParameterManager;
 import designAnalyzer.errorReporter.ErrorReporter;
 import designAnalyzer.inputParser.ArchitectureParser;
@@ -186,11 +187,13 @@ public class Router {
 				}
 			}
 			
+			int upperBound;
+			int upperBoundInitial;
 			
 			if(w == -1) {//-w not set
-				int upperBoundInitial= 16;
+				upperBoundInitial= 16;
 			
-				int upperBound= upperBoundInitial;
+				upperBound= upperBoundInitial;
 				int lowerBound= 0;
 				currentChannelWidth = upperBound;
 				
@@ -224,6 +227,8 @@ public class Router {
 			}
 			else {//-w set manually
 				currentChannelWidth = w;
+				upperBound= w;
+				upperBoundInitial= -1;
 				if(globalRouter()) { //successfully routed
 					for(Net n : currentRouting.keySet()) {
 						finalRouting.put(n, currentRouting.get(n));
@@ -246,6 +251,9 @@ public class Router {
 
 			
 			routingWriter.write(routingFilePath, finalRouting);
+			
+			printAnalysisData(elapsedTime, parameterManager.X_GRID_SIZE, parameterManager.Y_GRID_SIZE, upperBound, upperBoundInitial);
+			runDesignAnalyzer(netlistFilePath, architectureFilePath, placementFilePath, routingFilePath, parameterManager.X_GRID_SIZE, parameterManager.Y_GRID_SIZE, upperBound);
 
 			
 		} catch (FileNotFoundException e) {
@@ -256,9 +264,9 @@ public class Router {
 			e.printStackTrace();
 		}
 	}
-	
 
-	
+
+
 	private static int findIOBlockInputPin(NetlistBlock b) {
 		if(b.getX() == 0) return 3; //left io, right pin
 		else if(b.getY() == 0) return 2; //bottom io, top pin
@@ -807,6 +815,31 @@ public class Router {
 		}
 		
 		return outputChannels;
+	}
+
+
+	private static void runDesignAnalyzer(String netlistFilaPath, String architectureFilePath, String placementFilePath, String routingFilePath, int xGridSize, int yGridSize, int channelWidth) {
+		parameterManager.destroy();
+		structureManager.destroy();
+		DesignAnalyzer.main(new String[] {
+				netlistFilaPath,
+				architectureFilePath,
+				placementFilePath,
+				routingFilePath,
+				"-X",
+				String.valueOf(xGridSize),
+				"-Y",
+				String.valueOf(yGridSize),
+				"-W",
+				String.valueOf(channelWidth)
+		});
+	}
+	
+
+	private static void printAnalysisData(long elapsedTime, int x_GRID_SIZE, int y_GRID_SIZE, int upperBound,
+			int upperBoundInitial) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

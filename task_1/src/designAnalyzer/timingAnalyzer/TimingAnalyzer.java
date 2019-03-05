@@ -1,5 +1,6 @@
 package designAnalyzer.timingAnalyzer;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -553,6 +554,7 @@ public class TimingAnalyzer {
 			filename= "segment_count";
 		}
 		try {
+			new File(directory).mkdirs();
 			PrintWriter writer = new PrintWriter(directory + filename + ".txt", "UTF-8");
 			writer.append(output);
 			writer.close();
