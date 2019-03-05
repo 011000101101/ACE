@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'bbara'
+
+Execution Time: 0(s), 312(ms)
+
+Final Channel Width: 4
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 6x6 logic blocks)

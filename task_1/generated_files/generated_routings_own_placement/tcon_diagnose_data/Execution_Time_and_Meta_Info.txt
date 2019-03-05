@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'tcon'
+
+Execution Time: 0(s), 109(ms)
+
+Final Channel Width: 3
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 5x5 logic blocks)

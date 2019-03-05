@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'bbara'
+>used seed for random number generator: 4448531626715652089
+
+Execution Time: 0(s), 306(ms)
+>Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): 1
+
+Final Timing Cost (weighted sum of delays of all data paths): 4144.568730538894
+Final Wiring Cost (sum of 'Star+' wiring cost over all nets): 253.51896911175595

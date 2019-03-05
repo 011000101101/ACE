@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'tseng'
+
+Execution Time: 24(s), 24634(ms)
+
+Final Channel Width: 7
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 33x33 logic blocks)

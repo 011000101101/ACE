@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'clma'
+>used seed for random number generator: -6965126773526400246
+
+Execution Time: 1907(s), 1907396(ms)
+>Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): 1
+
+Final Timing Cost (weighted sum of delays of all data paths): 6150790.927476167
+Final Wiring Cost (sum of 'Star+' wiring cost over all nets): 165042.87109090804

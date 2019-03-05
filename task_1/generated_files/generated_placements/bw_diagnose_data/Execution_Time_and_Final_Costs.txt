@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'bw'
+>used seed for random number generator: -2372124577130173702
+
+Execution Time: 1(s), 1519(ms)
+>Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): 1
+
+Final Timing Cost (weighted sum of delays of all data paths): 48513.7586678969
+Final Wiring Cost (sum of 'Star+' wiring cost over all nets): 1135.055651387527

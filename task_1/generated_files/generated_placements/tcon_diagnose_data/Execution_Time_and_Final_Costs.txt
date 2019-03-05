@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'tcon'
+>used seed for random number generator: -383018500308593617
+
+Execution Time: 0(s), 254(ms)
+>Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): 1
+
+Final Timing Cost (weighted sum of delays of all data paths): 4471.706867805151
+Final Wiring Cost (sum of 'Star+' wiring cost over all nets): 164.83781288874488

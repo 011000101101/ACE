@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 's298'
+
+Execution Time: 185(s), 185373(ms)
+
+Final Channel Width: 8
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 44x44 logic blocks)

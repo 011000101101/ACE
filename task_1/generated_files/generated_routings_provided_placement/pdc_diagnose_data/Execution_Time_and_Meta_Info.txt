@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'pdc'
+
+Execution Time: 184(s), 184697(ms)
+
+Final Channel Width: 17
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 68x68 logic blocks)

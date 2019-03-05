@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'mm30a'
+>used seed for random number generator: 7688600884824280518
+
+Execution Time: 7(s), 7834(ms)
+>Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): 1
+
+Final Timing Cost (weighted sum of delays of all data paths): 188219.63984119784
+Final Wiring Cost (sum of 'Star+' wiring cost over all nets): 5975.50856207841

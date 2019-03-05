@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'pdc'
+>used seed for random number generator: -2872537991736600963
+
+Execution Time: 394(s), 394462(ms)
+>Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): 1
+
+Final Timing Cost (weighted sum of delays of all data paths): 8069637.651173149
+Final Wiring Cost (sum of 'Star+' wiring cost over all nets): 107534.35881986744

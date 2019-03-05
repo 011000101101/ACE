@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'tseng2'
+>used seed for random number generator: -8036781928457626720
+
+Execution Time: 45(s), 45637(ms)
+>Step Count Factor (1 is 'fast mode', 10 is 'normal mode'): 1
+
+Final Timing Cost (weighted sum of delays of all data paths): 203077.54352638975
+Final Wiring Cost (sum of 'Star+' wiring cost over all nets): 13414.793416869976

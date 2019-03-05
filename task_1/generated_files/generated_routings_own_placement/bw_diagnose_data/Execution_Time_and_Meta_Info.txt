@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'bw'
+
+Execution Time: 1(s), 1633(ms)
+
+Final Channel Width: 6
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 12x12 logic blocks)

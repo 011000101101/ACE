@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'clma'
+
+Execution Time: 948(s), 948805(ms)
+
+Final Channel Width: 13
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 92x92 logic blocks)

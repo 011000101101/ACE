@@ -1,0 +1,22 @@
+exact critical path: 
+ 
+(time in ns) 
+ 
+Node:			Time:
+Type:	Name:	Location:	Delay:	tA ('T-Arrival'):
+--	--	--	--	--
+In_Block	|pi	|(0,3).0	|0	|0
+O_Pin	|OPIN(0,3)	|(0,3).1	|500	|500
+CHAN_Y	|	|(0,3).0	|500	|1000
+CHAN_X	|	|(1,2).0	|500	|1500
+CHAN_X	|	|(2,2).0	|500	|2000
+CHAN_X	|	|(3,2).0	|500	|2500
+CHAN_X	|	|(4,2).0	|500	|3000
+CHAN_Y	|	|(4,2).0	|500	|3500
+CHAN_Y	|	|(4,1).0	|500	|4000
+I_Pin	|IPIN(5,1).1	|(5,1).1	|500	|4500
+CLB(comb)	|pd0	|(5,1)	|900	|5400
+O_Pin	|OPIN(5,1)	|(5,1).1	|0	|5400
+CHAN_X	|	|(5,0).0	|500	|5900
+I_Pin	|IPIN(5,0).0	|(5,0).0	|500	|6400
+Out_Block	|out:pd0	|(5,0).0	|300	|6700

@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'C2670'
+
+Execution Time: 7(s), 7176(ms)
+
+Final Channel Width: 7
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 28x28 logic blocks)

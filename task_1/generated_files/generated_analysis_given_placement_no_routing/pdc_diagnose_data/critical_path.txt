@@ -1,0 +1,19 @@
+estimated critical path: 
+ 
+(time in ns) 
+ 
+Node:			Time:
+Type:	Name:	Location:	Delay:	tA ('T-Arrival'):
+--	--	--	--	--
+I_Block	i_12_(69,34)0	31000	500
+CLB(comb)	n_n256(18,24)	36500	31500
+CLB(comb)	[19208](66,48)	7500	68900
+CLB(comb)	n_n5063(60,55)	4000	77300
+CLB(comb)	[19230](60,61)	5500	82200
+CLB(comb)	n_n5007(61,52)	5500	88600
+CLB(comb)	[19306](60,60)	7500	95000
+CLB(comb)	n_n5231(48,61)	36500	103400
+CLB(comb)	o_16_(24,13)	7500	140800
+O_Block	out:o_16_(24,0)0	300	149200
+
+('Delay' is delay from current to next Terminal, add final Delay and tA to get dMax)

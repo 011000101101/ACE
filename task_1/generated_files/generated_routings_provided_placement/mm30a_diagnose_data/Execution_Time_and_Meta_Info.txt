@@ -1,0 +1,8 @@
+Diagnostic Data for Design: 'mm30a'
+
+Execution Time: 7(s), 7491(ms)
+
+Final Channel Width: 6
+>Initial Channel Width (start of binary search) was: 16 ('-1' means no binary search...)
+
+(Grid Size is: 23x23 logic blocks)
