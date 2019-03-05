@@ -79,25 +79,9 @@ public abstract class NetlistBlock extends PathElement{
 		subblk_1= newVal;
 	}
 	
-	/**
-	 * standard setter method
-	 * @param newXCoordinate
-	 */
-	/* TODO remove in final version
-	public void setXCoordinate(int newXCoordinate) {
-		xCoordinate= newXCoordinate;
-	}
-	*/
+	
 
-	/**
-	 * standard setter method
-	 * @param newYCoordinate
-	 */
-	/* TODO remove in final version
-	public void setYCoordinate(int newYCoordinate) {
-		yCoordinate= newYCoordinate;
-	}
-	*/
+
 	
 	/**
 	 * sets X and Y coordinate of this block <br>

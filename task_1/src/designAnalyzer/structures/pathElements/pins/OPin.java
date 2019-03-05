@@ -174,8 +174,8 @@ public class OPin extends PathElement {
 	@Override
 	public void addPrevious(PathElement newPrevious) {
 		if(previous != null) {
-			//TODO report error
-			//ErrorReporter.re
+			//report error
+			
 		}
 		else {
 			previous = newPrevious;

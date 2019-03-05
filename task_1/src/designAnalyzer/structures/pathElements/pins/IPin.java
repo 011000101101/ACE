@@ -167,8 +167,8 @@ public class IPin extends PathElement{
 	@Override
 	public void addPrevious(PathElement newPrevious) {
 		if(previous != null) {
-			//TODO report error
-			//ErrorReporter.re
+			//report error
+			
 		}
 		else {
 			previous = newPrevious;
@@ -179,8 +179,8 @@ public class IPin extends PathElement{
 	@Override
 	public void addNext(PathElement newNext) {
 		if(next != null) {
-			//TODO report error
-			//ErrorReporter.re
+			//report error
+			
 		}
 		else {
 			next = newNext;

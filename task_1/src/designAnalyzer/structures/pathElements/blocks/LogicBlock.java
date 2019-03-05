@@ -29,7 +29,7 @@ public class LogicBlock extends NetlistBlock {
 	private List<IPin> previous= new LinkedList<IPin>();
 	private PathElement next;
 	
-	//TODO check if needed
+	
 	private PathElement criticalPrevious;
 
 	@SuppressWarnings("unused")
@@ -308,12 +308,7 @@ public class LogicBlock extends NetlistBlock {
 	}
 
 
-	/*
-	@Override
-	protected PathElement getSingleSource() {
-		//TODO this also returns a previous element if it is source
-		return previous.get(previous.size() - 1);
-	}*/
+
 	
 	@Override
 	protected PathElement searchAllNext(int checkXCoordinate, int checkYCoordinate, int checkTrack, boolean isChanX, boolean isPin, boolean init) {

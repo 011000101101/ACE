@@ -17,7 +17,7 @@ public class PlacementParser extends AbstractInputParser {
 	
 	public PlacementParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
-		// TODO Auto-generated constructor stub
+		
 		structureManager= StructureManager.getInstance();
 		
 		currentLine= readLineAndTokenize();
@@ -40,7 +40,7 @@ public class PlacementParser extends AbstractInputParser {
 			}
 			
 			//checks whether the name of the netlist file is consistent
-			String[] tmpArray = parameterManager.NETLIST_PATH.split("/"); //string array with elements representing the path//TODO escape https://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#sum
+			String[] tmpArray = parameterManager.NETLIST_PATH.split("/"); //string array with elements representing the path//
 			String tmpString = tmpArray[tmpArray.length-1];// string(name of netlist file) to be compared with
 			if(!currentLine[2].equals(tmpString)) {
 				ErrorReporter.reportInconsistentNamingError(tmpString, currentLine[2], this);

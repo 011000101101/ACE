@@ -29,7 +29,7 @@ public class NetlistParser extends AbstractInputParser {
 	
 	public NetlistParser(String newFilePath) throws FileNotFoundException {
 		super(newFilePath);
-		// TODO Auto-generated constructor stub
+		
 		structureManager= StructureManager.getInstance();
 		
 		currentLine= readLineAndTokenize();
