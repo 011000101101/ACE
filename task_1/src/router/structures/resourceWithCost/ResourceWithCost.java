@@ -11,7 +11,7 @@ public abstract class ResourceWithCost {
 
 	protected double hv;
 	
-	ResourceWithCost previous; //possible to save space by just saving direction of previous (has to be direct neighbour), but then additional logic needed for backtracking
+	ResourceWithCost previous; 
 
 	protected int usedCounter;
 	
@@ -48,15 +48,6 @@ public abstract class ResourceWithCost {
 		return previous;
 	}
 
-	
-	/**
-	 * also set validity date
-	 * @param iterationCounter
-	 * @param globalIterationCounter
-	 */
-//	protected abstract void setUsedCounterToOne();
-
-
 
 	public void incUsedCounter() {
 		usedCounter++;
@@ -81,14 +72,12 @@ public abstract class ResourceWithCost {
 	 */
 	public void setPathCostAndPreviousIfNotYetComputedInThisIteration(ResourceWithCost newPrevious, double pFak, int sinkX, int sinkY) {
 		if(costSum >= 0) {
-//			System.out.println("cost: " + cost);
 			return;
 		}
 		else {
 			previous= newPrevious;
 			costSum= previous.getCostSum() + computeCost(pFak);
 			costDistEst= computeCostDistEst(sinkX, sinkY);
-//			System.out.println("cost: " + cost);
 		}
 	}
 	
@@ -132,11 +121,4 @@ public abstract class ResourceWithCost {
 		costDistEst= computeCostDistEst(sinkX, sinkY);
 	}
 
-	/**
-	 * reset hv to 1
-	 */
-//	public void discardFromPQ() {
-//		cost= -1;
-//		alreadyAdded= false;
-//	}
 }
