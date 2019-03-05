@@ -118,32 +118,32 @@ public class Placer {
 	/**
 	 * List of total costs after each step
 	 */
-	private static List<Double> outputTotalCost= new ArrayList<Double>();
+	private static List<Double> outputTotalCost;
 	
 	/**
 	 * List of wiring costs after each step
 	 */
-	private static List<Double> outputTotalWiringCost= new ArrayList<Double>();
+	private static List<Double> outputTotalWiringCost;
 	
 	/**
 	 * List of timing costs after each step
 	 */
-	private static List<Double> outputTotalTimingCost= new ArrayList<Double>();
+	private static List<Double> outputTotalTimingCost;
 
 	/**
 	 * List of acceptance rate after each step
 	 */
-	private static List<Double> outputAcceptanceRate= new ArrayList<Double>();
+	private static List<Double> outputAcceptanceRate;
 
 	/**
 	 * List of r Limit after each step
 	 */
-	private static List<Double> outputRLimit= new ArrayList<Double>();
+	private static List<Double> outputRLimit;
 
 	/**
 	 * List of r Limit Logic Blocks after each step
 	 */
-	private static List<Double> outputRLimitLogicBlock= new ArrayList<Double>();
+	private static List<Double> outputRLimitLogicBlock;
 	
 	/**
 	 * for wiring cost
@@ -190,6 +190,13 @@ public class Placer {
 	 */
 	public static void main(String[] args) {
 
+		outputTotalCost= new ArrayList<Double>();
+		outputTotalWiringCost= new ArrayList<Double>();
+		outputTotalTimingCost= new ArrayList<Double>();
+		outputAcceptanceRate= new ArrayList<Double>();
+		outputRLimit= new ArrayList<Double>();
+		outputRLimitLogicBlock= new ArrayList<Double>();
+		
 		long startTime = System.currentTimeMillis();
 		String netlistFilePath= args[0];
 		String architectureFilePath= args[1];
@@ -276,15 +283,15 @@ public class Placer {
 	 * if there is only one IOBlock placed on a coordinate and this IOBlock has the subblocknumber 1, it will be swapped to subblock 0
 	 */
 	private static void normalizeIOBlockPadPlacement() {
-		for(int i=1; i <= parameterManager.X_GRID_SIZE + 1; i++) {// top and bottem row
+		for(int i=1; i <= parameterManager.X_GRID_SIZE; i++) {// top and bottem row
 			if(sBlocks[i][parameterManager.Y_GRID_SIZE +1][0] == null && sBlocks[i][parameterManager.Y_GRID_SIZE +1][1] != null) {
 				normalizeIOBlock(i, parameterManager.Y_GRID_SIZE +1);
 			}
 			if(sBlocks[i][0][0] == null && sBlocks[i][0][1] != null) {
-				normalizeIOBlock(i, parameterManager.Y_GRID_SIZE +1);
+				normalizeIOBlock(i, 0);
 			}
 		}
-		for(int i=1; i <= parameterManager.Y_GRID_SIZE + 1; i++) {// left and right column
+		for(int i=1; i <= parameterManager.Y_GRID_SIZE; i++) {// left and right column
 			if(sBlocks[0][i][0] == null && sBlocks[0][i][1] != null) {
 				normalizeIOBlock(0, i);
 			}
@@ -531,7 +538,7 @@ public class Placer {
 //					returnVal += currentNet.getWiringCost();
 //				}
 //			}
-			//oldWiringCost = totalWiringCost();//returnVal; //TODO check if can be omitted
+			oldWiringCost = totalWiringCost();//returnVal; //TODO check if can be omitted
 			System.out.println("\ntotal wiring cost: " + oldWiringCost);
 			oldTimingCost = timingGraph.analyzeTiming(critExp, temp);//TimingCost(critExp) ; 
 			System.out.println("total timing cost: " + oldTimingCost + "\n");
@@ -1625,17 +1632,24 @@ public class Placer {
 		    		chartPanelRLL.getWidth(),
 		    		chartPanelRLL.getHeight());
 
+		    frameCOut.close();
+		    frameWCOut.close();
+		    frameTCOut.close();
+		    frameAROut.close();
+		    frameRLOut.close();
+		    frameRLLOut.close();
+		    
 		} catch (IOException ex) {
 		    ex.printStackTrace();
 		}
 		
-		frameC.setVisible(true);
-		frameWC.setVisible(true);
-		frameTC.setVisible(true);
-		frameAR.setVisible(true);
-		frameRL.setVisible(true);
-		frameRLL.setVisible(true);
-
+//		frameC.setVisible(true);
+//		frameWC.setVisible(true);
+//		frameTC.setVisible(true);
+//		frameAR.setVisible(true);
+//		frameRL.setVisible(true);
+//		frameRLL.setVisible(true);
+		
 	}
 
 
